@@ -8,7 +8,8 @@ namespace RPG.AbilitySystem
     [CreateAssetMenu(fileName = "Ability", menuName = "RPG/Ability", order = 1)]
     public class Ability : ScriptableObject
     {
-        [SerializeField] public string Name { get; private set; }
+        [SerializeField] public string Name { get; set; }
+        [SerializeField] public string Description { get; set; }
         protected List<IBehavior> behaviors = new List<IBehavior>();
 
         // Start is called before the first frame update
@@ -36,6 +37,11 @@ namespace RPG.AbilitySystem
                 return false;
             }
             return true;
+        }
+
+        public List<IBehavior> GetBehaviors()
+        {
+            return behaviors;
         }
 
     }

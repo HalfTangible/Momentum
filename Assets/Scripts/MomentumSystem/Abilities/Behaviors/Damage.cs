@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RPG.StatSystem;
+using System;
 
 namespace RPG.AbilitySystem
 {
@@ -11,7 +12,8 @@ namespace RPG.AbilitySystem
         int roundsRemaining;
         int turnsRemaining;
         bool onHit;
-
+        //List<string> stats = { "AMOUNT", "ROUNDS", "TURNS", "ONHIT" }
+        private Dictionary<string, object> stats; 
         /*public void Apply(StatSheet user, StatSheet target)
         {
             //Attaches this behavior to the target. It then triggers based on
@@ -81,5 +83,84 @@ namespace RPG.AbilitySystem
             turnsRemaining = turns;
                 
         }
+
+
+        public List<string> GetKeys()
+        {
+            return new List<string>(stats.Keys);
+        }
+        
+        public T GetStat<T>(string key)
+        {
+            if (stats.TryGetValue(key.ToUpperInvariant(), out object value))
+            {
+                if (value is T typedValue)
+                {
+                    return typedValue;
+                }
+                else
+                {
+                    throw new InvalidCastException($"The value associated with key '{key}' is not of type {typeof(T).Name}.");
+                }
+            }
+            else
+            {
+                throw new KeyNotFoundException($"The key '{key}' was not found in the stats dictionary.");
+            }
+        }
+        public void SetStat(string key, object value)
+        {
+            key = key.ToUpperInvariant();
+
+            if (stats.ContainsKey(key))
+            {
+                stats[key] = value;
+
+                // Update the internal fields if necessary
+                switch (key)
+                {
+                    case "AMOUNT":
+                        amount = Convert.ToInt32(value);
+                        break;
+                    case "ONHIT":
+                        onHit = Convert.ToBoolean(value);
+                        break;
+                    case "ROUNDS":
+                        roundsRemaining = Convert.ToInt32(value);
+                        break;
+                    case "TURNS":
+                        turnsRemaining = Convert.ToInt32(value);
+                        break;
+                }
+            }
+            else
+            {
+                throw new KeyNotFoundException($"The key '{key}' is not valid for this behavior.");
+            }
+        }
+
+        /*
+        public List<string> GetStats()
+        {
+            return Stats;
+        }
+
+        public T GetThis<T>(string toGet.ToUppercase())
+        {
+            switch(toGet):
+                case "AMOUNT":
+                return amount;
+
+                case "ONHIT":
+                return onHit;
+
+                case "ROUNDS":
+                return roundsRemaining;
+
+                case "TURNS":
+                return turnsRemaining;
+
+
+        }*/
     }
 }
