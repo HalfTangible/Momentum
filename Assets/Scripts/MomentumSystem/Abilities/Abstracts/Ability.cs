@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RPG.StatSystem;
 
 namespace RPG.AbilitySystem
 {
-    public abstract class Ability
+    [CreateAssetMenu(fileName = "Ability", menuName = "RPG/Ability", order = 1)]
+    public class Ability : ScriptableObject
     {
-        public string Name { get; private set; }
+        [SerializeField] public string Name { get; private set; }
         protected List<IBehavior> behaviors = new List<IBehavior>();
 
         // Start is called before the first frame update

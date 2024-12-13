@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RPG.StatSystem;
 
 namespace RPG.AbilitySystem
 {
@@ -23,7 +24,7 @@ namespace RPG.AbilitySystem
         {
             if(turnsRemaining > 0)
             {
-                target.takesDamage(amount);
+                target.TakesDamage(amount);
                 turnsRemaining--;
             }
             
@@ -34,7 +35,7 @@ namespace RPG.AbilitySystem
         {
             if (roundsRemaining > 0)
             {
-                target.takesDamage(amount);
+                target.TakesDamage(amount);
                 roundsRemaining--;
             }
             
@@ -59,7 +60,7 @@ namespace RPG.AbilitySystem
         public void OnHit(StatSheet target)
         {
             if (onHit)
-                target.takesDamage(amount);
+                target.TakesDamage(amount);
             //With the OnHit done, we check to see if the effect continues.
         }
 

@@ -52,7 +52,12 @@ namespace RPG.Dialogue.Editor
             if (dialogue != null )
             {
                 //UnityEngine.Debug.Log("OpenDialogue: true");
-                ShowEditorWindow();
+                DialogueEditor editor = (DialogueEditor)GetWindow(typeof(DialogueEditor), false, "Dialogue Editor");
+                editor.selectedDialogue = dialogue;
+                editor.Repaint(); // Ensures the editor updates immediately
+                /*ShowEditorWindow();*/
+
+
                 return true;
             }
 

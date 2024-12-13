@@ -6,7 +6,7 @@ using Debug = UnityEngine.Debug;
 
 public class TestBattle1 : MonoBehaviour
 {
-
+    /*
     //With this, we're going to test if the BasicAttack and HeavyAttack classes actually work as they should.
     StatSheet player = new StatSheet();
     StatSheet enemy = new StatSheet();
@@ -21,11 +21,11 @@ public class TestBattle1 : MonoBehaviour
         Stat m1 = new Stat(20);
         Stat m2 = new Stat(10);
 
-        player.setHealth(health1);
-        enemy.setHealth(health2);
+        player.SetHealth(health1);
+        enemy.SetHealth(health2);
 
-        player.setMomentum(m1);
-        enemy.setMomentum(m2);
+        player.SetMomentum(m1);
+        enemy.SetMomentum(m2);
 
         BasicAttackTest();
     }
@@ -40,7 +40,8 @@ public class TestBattle1 : MonoBehaviour
     {
         //No longer works with our current setup
 
-        /*Debug.Log("Begin BasicAttack test");
+        /*
+        Debug.Log("Begin BasicAttack test");
         //The enemy will perform a BasicAttack against the user.
         //Print out player health and max before this point as well as the enemy
 
@@ -65,7 +66,7 @@ public class TestBattle1 : MonoBehaviour
         Debug.Log("Player Momentum: " + player.getMomentumCurrent());
 
         Debug.Log("Enemy HP: " + enemy.getHealthCurrent() + " / " + enemy.getHealthMax());
-        Debug.Log("Enemy Momentum: " + enemy.getMomentumCurrent());*/
+        Debug.Log("Enemy Momentum: " + enemy.getMomentumCurrent());
     }
 
     void HeavyAttack()
@@ -76,5 +77,5 @@ public class TestBattle1 : MonoBehaviour
     void OverWhelm() 
     {
         //User gains a ton of extra momentum and Overwhelms the attacker.
-    }
+    }*/
 }

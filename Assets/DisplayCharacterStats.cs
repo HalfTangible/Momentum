@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DisplayCharacterStats : MonoBehaviour
 {
-
+    /*
     StatSheet theCharacter;
     // Start is called before the first frame update
     void Start()
@@ -28,5 +28,5 @@ public class DisplayCharacterStats : MonoBehaviour
     string DisplayStat(Stat s)
     {
         return s.getName() + ": " + s.getCurrent() + " / " + s.getMax();
-    }
+    }*/
 }

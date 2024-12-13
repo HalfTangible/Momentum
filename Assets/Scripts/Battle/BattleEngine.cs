@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Battlephase;
 using RPG.AbilitySystem;
+using RPG.StatSystem;
 
 public class BattleEngine : MonoBehaviour
 {
@@ -31,20 +32,20 @@ public class BattleEngine : MonoBehaviour
     {
         //Check the sheets of our two combatants (for now; later we'll make it so it returns the next person in each party).
         //If one of these characters is dead, then that side loses.
-        if (player.getHealthCurrent() <= 0)
+        if (player.GetHealthCurrent() <= 0)
             PlayerLose();
-        else if (npc.getHealthCurrent() <= 0)
+        else if (npc.GetHealthCurrent() <= 0)
             PlayerWin();
 
         //If either the player or the NPC are at 0 Momentum, then the round ends and a new one begins that refreshes their momentum.
-        if (player.getMomentumCurrent() == 0 || npc.getMomentumCurrent() == 0)
+        if (player.GetMomentumCurrent() == 0 || npc.GetMomentumCurrent() == 0)
             NewRound();
 
         //The sheet with the higher Momentum goes next.
 
-        if (npc.getMomentumCurrent() > player.getMomentumCurrent())
+        if (npc.GetMomentumCurrent() > player.GetMomentumCurrent())
             currentPhase = BattlePhase.NonPlayerTurn;
-        else if (player.getMomentumCurrent() > npc.getMomentumCurrent())
+        else if (player.GetMomentumCurrent() > npc.GetMomentumCurrent())
             currentPhase = BattlePhase.PlayerTurn;
     }
 
