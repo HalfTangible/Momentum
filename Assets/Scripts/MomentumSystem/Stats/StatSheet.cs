@@ -13,7 +13,7 @@ namespace RPG.StatSystem {
         [SerializeField] private Stat means;
         [SerializeField] private Stat skill;
 
-        private List<IBehavior> continuingEffects;
+        private List<ABehavior> continuingEffects;
 
         /*
         private int healthInt;
@@ -43,9 +43,9 @@ namespace RPG.StatSystem {
             skill.SetStaticValue(true);
         }
 
-        public void AbilityHit(List<IBehavior> input)
+        public void AbilityHit(List<ABehavior> input)
         {
-            foreach (IBehavior a in input)
+            foreach (ABehavior a in input)
             {
                 a.OnHit(this);
                 //Check if a is supposed to stay on for extra rounds, turns, etc and if it is add them to the list of continuing effects

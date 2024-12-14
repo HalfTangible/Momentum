@@ -6,14 +6,15 @@ using System;
 
 namespace RPG.AbilitySystem
 {
-    public class Damage : IBehavior
+    [System.Serializable]
+    public class Damage : ABehavior
     {
-        int amount;
-        int roundsRemaining;
-        int turnsRemaining;
-        bool onHit;
+        //int amount;
+        //int roundsRemaining;
+        //int turnsRemaining;
+        //bool onHit;
         //List<string> stats = { "AMOUNT", "ROUNDS", "TURNS", "ONHIT" }
-        private Dictionary<string, object> stats; 
+        //private Dictionary<string, object> stats; 
         /*public void Apply(StatSheet user, StatSheet target)
         {
             //Attaches this behavior to the target. It then triggers based on
@@ -24,68 +25,110 @@ namespace RPG.AbilitySystem
 
         public bool EachTurn(StatSheet target)
         {
+            int turnsRemaining = GetStat<int>("TURNS");
+
             if(turnsRemaining > 0)
             {
-                target.TakesDamage(amount);
-                turnsRemaining--;
+                target.TakesDamage(GetStat<int>("AMOUNT"));
+                SetStat("TURNS", --turnsRemaining);
             }
+
+
             
             return Continues();
         }
 
         public bool EachRound(StatSheet target)
         {
+            int roundsRemaining = GetStat<int>("ROUNDS");
+
             if (roundsRemaining > 0)
             {
-                target.TakesDamage(amount);
-                roundsRemaining--;
+                target.TakesDamage(GetStat<int>("AMOUNT"));
+                SetStat("ROUNDS", --roundsRemaining);
             }
             
             return Continues();
         }
 
-        public bool Continues()
-        {
-            //Called at the end of apply. The code checks to see if the ability is done.
-            if (roundsRemaining > 0 || turnsRemaining > 0)
-                return true; else return false;
-        }
+
 
         public bool Finished() 
         {
             //This behavior is called when the ability's behaviors are done.
             //If this is a buff, then it removes the buff; debuff, same deal.
-            //Since this behavior is damage, we don't need to do that, just be done.
             return false;
         }
         
-        public void OnHit(StatSheet target)
+        public override void OnHit(StatSheet target)
         {
-            if (onHit)
-                target.TakesDamage(amount);
+
+            if (GetStat<bool>("ONHIT"))
+                target.TakesDamage(GetStat<int>("AMOUNT"));
+
+            base.OnHit(target);
+
             //With the OnHit done, we check to see if the effect continues.
         }
 
-        public Damage(int amountEachTick) : this(amountEachTick, true)
+        public Damage(int amount) : this(amount, true)
+        {
+            
+        }
+
+        public Damage(int amount, bool onHit) : this(amount, onHit, 0, 0)
+        {
+            //By default, damage will happen once on hit.
+            
+            
+        }
+
+        public Damage(int amount, bool onHit, int rounds, int turns)
         {
 
+            InitializeStats(amount, onHit, rounds, turns);
+
         }
 
-        public Damage(int amountEachTick, bool onHit)
+        private void InitializeStats(int amount, bool onHit, int roundsRemaining, int turnsRemaining)
         {
-            amount = amountEachTick;
-            this.onHit = onHit;
+            stats = new Dictionary<string, object>()
+            {
+                { "AMOUNT", amount },
+                { "ONHIT", onHit },
+                { "ROUNDS", roundsRemaining },
+                { "TURNS", turnsRemaining }
+            };
         }
 
-        public Damage(int amountEachTick, bool onHit, int rounds, int turns) : this(amountEachTick, onHit) { 
-        
-            roundsRemaining = rounds;
-            turnsRemaining = turns;
-                
+        private string Description()
+        {
+            string desc = "Damaging ability. \n";
+            int amount = GetStat<int>("AMOUNT");
+            bool onHit = GetStat<bool>("ONHIT");
+            int rounds = GetStat<int>("ROUNDS");
+            int turns = GetStat<int>("TURNS");
+
+            if (onHit)
+                desc += $"*On hit, do {amount} damage.\n";
+            if (rounds == 1)
+                desc += $"*Do {amount} damage at the start of the next round.";
+            if (turns == 1)
+                desc += $"Do {amount} damage at the start of the target's next turn.";
+            if (rounds > 1)
+                desc += $"*Do {amount} damage at the start of each round for {rounds} rounds";
+            if (turns > 1)
+                desc += $"Do {amount} damage each turn at the start of each of the target's turns for {turns} turns.";
+
+
+
+
+            return desc;
         }
 
 
-        public List<string> GetKeys()
+
+        public override List<string> GetKeys()
         {
             return new List<string>(stats.Keys);
         }
@@ -115,23 +158,6 @@ namespace RPG.AbilitySystem
             if (stats.ContainsKey(key))
             {
                 stats[key] = value;
-
-                // Update the internal fields if necessary
-                switch (key)
-                {
-                    case "AMOUNT":
-                        amount = Convert.ToInt32(value);
-                        break;
-                    case "ONHIT":
-                        onHit = Convert.ToBoolean(value);
-                        break;
-                    case "ROUNDS":
-                        roundsRemaining = Convert.ToInt32(value);
-                        break;
-                    case "TURNS":
-                        turnsRemaining = Convert.ToInt32(value);
-                        break;
-                }
             }
             else
             {

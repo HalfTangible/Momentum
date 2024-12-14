@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5d5eecd2258734993fd7942eb4d09f, type: 3}
   m_Name: BasicAttack
   m_EditorClassIdentifier: 
+  abilityName: Poison
+  description: DOT
