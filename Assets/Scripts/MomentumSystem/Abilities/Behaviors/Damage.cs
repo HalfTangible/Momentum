@@ -71,34 +71,24 @@ namespace RPG.AbilitySystem
             //With the OnHit done, we check to see if the effect continues.
         }
 
-        public Damage(int amount) : this(amount, true)
+        public override void Initialize(int amount)
         {
-            
+            Initialize(amount, true);
         }
 
-        public Damage(int amount, bool onHit) : this(amount, onHit, 0, 0)
+        public void Initialize(int amount, bool onHit)
         {
             //By default, damage will happen once on hit.
-            
-            
+            Initialize(amount, onHit, 0, 0);
+
+
         }
 
-        public Damage(int amount, bool onHit, int rounds, int turns)
+        public void Initialize(int amount, bool onHit, int rounds, int turns)
         {
 
             InitializeStats(amount, onHit, rounds, turns);
 
-        }
-
-        private void InitializeStats(int amount, bool onHit, int roundsRemaining, int turnsRemaining)
-        {
-            stats = new Dictionary<string, object>()
-            {
-                { "AMOUNT", amount },
-                { "ONHIT", onHit },
-                { "ROUNDS", roundsRemaining },
-                { "TURNS", turnsRemaining }
-            };
         }
 
         private string Description()
@@ -126,44 +116,6 @@ namespace RPG.AbilitySystem
             return desc;
         }
 
-
-
-        public override List<string> GetKeys()
-        {
-            return new List<string>(stats.Keys);
-        }
-        
-        public T GetStat<T>(string key)
-        {
-            if (stats.TryGetValue(key.ToUpperInvariant(), out object value))
-            {
-                if (value is T typedValue)
-                {
-                    return typedValue;
-                }
-                else
-                {
-                    throw new InvalidCastException($"The value associated with key '{key}' is not of type {typeof(T).Name}.");
-                }
-            }
-            else
-            {
-                throw new KeyNotFoundException($"The key '{key}' was not found in the stats dictionary.");
-            }
-        }
-        public void SetStat(string key, object value)
-        {
-            key = key.ToUpperInvariant();
-
-            if (stats.ContainsKey(key))
-            {
-                stats[key] = value;
-            }
-            else
-            {
-                throw new KeyNotFoundException($"The key '{key}' is not valid for this behavior.");
-            }
-        }
 
         /*
         public List<string> GetStats()

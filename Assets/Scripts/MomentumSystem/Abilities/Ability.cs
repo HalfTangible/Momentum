@@ -11,8 +11,7 @@ namespace RPG.AbilitySystem
     {
         [SerializeField] private string abilityName;
         [SerializeField] private string description;
-        [SerializeField]
-        protected List<ABehavior> behaviors = new List<ABehavior>();
+        [SerializeField] protected List<ABehavior> behaviors = new List<ABehavior>();
 
         // Start is called before the first frame update
 

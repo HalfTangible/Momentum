@@ -147,10 +147,10 @@ namespace RPG.AbilitySystem.Editor
             }
             //Then put up a button that adds a new behavior to the ability based on a drop down menu.
             EditorGUILayout.LabelField("Behaviors:");
-            ShowBehaviors(selectedAbility);
+            ShowBehaviors();
         }
 
-        private void ShowBehaviors(Ability selectedAbility)
+        private void ShowBehaviors()
         {
             //Each behavior should get its own node.
             //There should be an option at the end of the list to add more behaviors
@@ -164,7 +164,7 @@ namespace RPG.AbilitySystem.Editor
                     EditorGUILayout.LabelField($"{behavior.GetType().Name} stats:");
                     //GUILayout.BeginHorizontal();
                     //Show the different behavior stats
-                    foreach(string key in behavior.GetKeys())
+                    foreach(string key in behavior.GetAllKeys())
                     {
                         EditorGUILayout.LabelField($"{key}: ");
                         behavior.SetStat(key, EditorGUILayout.TextField(behavior.GetStat<object>(key).ToString()));
@@ -181,9 +181,14 @@ namespace RPG.AbilitySystem.Editor
                 ABehavior newBehavior;
 
                 //If damage is selected
-                newBehavior = new Damage(10);
+                /*newBehavior = new Damage(10);*/
+
+                newBehavior = ScriptableObject.CreateInstance<Damage>();
+                newBehavior.Initialize(10);
+                AssetDatabase.AddObjectToAsset(newBehavior, selectedAbility);
                 selectedAbility.GetBehaviors().Add(newBehavior);
                 EditorUtility.SetDirty(selectedAbility);
+                EditorUtility.SetDirty(newBehavior);
                 AssetDatabase.SaveAssets();
                 Repaint();
             }
