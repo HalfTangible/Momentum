@@ -193,11 +193,15 @@ namespace RPG.AbilitySystem
         }
 
     }
+    /*
     [System.Serializable]
     public class BehaviorStat
     {
         //Because apparently dictionaries aren't serializable. Which is stupid.
         //Like, I get it, but it's stupid to have to work through.
+        //It doesn't serialize objects either. So I guess we're doing simple data types because there's no way doing a couple hundred JSON actions at the start of a game is worth it.
+        //Yeah it'd be easier to code at this point but we're trying to be efficient with the game's memory usage right now
+        
         [SerializeField]
         public string key;
         [SerializeField]
@@ -209,5 +213,5 @@ namespace RPG.AbilitySystem
             this.value = value;
         }
 
-    }
+    }8?
 }
