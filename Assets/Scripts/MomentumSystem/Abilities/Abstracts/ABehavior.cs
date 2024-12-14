@@ -213,5 +213,5 @@ namespace RPG.AbilitySystem
             this.value = value;
         }
 
-    }8?
+    }*/
 }
