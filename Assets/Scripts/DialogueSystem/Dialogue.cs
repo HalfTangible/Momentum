@@ -11,6 +11,8 @@ namespace RPG.Dialogue
     public class Dialogue : ScriptableObject, ISerializationCallbackReceiver
     {
         [SerializeField]
+        List<string> validSpeakers = new List<string>();
+        [SerializeField]
         List<DialogueNode> nodes = new List<DialogueNode>();
 
         Dictionary<string, DialogueNode> nodeLookup = new Dictionary<string, DialogueNode> ();
@@ -33,6 +35,9 @@ namespace RPG.Dialogue
             {
                 nodeLookup[node.name] = node;
             }
+
+            InitializeListCheck();
+
         }
 
         public IEnumerable<DialogueNode> GetAllNodes() //using IEnumerable so the type can be changed later (important thing is that a for loop can be done over it)
@@ -74,6 +79,44 @@ namespace RPG.Dialogue
             }
 
             return theNode;
+        }
+
+        public void AddSpeaker(string speakerName)
+        {
+            if (!validSpeakers.Contains(speakerName))
+            {
+                validSpeakers.Add(speakerName);
+                EditorUtility.SetDirty(this);
+                AssetDatabase.SaveAssets();
+            }
+        }
+
+        public void RemoveSpeaker(string speakerName)
+        {
+            if (validSpeakers.Contains(speakerName))
+            {
+                validSpeakers.Remove(speakerName);
+                EditorUtility.SetDirty(this);
+                AssetDatabase.SaveAssets();
+            }
+        }
+
+        public void InitializeListCheck()
+        {
+            if (validSpeakers == null)
+            {
+                validSpeakers = new List<string>();
+            }
+            if (!validSpeakers.Contains("Someone"))
+            {
+                validSpeakers.Add("Someone");
+            }
+        }
+
+        public List<string> GetSpeakers()
+        {
+            InitializeListCheck();
+            return validSpeakers;
         }
 
 #if UNITY_EDITOR

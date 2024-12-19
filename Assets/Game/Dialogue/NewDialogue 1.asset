@@ -18,8 +18,8 @@ MonoBehaviour:
   - 1d9c94e6-f11a-4a7a-8dfb-7b213a1321b8
   rect:
     serializedVersion: 2
-    x: 380
-    y: 168
+    x: 423
+    y: 120
     width: 200
     height: 200
 --- !u!114 &11400000
@@ -34,6 +34,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3979081a32abc654aa950519d75e6c56, type: 3}
   m_Name: NewDialogue 1
   m_EditorClassIdentifier: 
+  validSpeakers:
+  - Someone
   nodes:
   - {fileID: 7406354036917244504}
   - {fileID: -6109851514557343905}
@@ -55,8 +57,8 @@ MonoBehaviour:
   childNodes: []
   rect:
     serializedVersion: 2
-    x: 859
-    y: 184
+    x: 810
+    y: 125
     width: 200
     height: 200
 --- !u!114 &7406354036917244504
@@ -77,7 +79,7 @@ MonoBehaviour:
   - 0c6e56b0-a8e0-4808-b16e-43e026f00ec6
   rect:
     serializedVersion: 2
-    x: 0
-    y: 0
+    x: 77
+    y: 126
     width: 200
     height: 200

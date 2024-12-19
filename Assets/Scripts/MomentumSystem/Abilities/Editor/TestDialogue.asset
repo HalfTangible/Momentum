@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1897304266975281701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
+  m_Name: bf36bc59-11ee-436d-9efb-a5ed5ba3df23
+  m_EditorClassIdentifier: 
+  speaker: Someone
+  text: 
+  childNodes: []
+  rect:
+    serializedVersion: 2
+    x: 77
+    y: 120
+    width: 200
+    height: 200
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3979081a32abc654aa950519d75e6c56, type: 3}
+  m_Name: TestDialogue
+  m_EditorClassIdentifier: 
+  validSpeakers:
+  - Someone
+  - Khorne
+  - Desperado
+  nodes:
+  - {fileID: -1897304266975281701}

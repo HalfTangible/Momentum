@@ -31,6 +31,8 @@ namespace RPG.Dialogue.Editor
         bool draggingCanvas = false;
         [NonSerialized]
         Vector2 draggingCanvasOffset;
+        [NonSerialized]
+        List<string> speakerOptions;
 
         const float canvasSize = 4000;
         const float backgroundSize = 250;
@@ -54,6 +56,7 @@ namespace RPG.Dialogue.Editor
                 //UnityEngine.Debug.Log("OpenDialogue: true");
                 DialogueEditor editor = (DialogueEditor)GetWindow(typeof(DialogueEditor), false, "Dialogue Editor");
                 editor.selectedDialogue = dialogue;
+                editor.speakerOptions = editor.selectedDialogue.GetSpeakers();
                 editor.Repaint(); // Ensures the editor updates immediately
                 /*ShowEditorWindow();*/
 
@@ -81,6 +84,7 @@ namespace RPG.Dialogue.Editor
             if (newSelection != null)
             {
                 selectedDialogue = newSelection;
+                speakerOptions = selectedDialogue.GetSpeakers();
                 Repaint();
             }
 
@@ -196,12 +200,34 @@ namespace RPG.Dialogue.Editor
         {
             GUILayout.BeginArea(node.GetRect(), nodeStyle); //Begins the node layout
             EditorGUILayout.LabelField("Node:"); //Can also add editor styles as a second input variable, such as EditorStyles.whiteLabel
-            
+
             //EditorGUILayout.LabelField("Unique ID:");
             //string newId = EditorGUILayout.TextField(node.name);
             //GUILayout.BeginHorizontal();
+            //EditorGUILayout.StartVertical();
             EditorGUILayout.LabelField("Speaker:");
-            node.SetSpeaker(EditorGUILayout.TextField(node.GetSpeaker()));
+            //node.SetSpeaker(EditorGUILayout.TextField(node.GetSpeaker()));
+            //EditorGUILayout.Popup(key, currentIndex, options)
+
+            string[] options = selectedDialogue.GetSpeakers().ToArray();
+            int currentIndex = Array.IndexOf(options, node.GetSpeaker());
+            EditorGUILayout.BeginHorizontal();
+            int newIndex = EditorGUILayout.Popup(currentIndex, options, GUILayout.Width(150));
+            EditorGUILayout.EndHorizontal();
+            if(currentIndex != newIndex)
+            {
+                string newSpeaker = selectedDialogue.GetSpeakers()[newIndex];
+                node.SetSpeaker(newSpeaker);
+            }
+
+            //EditorGUILayout.EndVertical();
+
+            //node.SetSpeaker(EditorGUILayout.Popup(key, currentIndex, speakerOptions));
+            //First, get the valid speakers. (selectedOptions)
+            //Display them in a dropdown menu
+            //Set the speaker.
+            //Always include 'Someone' as a valid speaker.
+
             //GUILayout.EndHorizontal();
 
             //GUILayout.BeginHorizontal();

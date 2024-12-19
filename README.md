@@ -12,7 +12,9 @@ Currently on the backburner. I have a template I'm working on... and now that I 
 
 ## Dialogue
 
-Dialogues can be created from scratch and nodes added to it through an editor system. Still have not finished creating a way to display the information, but this set of files does have an older version of a text box that I will be using as a reference guide until completion.
+Dialogues can be created from scratch and nodes added to it through an editor system. Dialogues now contain a list of speakers, though at the moment the speakers must be entered manually through the inspector.
+
+Still have not finished creating a way to display the information, but this set of files does have an older version of a text box that I will be using as a reference guide until completion.
 
 ## Combat
 
