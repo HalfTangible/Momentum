@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RPG.StatSystem;
 using System;
+using Debug = UnityEngine.Debug;
 
 namespace RPG.AbilitySystem
 {
@@ -25,11 +26,11 @@ namespace RPG.AbilitySystem
 
         public bool EachTurn(StatSheet target)
         {
-            int turnsRemaining = GetStat<int>("TURNS");
+            int turnsRemaining = (int) GetStat<int>("TURNS");
 
             if(turnsRemaining > 0)
             {
-                target.TakesDamage(GetStat<int>("AMOUNT"));
+                target.TakesDamage((int) GetStat<int>("AMOUNT"));
                 SetStat("TURNS", --turnsRemaining);
             }
 
@@ -40,11 +41,11 @@ namespace RPG.AbilitySystem
 
         public bool EachRound(StatSheet target)
         {
-            int roundsRemaining = GetStat<int>("ROUNDS");
+            int roundsRemaining = (int) GetStat<int>("ROUNDS");
 
             if (roundsRemaining > 0)
             {
-                target.TakesDamage(GetStat<int>("AMOUNT"));
+                target.TakesDamage((int) GetStat<int>("AMOUNT"));
                 SetStat("ROUNDS", --roundsRemaining);
             }
             
@@ -53,25 +54,29 @@ namespace RPG.AbilitySystem
 
 
 
-        public bool Finished() 
+        public override void Finished(StatSheet target) 
         {
             //This behavior is called when the ability's behaviors are done.
             //If this is a buff, then it removes the buff; debuff, same deal.
-            return false;
+            base.Finished(target);
         }
         
         public override void OnHit(StatSheet target)
         {
+            Debug.Log($"Damage on hit reached. Bool: {(bool)GetStat<bool>("ONHIT")}");
 
-            if (GetStat<bool>("ONHIT"))
-                target.TakesDamage(GetStat<int>("AMOUNT"));
+            if ((bool)GetStat<bool>("ONHIT"))
+            {
+                Debug.Log($"It's onhit! Do damage: {(int)GetStat<int>("AMOUNT")}");
+                target.TakesDamage((int)GetStat<int>("AMOUNT")); 
+            }
 
             base.OnHit(target);
 
             //With the OnHit done, we check to see if the effect continues.
         }
 
-        public override void Initialize(int amount)
+        public void Initialize(int amount)
         {
             Initialize(amount, true);
         }
@@ -94,10 +99,10 @@ namespace RPG.AbilitySystem
         private string Description()
         {
             string desc = "Damaging ability. \n";
-            int amount = GetStat<int>("AMOUNT");
-            bool onHit = GetStat<bool>("ONHIT");
-            int rounds = GetStat<int>("ROUNDS");
-            int turns = GetStat<int>("TURNS");
+            int amount = (int) GetStat<int>("AMOUNT");
+            bool onHit = (bool) GetStat<bool>("ONHIT");
+            int rounds = (int) GetStat<int>("ROUNDS");
+            int turns = (int) GetStat<int>("TURNS");
 
             if (onHit)
                 desc += $"*On hit, do {amount} damage.\n";
@@ -111,34 +116,8 @@ namespace RPG.AbilitySystem
                 desc += $"Do {amount} damage each turn at the start of each of the target's turns for {turns} turns.";
 
 
-
-
             return desc;
         }
 
-
-        /*
-        public List<string> GetStats()
-        {
-            return Stats;
-        }
-
-        public T GetThis<T>(string toGet.ToUppercase())
-        {
-            switch(toGet):
-                case "AMOUNT":
-                return amount;
-
-                case "ONHIT":
-                return onHit;
-
-                case "ROUNDS":
-                return roundsRemaining;
-
-                case "TURNS":
-                return turnsRemaining;
-
-
-        }*/
     }
 }

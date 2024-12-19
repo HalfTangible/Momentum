@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RPG.AbilitySystem;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 namespace RPG.StatSystem { 
     [System.Serializable]
@@ -24,6 +26,8 @@ namespace RPG.StatSystem {
 
         public StatSheet()
         {
+            continuingEffects = new List<ABehavior>();
+
             health = new Stat(10);
             momentum = new Stat(10);
             motive = new Stat(10);
@@ -42,18 +46,54 @@ namespace RPG.StatSystem {
             means.SetStaticValue(true);
             skill.SetStaticValue(true);
         }
+        /*
+        public void AbilityHit(Ability ability)
+        {
+            //Run checks to see if the ability hits.
+            //If it does
+            AbilityHit(ability.GetBehaviors());
+        }*/
 
         public void AbilityHit(List<ABehavior> input)
         {
+            Debug.Log("AbilityHit was called");
+            
+
             foreach (ABehavior a in input)
             {
+                Debug.Log("Foreach loop reached");
                 a.OnHit(this);
                 //Check if a is supposed to stay on for extra rounds, turns, etc and if it is add them to the list of continuing effects
-                if (!a.Finished())
+                if (!a.Continues())
                     continuingEffects.Add(a);
 
             }
         }
+
+        public void TakesDamage(int amount)
+        {
+            Debug.Log($"Takes damage. Health should now be {GetHealthBase() - amount}");
+            SetHealthBase(GetHealthBase() - amount);
+            Debug.Log($"{GetHealthCurrent()}");
+        }
+
+        public void Heal(int amount)
+        {
+            TakesDamage(amount * -1);
+        }
+
+        public void Buff(string statName, int amount)
+        {
+            Stat stat = GetStatByName(statName);
+            stat.ApplyBuff(amount);
+        }
+
+        public void Debuff(string statName, int amount)
+        {
+            Stat stat = GetStatByName(statName);
+            stat.ApplyDebuff(amount);
+        }
+
 
         public Stat[] GetStats()
         {
@@ -62,10 +102,36 @@ namespace RPG.StatSystem {
             return myStats;
         }
 
-        public void TakesDamage(int amount)
+        public List<string> GetStatNames()
         {
-        
+            List<string> allStatNames = new List<string>();
+            foreach (Stat stat in GetStats())
+            {
+                allStatNames.Add(stat.GetName());
+            }
+
+            return allStatNames;
         }
+
+
+
+        public Stat GetStatByName(string statName)
+        {
+            foreach(Stat stat in GetStats())
+            {
+                if(statName == stat.GetName())
+                {
+                    return stat;
+                }
+            }
+
+            return null;
+            //throw new ArgumentNotFoundException("Stat name not found in GetStatByName");
+        }
+
+
+
+
 
         public Stat GetHealth()
         {
@@ -82,6 +148,10 @@ namespace RPG.StatSystem {
         public int GetHealthCurrent()
         {
             return health.GetCurrent();
+        }
+        public int GetHealthBase()
+        {
+            return health.GetBaseStat();
         }
         public void SetHealth(Stat health)
         {
@@ -223,28 +293,6 @@ namespace RPG.StatSystem {
 
 
 
-
-
-        /*
-        public void setHealth(Stat health)
-        {
-            this.health = health;
-        }
-
-        public void setMomentum(Stat momentum)
-        {
-            this.momentum = momentum;
-        }
-
-        public void setMotive(Stat motive)
-        {
-            this.motive = motive;
-        }
-
-        public void setMeans(Stat means)
-        {
-            this.means = means;
-        }*/
 
 
 

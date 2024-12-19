@@ -4,18 +4,20 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using System.Diagnostics;
+using System.Linq;
+using System;
 
 namespace RPG.AbilitySystem.Editor
 {
     public class AbilityEditor : EditorWindow
     {
-        
+
         Ability selectedAbility = null;
-        
+
         string newAbilityName = null;
-        
-        private List<string> behaviorOptions = new List<string>{ "Damage","Healing","Buff" };
-        
+
+        private List<string> behaviorOptions = new List<string> { "Damage", "Healing", "Buff", "Debuff" };
+
         private int selectedBehaviorIndex = 0;
 
 
@@ -58,7 +60,7 @@ namespace RPG.AbilitySystem.Editor
         private void OnSelectionChanged()
         {
             Ability newSelection = Selection.activeObject as Ability;
-            if(newSelection != null)
+            if (newSelection != null)
             {
                 selectedAbility = newSelection;
                 newAbilityName = selectedAbility.GetName();
@@ -68,7 +70,7 @@ namespace RPG.AbilitySystem.Editor
 
         private void OnGUI()
         {
-            if(selectedAbility == null)
+            if (selectedAbility == null)
             {
                 EditorGUILayout.LabelField("No ability selected");
             }
@@ -92,7 +94,7 @@ namespace RPG.AbilitySystem.Editor
             EditorGUILayout.LabelField("Ability Name: ");
             newAbilityName = EditorGUILayout.TextField(selectedAbility.GetAbilityName());
 
-            if (newAbilityName != selectedAbility.GetAbilityName()) 
+            if (newAbilityName != selectedAbility.GetAbilityName())
             {
                 selectedAbility.SetAbilityName(newAbilityName);
                 EditorUtility.SetDirty(selectedAbility);
@@ -100,45 +102,12 @@ namespace RPG.AbilitySystem.Editor
                 Repaint();
             }
             //RenameAbilityAsset((EditorGUILayout.TextField(selectedAbility.GetName())));
-            
-            
-            
-            /* I don't actually need to redo the asset mapping/naming and it'd be more trouble than it was worth anyway. Good news is that it worked.
-            string tempName = EditorGUILayout.TextField(newAbilityName);
 
-            // Update the new name without renaming immediately
-            if (tempName != newAbilityName)
-            {
-                newAbilityName = tempName;
-            }
-
-            // Add a button to confirm the renaming
-            if (GUILayout.Button("Rename Ability"))
-            {
-                if (!string.IsNullOrEmpty(newAbilityName) && newAbilityName != selectedAbility.GetName())
-                {
-                    RenameAbilityAsset(selectedAbility, newAbilityName);
-                    newAbilityName = selectedAbility.GetName();
-                    //Repaint();
-                    //Tried Repaint to make it update immediately but did not. Will have to settle for it changing after I click off.
-                }
-            }/*
-
-            /*            EditorGUI.BeginChangeCheck();
-                        newAbilityName = EditorGUILayout.TextField(newAbilityName ?? selectedAbility.GetName());
-                        if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newAbilityName))
-                        {
-                            if (newAbilityName != selectedAbility.GetName())
-                            {
-                                RenameAbilityAsset(selectedAbility, newAbilityName);
-                            }
-                        }
-            */
 
             EditorGUILayout.LabelField("Description: ");
-                
+
             string newDesc = EditorGUILayout.TextField(selectedAbility.Description);
-            if(newDesc != selectedAbility.Description)
+            if (newDesc != selectedAbility.Description)
             {
                 selectedAbility.Description = newDesc;
                 EditorUtility.SetDirty(selectedAbility);
@@ -152,38 +121,206 @@ namespace RPG.AbilitySystem.Editor
 
         private void ShowBehaviors()
         {
-            //Each behavior should get its own node.
-            //There should be an option at the end of the list to add more behaviors
-            //Connected to that should be a list of the valid behavior types. For now it's just damage.
-            //If a behavior is added, we need to Repaint.
+            
             if (selectedAbility.GetBehaviors() != null)
             {
-                foreach (var behavior in selectedAbility.GetBehaviors())
+
+                GUILayout.BeginHorizontal();
+                selectedBehaviorIndex = EditorGUILayout.Popup("Select behavior to add:", selectedBehaviorIndex, behaviorOptions.ToArray());
+                if (GUILayout.Button("Add Behavior"))
                 {
-                    //GUILayout.BeginVertical();
-                    EditorGUILayout.LabelField($"{behavior.GetType().Name} stats:");
-                    //GUILayout.BeginHorizontal();
-                    //Show the different behavior stats
-                    foreach(string key in behavior.GetAllKeys())
-                    {
-                        EditorGUILayout.LabelField($"{key}: ");
-                        behavior.SetStat(key, EditorGUILayout.TextField(behavior.GetStat<object>(key).ToString()));
-                    }
-                    //Add button to remove each behavior
-                    //GUILayout.EndHorizontal();
-                    //GUILayout.EndVertical();
+                    CreateNewBehavior();
                 }
+                GUILayout.EndHorizontal();
             }
 
-            if (GUILayout.Button("Add Behavior"))
+            List<ABehavior> behaviorsToDelete = new List<ABehavior>();
+            //This is to keep the InvalidOperationException from popping up; it was doing so because we were moving something in a list while iterating over it.
+            //I feel like it would've been fine but just to be safe...
+
+            foreach (var behavior in selectedAbility.GetBehaviors())
             {
-                // Example of creating a new Damage behavior (or any other behavior you want)
-                ABehavior newBehavior;
+                EditorGUILayout.LabelField($"{behavior.GetType().Name} stats:");
 
-                //If damage is selected
-                /*newBehavior = new Damage(10);*/
+                foreach (string key in behavior.GetAllKeys())
+                {
 
-                newBehavior = ScriptableObject.CreateInstance<Damage>();
+
+                    object statValue = behavior.GetStat<object>(key);
+                    object newValue = statValue; // Default to the same value if no changes are made
+                    //UnityEngine.Debug.Log($"Top: statValue = {statValue}, newValue = {newValue}");
+                    //UnityEngine.Debug.Log($"Top Comparison between {statValue} and {newValue}: {statValue.Equals(newValue)}");
+                    // Retrieve the current stat value associated with the key
+                    //object currentStatValue = behavior.GetStat<object>(key);
+                    //string currentValueString = currentStatValue?.ToString() ?? string.Empty;
+
+                    switch (statValue)
+                    {
+                        case int intValue:
+                            newValue = EditorGUILayout.IntField(key, intValue);
+                            break;
+
+                        case float floatValue:
+                            newValue = EditorGUILayout.FloatField(key, floatValue);
+                            break;
+
+                        case bool boolValue:
+                            newValue = EditorGUILayout.Toggle(key, boolValue);
+                            break;
+
+                        case string stringValue:
+                            newValue = EditorGUILayout.TextField(key, stringValue);
+                            break;
+
+                        case Enum enumValue:
+                            newValue = EditorGUILayout.EnumPopup(key, enumValue);
+                            break;
+
+                        case IList listValue:
+
+                            // Convert the list into an array of string options
+                            string[] options = listValue.Cast<object>().Select(o => o.ToString()).ToArray();
+
+                            // Retrieve the current stat value associated with the key
+                            object currentStatValue = behavior.GetStat<object>(key);
+                            string currentValueString = currentStatValue?.ToString() ?? string.Empty;
+
+                            // Find the current index of the stat value in the options array
+                            int currentIndex = Array.IndexOf(options, currentValueString);
+
+                            // Ensure a valid default selection index
+                            //currentIndex = Mathf.Max(0, currentIndex);
+                            currentIndex = behavior.GetListIndex(key);
+                            // Display the dropdown menu and get the new selected index
+                            int newIndex = EditorGUILayout.Popup(key, currentIndex, options);
+
+                            //UnityEngine.Debug.Log($"newIndex = {newIndex}, currentIndex = {currentIndex}");
+
+                            //So the problem is that the newValue assigned at the end of this is a string to represent the selected value
+                            //But since the old value is a List, they will always be different, and thus the test always fails
+                            //We need to compare the newIndex with the currentIndex. Which we now have saved to the behavior.
+                            //If the newIndex is changed, then we change the newValue, and the update occurs as it should.
+
+                            if(newIndex != currentIndex)
+                            {
+                                //If this has happened, then you need to set the newValue to the newIndex.
+                                newValue = newIndex;
+                            }
+
+                            
+
+                            break;
+                    }
+
+                    if (!Equals(statValue, newValue))
+                    {
+                        //UnityEngine.Debug.Log($"Bot: statValue = {statValue}, newValue = {newValue}");
+                        //UnityEngine.Debug.Log($"Bot Comparison between {statValue} and {newValue}: {statValue.Equals(newValue)}");
+                        //UnityEngine.Debug.Log("Values different, saving now");
+                        behavior.SetStat(key, newValue);
+                        EditorUtility.SetDirty(behavior);
+                        AssetDatabase.SaveAssets();
+                    }
+
+                }
+
+                if (GUILayout.Button("Delete behavior"))
+                {
+                    behaviorsToDelete.Add(behavior);    
+                    
+                }
+
+
+            }
+
+            foreach (var behavior in behaviorsToDelete)
+            {
+                selectedAbility.GetBehaviors().Remove(behavior);
+                AssetDatabase.RemoveObjectFromAsset(behavior);
+                EditorUtility.SetDirty(behavior);
+                AssetDatabase.SaveAssets();
+            }
+
+
+        }
+        private void CreateNewBehavior()
+        {
+            ABehavior newBehavior = null;
+
+            string newBehaviorName = behaviorOptions[selectedBehaviorIndex];
+
+
+            switch (newBehaviorName)
+            {
+                case "Damage":
+                    newBehavior = ScriptableObject.CreateInstance<Damage>();
+
+                    break;
+                case "Healing":
+                    newBehavior = ScriptableObject.CreateInstance<Healing>();
+
+                    break;
+                case "Buff":
+                    newBehavior = ScriptableObject.CreateInstance<Buff>();
+                    break;
+            }
+
+            newBehavior.Initialize(10);
+            AssetDatabase.AddObjectToAsset(newBehavior, selectedAbility);
+            selectedAbility.GetBehaviors().Add(newBehavior);
+            EditorUtility.SetDirty(selectedAbility);
+            EditorUtility.SetDirty(newBehavior);
+            AssetDatabase.SaveAssets();
+            Repaint();
+        }
+        //throw new NotImplementedException("You didn't finish the creation of a new behavior method.");
+    }
+}
+
+        /*        private void ShowBehaviors()
+                {
+                    //Each behavior should get its own node.
+                    //There should be an option at the end of the list to add more behaviors
+                    //Connected to that should be a list of the valid behavior types. For now it's just damage.
+                    //If a behavior is added, we need to Repaint.
+                    if (selectedAbility.GetBehaviors() != null)
+                    {
+                        foreach (var behavior in selectedAbility.GetBehaviors())
+                        {
+                            //GUILayout.BeginVertical();
+                            EditorGUILayout.LabelField($"{behavior.GetType().Name} stats:");
+                            //GUILayout.BeginHorizontal();
+                            //Show the different behavior stats
+                            foreach(string key in behavior.GetAllKeys())
+                            {
+
+                                EditorGUILayout.LabelField($"{key}: ");
+                                string previousString = behavior.GetStat<object>(key).ToString();
+                                string currentString = EditorGUILayout.TextField(previousString);
+
+                                if(previousString != currentString)
+                                {
+                                    behavior.SetStat(key, currentString);
+                                    EditorUtility.SetDirty(behavior);
+                                    AssetDatabase.SaveAssets();
+                                }
+                            }
+                            //Add button to remove each behavior
+                            //GUILayout.EndHorizontal();
+                            //GUILayout.EndVertical();
+                        }
+                    }
+
+                    if (GUILayout.Button("Add Behavior"))
+                    {
+                        // Example of creating a new Damage behavior (or any other behavior you want)
+                        ABehavior newBehavior;
+
+                        //If damage is selected
+                        /*newBehavior = new Damage(10);*/
+
+        /*
+        newBehavior = ScriptableObject.CreateInstance<Damage>();
                 newBehavior.Initialize(10);
                 AssetDatabase.AddObjectToAsset(newBehavior, selectedAbility);
                 selectedAbility.GetBehaviors().Add(newBehavior);
@@ -194,13 +331,7 @@ namespace RPG.AbilitySystem.Editor
             }
 
 
-        }
-
-
-        private ABehavior CreateBehavior()
-        {
-            return null;
-        }
+        }*/
 
         /*
          * private void WriteBehaviors(List<ABehavior> behaviors)
@@ -278,5 +409,3 @@ namespace RPG.AbilitySystem.Editor
         */
 
 
-    }
-}

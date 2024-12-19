@@ -3,9 +3,82 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using RPG.StatSystem;
+using RPG.AbilitySystem;
 
 public class TestBattle1 : MonoBehaviour
 {
+
+    //Firstly, we test Basic Attack!
+
+
+
+    private void Start()
+    {
+        bool allTests = true;
+
+        if (BasicAttackTest())
+            Debug.Log("BasicAttack test succesful");
+        else {
+            Debug.Log("BasicAttack test failed");
+            allTests = false;
+        }
+
+        if (allTests)
+            Debug.Log("All tests succeeded");
+        else
+            Debug.Log("Not all tests succeeded.");
+
+    }
+
+    private bool BasicAttackTest()
+    {
+        Ability abilityInstance;
+        StatSheet player;
+        StatSheet enemy;
+        Ability testAttack;
+
+        player = new StatSheet();
+        enemy = new StatSheet();
+        testAttack = Resources.Load<Ability>("TestAttack");
+
+        //TestAttack is a basic damage ability that does 10 damage.
+
+        //I want to set this up so that if I change the damage or health total defaults later, this method still works.
+        
+        int expectedDamage = 0;
+
+        foreach (ABehavior behavior in testAttack.GetBehaviors())
+        {
+            if (behavior != null && behavior.GetType() == typeof(Damage))
+                expectedDamage += (int) behavior.GetStat<int>("AMOUNT");
+        }
+
+        int expectedEnemyHealth = enemy.GetHealthCurrent() - expectedDamage;
+
+
+
+        //Debug.Log($"Successfully loaded ability: {testAttack.AbilityName}");
+        abilityInstance = Instantiate(testAttack);
+        //Debug.Log($"Ability '{abilityInstance.AbilityName}' instantiated for the battle.");
+        //Debug.Log($"Description: {abilityInstance.Description}");
+        //Debug.Log($"Player health: {player.GetHealthCurrent()}, Enemy health: {player.GetHealthCurrent()}");
+        //Debug.Log("The player attacks the enemy!");
+        abilityInstance.OnHit(player, enemy);
+        Debug.Log($"Player health: {player.GetHealthCurrent()}, Enemy health: {enemy.GetHealthCurrent()}");
+        //Expected result: enemy health should be reduced by the damage of the basic attack.
+        //
+
+
+
+        if (enemy.GetHealthCurrent() == expectedEnemyHealth)
+            return true;
+        else
+            return false;
+    }
+
+
+}
     /*
     //With this, we're going to test if the BasicAttack and HeavyAttack classes actually work as they should.
     StatSheet player = new StatSheet();
@@ -78,4 +151,4 @@ public class TestBattle1 : MonoBehaviour
     {
         //User gains a ton of extra momentum and Overwhelms the attacker.
     }*/
-}
+

@@ -22,6 +22,16 @@ namespace RPG.StatSystem {
             isStaticValue = false;
         }
 
+        public void ApplyBuff(int buff)
+        {
+            this.buff += buff;
+        }
+
+        public void ApplyDebuff(int debuff)
+        {
+            this.debuff += debuff; //Gets subtracted elsewhere so needs to be positive here
+        }
+
         public string GetName() => name;
         public void SetName(string name) => this.name = name;
 
@@ -36,6 +46,11 @@ namespace RPG.StatSystem {
         public void SetStaticValue(bool value) => isStaticValue = value;
 
         public int GetBaseStat() => baseStat;
+
+        public void SetCurrent(int newAmount)
+        {
+            SetBase(newAmount);
+        }
 
         public int GetCurrent()
         {

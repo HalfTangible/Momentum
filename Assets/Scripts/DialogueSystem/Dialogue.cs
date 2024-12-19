@@ -57,6 +57,25 @@ namespace RPG.Dialogue
 
 
         }
+
+        public DialogueNode GetNodeByID(string id)
+        {
+            IEnumerable<DialogueNode> theList = GetAllNodes();
+
+            DialogueNode theNode = null;
+
+            foreach(DialogueNode node in theList)
+            {
+                if(node.name == id)
+                {
+                    theNode= node;
+                    break;
+                }
+            }
+
+            return theNode;
+        }
+
 #if UNITY_EDITOR
         public void CreateNode(DialogueNode parentNode)
         {

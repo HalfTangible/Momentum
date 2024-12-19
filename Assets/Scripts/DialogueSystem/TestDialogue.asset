@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5317377027851438838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
+  m_Name: 7cfda0cd-30ca-4d1f-94c5-8be755161f2b
+  m_EditorClassIdentifier: 
+  speaker: 
+  text: 
+  childNodes: []
+  rect:
+    serializedVersion: 2
+    x: 563
+    y: 74
+    width: 200
+    height: 200
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3979081a32abc654aa950519d75e6c56, type: 3}
+  m_Name: TestDialogue
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: 89836209208918269}
+  - {fileID: -5317377027851438838}
+--- !u!114 &89836209208918269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
+  m_Name: 467aa0d2-b9cf-48fa-b6c9-0c3f83c710d1
+  m_EditorClassIdentifier: 
+  speaker: 
+  text: 
+  childNodes:
+  - 7cfda0cd-30ca-4d1f-94c5-8be755161f2b
+  rect:
+    serializedVersion: 2
+    x: 123
+    y: 57
+    width: 200
+    height: 200

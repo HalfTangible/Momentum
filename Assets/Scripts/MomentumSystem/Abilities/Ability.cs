@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RPG.StatSystem;
+using Debug = UnityEngine.Debug;
 
 namespace RPG.AbilitySystem
 {
@@ -37,12 +38,13 @@ namespace RPG.AbilitySystem
             Name = name;
         }
 */
-        void OnHit(StatSheet user, StatSheet target)
+        public void OnHit(StatSheet user, StatSheet target)
         {
             //What these abilities do on hit
             //First, determine if the behaviors Overwhelm.
             //if(user.momentum + user.skill >= target.momentum + target.skill + target.skill
             //then add the user's overwhelming behavior to the ability
+            Debug.Log("OnHit triggers");
 
             target.AbilityHit(behaviors);
         }

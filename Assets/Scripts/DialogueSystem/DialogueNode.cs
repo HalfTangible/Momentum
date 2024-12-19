@@ -45,6 +45,8 @@ namespace RPG.Dialogue
             return GetChildren();
         }
 
+        
+
 #if UNITY_EDITOR
         public void SetPosition(Vector2 newPosition)
         {
