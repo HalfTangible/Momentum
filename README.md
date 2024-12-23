@@ -1,4 +1,4 @@
-Last updated 12/19/2024
+Last updated 12/23/2024
 
 # Momentum
 
@@ -8,7 +8,7 @@ The main purpose of this project for the moment is to create tools in Unity base
 
 ## Animations and Art
 
-Currently on the backburner. I have a template I'm working on... and now that I think on it it might be worth it to put the aseprite files directly into the Momentum_MVP folder just in case.
+12/23/24: Began doing grass overworld tiles. Planning to do a 4x4 grid of 16x16 tiles, each copying the same grass pattern but slightly unique individually. Aseprite files (character base not complete) moved into the git folder.
 
 ## Dialogue
 
@@ -22,7 +22,6 @@ Statsheets are prepared. Still need to create full-on character sheets and chara
 
 ## Overworld tilemaps
 
-Not even begun.
 
 ## Tests
 
