@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5317377027851438838
+--- !u!114 &-2743388971074772993
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
-  m_Name: 7cfda0cd-30ca-4d1f-94c5-8be755161f2b
+  m_Name: 2117d9e0-b32d-46a0-8d52-987bfecd7edb
   m_EditorClassIdentifier: 
-  speaker: 
-  text: 
+  speaker: Someone
+  text: Third node
   childNodes: []
   rect:
     serializedVersion: 2
-    x: 563
-    y: 74
+    x: 728
+    y: 104
     width: 200
     height: 200
 --- !u!114 &11400000
@@ -33,10 +33,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3979081a32abc654aa950519d75e6c56, type: 3}
   m_Name: TestDialogue
   m_EditorClassIdentifier: 
+  validSpeakers:
+  - Someone
   nodes:
-  - {fileID: 89836209208918269}
-  - {fileID: -5317377027851438838}
---- !u!114 &89836209208918269
+  - {fileID: 377867641992556687}
+  - {fileID: 3369117568679235510}
+  - {fileID: -2743388971074772993}
+--- !u!114 &377867641992556687
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,15 +49,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
-  m_Name: 467aa0d2-b9cf-48fa-b6c9-0c3f83c710d1
+  m_Name: 74b0291d-0855-4558-b0e4-2c7a5c6898a7
   m_EditorClassIdentifier: 
-  speaker: 
-  text: 
+  speaker: Someone
+  text: First node
   childNodes:
-  - 7cfda0cd-30ca-4d1f-94c5-8be755161f2b
+  - 7707f296-8b1f-4b4b-ae5c-b07bfea47487
   rect:
     serializedVersion: 2
-    x: 123
-    y: 57
+    x: 0
+    y: 0
+    width: 200
+    height: 200
+--- !u!114 &3369117568679235510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
+  m_Name: 7707f296-8b1f-4b4b-ae5c-b07bfea47487
+  m_EditorClassIdentifier: 
+  speaker: Someone
+  text: Second node
+  childNodes:
+  - 2117d9e0-b32d-46a0-8d52-987bfecd7edb
+  rect:
+    serializedVersion: 2
+    x: 417
+    y: 91
     width: 200
     height: 200

@@ -123,6 +123,7 @@ namespace RPG.Dialogue
         public void CreateNode(DialogueNode parentNode)
         {
             DialogueNode newNode = MakeNode(parentNode);
+            newNode.SetSpeaker("Someone");
 
             Undo.RegisterCreatedObjectUndo(newNode, "Created dialogue node");
             Undo.RecordObject(this, "Added Dialogue Node");

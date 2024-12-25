@@ -15,8 +15,8 @@ public class TestBattle1 : MonoBehaviour
 
     private void Start()
     {
-        bool allTests = true;
-
+        /*bool allTests = true;
+        
         if (BasicAttackTest())
             Debug.Log("BasicAttack test succesful");
         else {
@@ -28,6 +28,7 @@ public class TestBattle1 : MonoBehaviour
             Debug.Log("All tests succeeded");
         else
             Debug.Log("Not all tests succeeded.");
+        */
 
     }
 

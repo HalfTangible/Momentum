@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using RPG.Dialogue;
 using Debug = UnityEngine.Debug;
+using TMPro;
 
 namespace TextHandler.RPG {
     
@@ -13,15 +14,31 @@ namespace TextHandler.RPG {
         private DialogueNode currentNode;
         private DialogueNode nextNode;
 
+        public GameObject dialogueBox;
         
         float textSpeed;
-        public Text speakerText;
-        public Text dialogueText;
+        public TextMeshProUGUI speakerText;
+        public TextMeshProUGUI dialogueText;
 
         void Start()
         {
+            DialogueTest();
             StartDialogue();
             textSpeed = 2f;
+        }
+
+        private void DialogueTest()
+        {
+            theDialogue = Resources.Load<Dialogue>("TestDialogue");
+
+            if (theDialogue == null)
+            {
+                Debug.LogError("TestDialogue asset not found in Resources folder!");
+            }
+            else
+            {
+                Debug.Log("Dialogue loaded successfully");
+            }
         }
 
         // Update is called once per frame
@@ -49,8 +66,11 @@ namespace TextHandler.RPG {
 
         void StartDialogue()
         {
+            Debug.Log("Accessing the root node.");
             currentNode = theDialogue.GetRootNode();
+            Debug.Log($"Root node accessed. Text is {currentNode.GetText()}");
             StartCoroutine(DisplayCurrentNode());
+            Debug.Log("Coroutine begun.");
         }
 
         /*
@@ -65,20 +85,18 @@ namespace TextHandler.RPG {
 
         IEnumerator DisplayCurrentNode()
         {
-            if (currentNode == null)
-            {
-                Debug.Log("currentNode is null. So either the dialogue ended or you messed up.");
-            }
-            else
-            {
+            yield return new WaitForSeconds(textSpeed);
 
-                speakerText.text = currentNode.GetSpeaker();
-                dialogueText.text = currentNode.GetText(); //Eventually should be typed across the screen
+            while (currentNode != null)
+                {
+                    speakerText.text = currentNode.GetSpeaker();
+                    dialogueText.text = currentNode.GetText(); //Eventually should be typed across the screen
 
-                yield return new WaitForSeconds(textSpeed);
+                    yield return new WaitForSeconds(textSpeed);
 
-                currentNode = GetNextNode();
-            }
+                    currentNode = GetNextNode();
+                }
+            
         }
 
 
