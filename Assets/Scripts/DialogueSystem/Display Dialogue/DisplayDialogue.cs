@@ -96,6 +96,20 @@ namespace TextHandler.RPG {
 
                     currentNode = GetNextNode();
                 }
+
+            if (currentNode == null)
+            {
+                speakerText.text = string.Empty;
+                dialogueText.text = string.Empty;
+
+                //speakerText.SetActive(false);
+                dialogueBox.SetActive(false);
+
+                //This is to show that the dialogue box can be turned back on if a new bit of dialogue needs to be displayed.
+                yield return new WaitForSeconds(1);
+                dialogueBox.SetActive(true);
+            }
+                
             
         }
 
