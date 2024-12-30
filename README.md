@@ -1,4 +1,4 @@
-Last updated 12/23/2024
+Last updated 12/30/2024
 
 # Momentum
 
@@ -9,19 +9,19 @@ The main purpose of this project for the moment is to create tools in Unity base
 ## Animations and Art
 
 12/23/24: Began doing grass overworld tiles. Planning to do a 4x4 grid of 16x16 tiles, each copying the same grass pattern but slightly unique individually. Aseprite files (character base not complete) moved into the git folder.
+12/30/24: That took way too long. Next time, do like 4 tiles instead to see if it'll be any good.
 
 ## Dialogue
 
 Dialogues can be created from scratch and nodes added to it through an editor system. Dialogues now contain a list of speakers, though at the moment the speakers must be entered manually through the inspector.
 
-Still have not finished creating a way to display the information, but this set of files does have an older version of a text box that I will be using as a reference guide until completion.
+12/30/24: Dialogue can be displayed now through the DisplayDialogue script. Currently only shows a test dialogue script.
 
 ## Combat
 
 Statsheets are prepared. Still need to create full-on character sheets and character managers to unite the statsheet, animations, art, etc.
 
 ## Overworld tilemaps
-
 
 ## Tests
 
