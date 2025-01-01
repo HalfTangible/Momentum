@@ -1,4 +1,4 @@
-ReadMe Last updated 12/30/2024
+ReadMe Last updated 1/1/2025
 
 # Momentum
 
@@ -10,7 +10,9 @@ The main purpose of this project for the moment is to create tools in Unity base
 
 12/23/24: Began doing grass overworld tiles. Planning to do a 4x4 grid of 16x16 tiles, each copying the same grass pattern but slightly unique individually. Aseprite files (character base not complete) moved into the git folder.
 12/30/24: That took way too long. Next time, do like 4 tiles instead to see if it'll be any good.
-12/31/24: Grid layers made and can be drawn but their size is not consistent with the character sprite.
+12/31/24: Rule tile created for grass. Grid layers made and can be drawn but their size is not consistent with the character sprite.
+1/1/25: Consistency issue resolved.
+REMEMBER: Crop your sprits down so there isn't any extra canvas space. Unity assumes this is the case and will mess up your sprite size accordingly.
 
 ## Dialogue
 
