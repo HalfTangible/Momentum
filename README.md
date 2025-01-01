@@ -6,6 +6,10 @@ Marked as Momentum_MVP in my files, this is the beginnings of a project using th
 
 The main purpose of this project for the moment is to create tools in Unity based in C# that will allow me to create a wide variety of customizable abilities, dialogue, and anything else a JRPG system requires. I've been trying to future-proof the editors to work with any future updates.
 
+## Camera
+
+1/1/24: Adjusted so that the sprites now appear at the proper size. Might need adjustment later but works for now.
+
 ## Animations and Art
 
 12/23/24: Began doing grass overworld tiles. Planning to do a 4x4 grid of 16x16 tiles, each copying the same grass pattern but slightly unique individually. Aseprite files (character base not complete) moved into the git folder.
@@ -19,6 +23,7 @@ REMEMBER: Crop your sprits down so there isn't any extra canvas space. Unity ass
 Dialogues can be created from scratch and nodes added to it through an editor system. Dialogues now contain a list of speakers, though at the moment the speakers must be entered manually through the inspector.
 
 12/30/24: Dialogue can be displayed now through the DisplayDialogue script. Currently only shows a test dialogue script.
+1/1/24: PROBLEM: The dialogue box no longer cooresponds with the player's view. 
 
 ## Combat
 
