@@ -12,14 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
   m_Name: 0c6e56b0-a8e0-4808-b16e-43e026f00ec6
   m_EditorClassIdentifier: 
-  speaker: 
+  speaker: Someone Else
   text: 
   childNodes:
-  - 1d9c94e6-f11a-4a7a-8dfb-7b213a1321b8
+  - 0d8c2939-7ddf-4a55-b440-05df5ac8cc33
   rect:
     serializedVersion: 2
-    x: 423
-    y: 120
+    x: 461
+    y: 146
+    width: 200
+    height: 200
+--- !u!114 &-4806874804138279264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
+  m_Name: 0d8c2939-7ddf-4a55-b440-05df5ac8cc33
+  m_EditorClassIdentifier: 
+  speaker: Someone
+  text: 
+  childNodes: []
+  rect:
+    serializedVersion: 2
+    x: 808
+    y: 131
     width: 200
     height: 200
 --- !u!114 &11400000
@@ -36,31 +57,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   validSpeakers:
   - Someone
+  - Someone Else
   nodes:
   - {fileID: 7406354036917244504}
   - {fileID: -6109851514557343905}
-  - {fileID: 6822933265126202165}
---- !u!114 &6822933265126202165
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
-  m_Name: 1d9c94e6-f11a-4a7a-8dfb-7b213a1321b8
-  m_EditorClassIdentifier: 
-  speaker: 
-  text: 
-  childNodes: []
-  rect:
-    serializedVersion: 2
-    x: 810
-    y: 125
-    width: 200
-    height: 200
+  - {fileID: -4806874804138279264}
 --- !u!114 &7406354036917244504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,13 +74,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2438d508d49027841bce8764f86f450a, type: 3}
   m_Name: a3d065f4-6757-4a6c-b451-9bbbdf0b6ca2
   m_EditorClassIdentifier: 
-  speaker: 
-  text: 
+  speaker: Someone
+  text: This is a dialogue node
   childNodes:
   - 0c6e56b0-a8e0-4808-b16e-43e026f00ec6
   rect:
     serializedVersion: 2
-    x: 77
-    y: 126
+    x: 99
+    y: 118
     width: 200
     height: 200

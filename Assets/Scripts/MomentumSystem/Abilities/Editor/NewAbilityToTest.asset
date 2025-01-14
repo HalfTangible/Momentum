@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-455836066305964264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972cb67e3521bd24bad021c3e3deb707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 10
+  roundsRemaining: 0
+  turnsRemaining: 0
+  onHit: 1
+  allKeys:
+  - AMOUNT
+  - BUFFTARGETS
+  - ONHIT
+  - ROUNDS
+  - TARGETSTAT
+  - TURNS
+  buffTargets:
+  - MOMENTUM
+  - MOTIVE
+  - MEANS
+  - SKILL
+  targetStat: 
+  targetStat_index: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e5d5eecd2258734993fd7942eb4d09f, type: 3}
+  m_Name: NewAbilityToTest
+  m_EditorClassIdentifier: 
+  abilityName: Rage
+  description: 
+  behaviors:
+  - {fileID: -455836066305964264}
