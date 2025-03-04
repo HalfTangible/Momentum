@@ -54,6 +54,14 @@ namespace RPG.StatSystem {
             AbilityHit(ability.GetBehaviors());
         }*/
 
+
+
+
+        public string GetName()
+        {
+            return "tempName"; //I plan to cosmetic stuff into its own class that links to this class. To get the UI set up I'm using this temp class
+        }
+
         public void AbilityHit(List<ABehavior> input)
         {
             Debug.Log("AbilityHit was called");
@@ -223,7 +231,7 @@ namespace RPG.StatSystem {
         }
         public void SetMomentumCurrent(int current)
         {
-            motive.SetBase(current);
+            momentum.SetBase(current);
         }
 
 

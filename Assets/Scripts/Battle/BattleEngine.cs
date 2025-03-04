@@ -79,6 +79,11 @@ public class BattleEngine : MonoBehaviour
     {
 
     }
+
+    public BattlePhase GetCurrentPhase()
+    {
+        return currentPhase;
+    }
 }
 
 namespace Battlephase
