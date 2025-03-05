@@ -55,21 +55,21 @@ namespace RPG.StatSystem {
         }*/
 
 
-
+        public string characterName;
 
         public string GetName()
         {
-            return "tempName"; //I plan to cosmetic stuff into its own class that links to this class. To get the UI set up I'm using this temp class
+            return characterName; //I plan to cosmetic stuff into its own class that links to this class. To get the UI set up I'm using this temp class
         }
 
         public void AbilityHit(List<ABehavior> input)
         {
-            Debug.Log("AbilityHit was called");
+            //Debug.Log("AbilityHit was called");
             
 
             foreach (ABehavior a in input)
             {
-                Debug.Log("Foreach loop reached");
+                //Debug.Log("Foreach loop reached");
                 a.OnHit(this);
                 //Check if a is supposed to stay on for extra rounds, turns, etc and if it is add them to the list of continuing effects
                 if (!a.Continues())
@@ -80,9 +80,9 @@ namespace RPG.StatSystem {
 
         public void TakesDamage(int amount)
         {
-            Debug.Log($"Takes damage. Health should now be {GetHealthBase() - amount}");
+            //Debug.Log($"Takes damage. Health should now be {GetHealthBase() - amount}");
             SetHealthBase(GetHealthBase() - amount);
-            Debug.Log($"{GetHealthCurrent()}");
+            //Debug.Log($"{GetHealthCurrent()}");
         }
 
         public void Heal(int amount)
@@ -137,7 +137,14 @@ namespace RPG.StatSystem {
             //throw new ArgumentNotFoundException("Stat name not found in GetStatByName");
         }
 
-
+        public void NewRound()
+        {
+            if(GetHealthCurrent() > 0)
+            {
+                int amount = GetMomentumCurrent() + GetMotiveCurrent();
+                SetMomentumCurrent(amount);
+            }
+        }
 
 
 
