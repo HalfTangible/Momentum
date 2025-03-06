@@ -21,11 +21,12 @@ namespace RPG.Battle {
         StatSheet player;
         StatSheet npc;
         bool firstRound;
+        private bool advanceTurn = false; //For manual stopping
 
         // Start is called before the first frame update
         void Start()
         {
-
+            advanceTurn = false;
             battleUI = FindObjectOfType<BattleUI>();
             if (battleUI == null) Debug.LogError("BattleUI not found in scene!");
 
@@ -42,31 +43,51 @@ namespace RPG.Battle {
         // Update is called once per frame
         void Update()
         {
-            battleUI.RefreshUI(player, npc);
-            switch (currentPhase)
+
+            // Stop if battle is finished
+            if (currentPhase == BattlePhase.Finish)
             {
-                case BattlePhase.PlayerTurn:
-                    currentPhase = BattlePhase.Waiting;
-                    PlayerTurn(player);
-                    break;
-                case BattlePhase.NonPlayerTurn:
-                    currentPhase = BattlePhase.Waiting;
-                    NonPlayerTurn(npc);
-                    break;
-                case BattlePhase.WhosNext:
-                    WhosNext(player, npc);
-                    break;
-                case BattlePhase.NewRound:
-                    currentPhase = BattlePhase.Waiting;
-                    NewRound();
-                    break;
-                
+                battleUI?.RefreshUI(player, npc); // Final update
+                return;
+            }
+
+            // Advance from Waiting only on button press
+            if (currentPhase == BattlePhase.Waiting && advanceTurn)
+            {
+                advanceTurn = false;
+                WhosNext(player, npc);
+            }
+
+            if (advanceTurn && currentPhase != BattlePhase.Finish)
+            {
+                advanceTurn = false;
+                Debug.Log($"At the switch: {currentPhase}");
+                switch (currentPhase)
+                {
+                    case BattlePhase.PlayerTurn:
+                        currentPhase = BattlePhase.Waiting;
+                        PlayerTurn(player);
+                        break;
+                    case BattlePhase.NonPlayerTurn:
+                        currentPhase = BattlePhase.Waiting;
+                        NonPlayerTurn(npc);
+                        break;
+                    case BattlePhase.WhosNext:
+                        WhosNext(player, npc);
+                        break;
+                    case BattlePhase.NewRound:
+                        currentPhase = BattlePhase.Waiting;
+                        NewRound();
+                        break;
+
+                }
             }
         }
 
         public void Setup()
         {
             currentPhase = BattlePhase.Setup;
+            advanceTurn = false;
             Debug.Log("Battle setup complete.");
         }
 
@@ -90,12 +111,14 @@ namespace RPG.Battle {
 
                 Debug.Log("If2a in");
                 PlayerLose();
+                return;
             }
             else if (npc.GetHealthCurrent() <= 0)
             {
 
                 Debug.Log("If2b in");
                 PlayerWin();
+                return;
             }
 
 
@@ -149,10 +172,12 @@ namespace RPG.Battle {
             player.TakesDamage(damage);
 
             EndTurn();
+            
         }
 
         public void EndTurn()
         {
+            
             currentPhase = BattlePhase.WhosNext;
             battleUI?.RefreshUI(player, npc); // Update UI after turn
         }
@@ -167,8 +192,11 @@ namespace RPG.Battle {
             }
             else 
             {
+                Debug.Log($"Player: Momentum is {player.GetMomentumCurrent()}; motive is {player.GetMotiveCurrent()} ");
                 player.NewRound(); //Player and NPC gain their Momentum for the round, based on Motive.
+                Debug.Log($"NPC: Momentum is {npc.GetMomentumCurrent()}; motive is {npc.GetMotiveCurrent()} ");
                 npc.NewRound();
+                Debug.Log($"Player: Momentum is {player.GetMomentumCurrent()}; NPC is {npc.GetMomentumCurrent()} ");
             }
             
             Debug.Log("New round started!");
@@ -199,6 +227,13 @@ namespace RPG.Battle {
         public BattlePhase GetCurrentPhase()
         {
             return currentPhase;
+        }
+
+        // Call this from a button to advance
+        public void AdvanceTurn()
+        {
+            Debug.Log($"Phase is {currentPhase}");
+            advanceTurn = true;
         }
 
 

@@ -50,3 +50,9 @@ Example: A basic damaging ability that overwhelms would deal double the damage.
 Concept: at the beginning of each round, the player and enemies can choose between a number of stances that will affect how an Overwhelming attack works. An aggressive stance, for example, will sacrifice Skill on defense but add it on offense. Defensive, same deal in reverse. Or... hrm, seems too simplistic.
 
 Permutations: Perhaps the player and enemies get one free stance change per round instead? Give it a try.
+
+# UI
+
+## BattleUI
+
+3/5/2025: BattleUI and BattleScene set up. (Size doesn't work, scale works at 0.53x for now)

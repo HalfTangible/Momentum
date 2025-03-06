@@ -51,7 +51,7 @@ namespace RPG.Battle.UI
 
         public void UpdateUI()
         {
-            Debug.Log($"Updating UI: Player HP = {playerSheet?.GetHealthCurrent() ?? -1}, NPC HP = {npcSheet?.GetHealthCurrent() ?? -1}");
+            //Debug.Log($"Updating UI: Player HP = {playerSheet?.GetHealthCurrent() ?? -1}, NPC HP = {npcSheet?.GetHealthCurrent() ?? -1}");
 
             if (playerSheet != null)
             {
@@ -89,6 +89,9 @@ namespace RPG.Battle.UI
                             break;
                         case BattlePhase.NonPlayerTurn:
                             turnIndicatorText.text = "Enemy's Turn";
+                            break;
+                        case BattlePhase.Finish:
+                            turnIndicatorText.text = playerSheet.GetHealthCurrent() <= 0 ? "Defeat!" : "Victory!";
                             break;
                         default:
                             turnIndicatorText.text = "Waiting...";

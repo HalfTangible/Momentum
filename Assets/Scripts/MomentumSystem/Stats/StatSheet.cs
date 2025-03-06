@@ -45,6 +45,8 @@ namespace RPG.StatSystem {
             motive.SetStaticValue(true);
             means.SetStaticValue(true);
             skill.SetStaticValue(true);
+
+            momentum.SetMax(0);
         }
         /*
         public void AbilityHit(Ability ability)
@@ -72,7 +74,7 @@ namespace RPG.StatSystem {
                 //Debug.Log("Foreach loop reached");
                 a.OnHit(this);
                 //Check if a is supposed to stay on for extra rounds, turns, etc and if it is add them to the list of continuing effects
-                if (!a.Continues())
+                if (a.Continues())
                     continuingEffects.Add(a);
 
             }
@@ -141,8 +143,11 @@ namespace RPG.StatSystem {
         {
             if(GetHealthCurrent() > 0)
             {
+                Debug.Log($"GetMomentumCurrent + GetMotiveCurrent = {GetMomentumCurrent() + GetMotiveCurrent()}");
                 int amount = GetMomentumCurrent() + GetMotiveCurrent();
+                Debug.Log($"Amount: {amount}");
                 SetMomentumCurrent(amount);
+                Debug.Log($"CurrentMomentum: {GetMomentumCurrent()}");
             }
         }
 

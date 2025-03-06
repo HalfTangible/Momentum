@@ -60,22 +60,37 @@ namespace RPG.StatSystem {
             //If it's not a static value, then it need a maximum and its minimum is 0
             int min = GetMin();
 
+            //Momentum should have no max or min. It is NOT a static value, but its max is set to 0.
+
+            if (!isStaticValue && max == 0) //If this is the case (just Momentum as of yet) return current. No notes.
+                return current;
+            else if (isStaticValue) //If it IS a static value (ie a stat) then it has a minimum of 1 and no max.
+                return Mathf.Max(current, min);
+            else //If it is NOT a static value (ie health or mana or the like) then it has both a max and minimum value
+                return Mathf.Clamp(current, min, max);
 
             // Clamp the value: no max if static, otherwise limit to max
-            return isStaticValue
+            // If max is 0, treat it as no max
+  
+/*            return isStaticValue
                 ? Mathf.Max(current, min)
-                : Mathf.Clamp(current, min, max);
+                : Mathf.Clamp(current, min, max);*/
 
-            /*        if (current < min)
-                        return min;
+                /*        if (current < min)
+                            return min;
 
-                    if (!isStaticValue && current > max)
-                        return max;
+                        if (!isStaticValue && current > max)
+                            return max;
 
-                    return current;*/
+                        return current;*/
 
         }
 
-        public void SetBase(int newBase) => baseStat = newBase; //Probably only going to be used on a level-up anyway.
+        public void SetBase(int newBase) => baseStat = newBase; //Probably only going to be used on a level-up anyway. REMEMBER TO RESET THE MAX FIRST!!
+
+        public void LevelUp(int amount)
+        {
+        //REMEMBER TO RESET THE MAX IF IT'S NOT 0 ALREADY
+        }
     }
 }
