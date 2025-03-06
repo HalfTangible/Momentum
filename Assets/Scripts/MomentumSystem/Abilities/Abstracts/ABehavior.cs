@@ -112,13 +112,13 @@ namespace RPG.AbilitySystem
         {
             switch (key)
             {
-                
+
 
                 default:
                     throw new KeyNotFoundException($"The key '{key}' is not recognized.");
             }
 
-            
+
         }
 
         public virtual void SetStat(string key, object value)
@@ -187,7 +187,7 @@ namespace RPG.AbilitySystem
 
         protected virtual void InitializeStats(int amount, bool onHit, int roundsRemaining, int turnsRemaining)
         {
-            
+
             SetStat("AMOUNT", amount);
             SetStat("ONHIT", onHit);
             SetStat("ROUNDS", roundsRemaining);
@@ -206,13 +206,13 @@ namespace RPG.AbilitySystem
             {
                 return (T)(object)input;
             }
-            else if(typeof(T) == typeof(int))
+            else if (typeof(T) == typeof(int))
             {
                 if (int.TryParse(input, out int intValue))
                     return (T)(object)intValue;
                 throw new ArgumentException("Expected an integer value.");
             }
-            else if(typeof(T) == typeof(bool))
+            else if (typeof(T) == typeof(bool))
             {
                 if (bool.TryParse(input, out bool boolValue))
                     return (T)(object)boolValue;
@@ -240,7 +240,7 @@ namespace RPG.AbilitySystem
 
 
     }
-
+}
         /*
         public List<string> GetStats()
         {
@@ -361,4 +361,3 @@ namespace RPG.AbilitySystem
     }*/
 
     
-}
