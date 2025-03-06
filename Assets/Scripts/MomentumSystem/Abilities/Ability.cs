@@ -12,6 +12,7 @@ namespace RPG.AbilitySystem
     {
         [SerializeField] private string abilityName;
         [SerializeField] private string description;
+        [SerializeField] private int momentumCost;
         [SerializeField] protected List<ABehavior> behaviors = new List<ABehavior>();
 
         // Start is called before the first frame update
@@ -28,6 +29,12 @@ namespace RPG.AbilitySystem
             set => description = value;
         }
 
+        public int MomentumCost
+        {
+            get => momentumCost;
+            set => momentumCost = value;
+        }
+
         public Ability()
         {
         
@@ -40,13 +47,33 @@ namespace RPG.AbilitySystem
 */
         public void OnHit(StatSheet user, StatSheet target)
         {
+
+            
+
             //What these abilities do on hit
             //First, determine if the behaviors Overwhelm.
             //if(user.momentum + user.skill >= target.momentum + target.skill + target.skill
             //then add the user's overwhelming behavior to the ability
-            Debug.Log("OnHit triggers");
+
+            int threshold = user.GetMomentumCurrent() + user.GetSkillCurrent() - (target.GetMomentumCurrent() + target.GetSkillCurrent() * 2);
+            //If the user's skill and momentum are enough to overcome the target's skill and momentum, then the ability overwhelms
+            bool overwhelming = threshold > 0;
+
+            //For the purposes of the prototyping stage we will apply the behaviors a second time for free, which in this case means double damage.
+
+            Debug.Log($"{user.GetName()} attacks {target.GetName()} with {this.abilityName}.");
 
             target.AbilityHit(behaviors);
+            if (overwhelming){
+                Debug.Log($"{user.GetName()} overwhelms {target.GetName()}!");
+
+                //Note: Check to see if this works with DOTS and the like; I don't know if I need to instantiate a new behaviors list or something.
+
+                target.AbilityHit(behaviors);
+            }
+
+            user.SpendMomentum(momentumCost);
+
         }
 
         bool Finished()

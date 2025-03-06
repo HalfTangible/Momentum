@@ -114,6 +114,17 @@ namespace RPG.AbilitySystem.Editor
                 AssetDatabase.SaveAssets();
                 Repaint();
             }
+
+            EditorGUILayout.LabelField("Momentum cost: ");
+
+            int newMomentumCost = EditorGUILayout.IntField(selectedAbility.MomentumCost);
+            if (newMomentumCost != selectedAbility.MomentumCost)
+            {
+                selectedAbility.MomentumCost = newMomentumCost;
+                EditorUtility.SetDirty(selectedAbility);
+                AssetDatabase.SaveAssets();
+                Repaint();
+            }
             //Then put up a button that adds a new behavior to the ability based on a drop down menu.
             EditorGUILayout.LabelField("Behaviors:");
             ShowBehaviors();

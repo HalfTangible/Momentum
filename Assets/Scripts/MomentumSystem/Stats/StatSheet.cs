@@ -15,6 +15,7 @@ namespace RPG.StatSystem {
         [SerializeField] private Stat means;
         [SerializeField] private Stat skill;
 
+        private List<Ability> abilities;
         private List<ABehavior> continuingEffects;
 
         /*
@@ -24,15 +25,45 @@ namespace RPG.StatSystem {
         private int meansInt;
         private int skillInt;*/
 
+        public void AddAbility(Ability newAbility)
+        {
+            abilities.Add(newAbility);
+        }
+
+        public void AddAbilities(List<Ability> newAbilities)
+        {
+            abilities.AddRange(newAbilities);
+        }
+
+        public void RemoveAbility(Ability oldAbility)
+        {
+            abilities.Remove(oldAbility);
+        }
+        /*
+        
+        //RemoveRange requires a count.
+        public void RemoveAbilities(List<Ability> oldAbilities)
+        {
+            abilities.RemoveRange(oldAbilities);
+        }
+        
+        */
+
+        public List<Ability> GetAbilities()
+        {
+            return abilities;
+        }
+
         public StatSheet()
         {
             continuingEffects = new List<ABehavior>();
+            abilities = new List<Ability>();
 
             health = new Stat(10);
             momentum = new Stat(10);
             motive = new Stat(10);
             means = new Stat(10);
-            skill = new Stat(1);
+            skill = new Stat(3);
 
             health.SetName("HEALTH");
             momentum.SetName("MOMENTUM");
@@ -64,6 +95,7 @@ namespace RPG.StatSystem {
             return characterName; //I plan to cosmetic stuff into its own class that links to this class. To get the UI set up I'm using this temp class
         }
 
+
         public void AbilityHit(List<ABehavior> input)
         {
             //Debug.Log("AbilityHit was called");
@@ -78,6 +110,11 @@ namespace RPG.StatSystem {
                     continuingEffects.Add(a);
 
             }
+        }
+
+        public void SpendMomentum(int amount)
+        {
+            SetMomentumCurrent(GetMomentumCurrent() - amount);
         }
 
         public void TakesDamage(int amount)

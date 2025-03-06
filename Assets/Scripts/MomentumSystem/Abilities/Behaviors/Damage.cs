@@ -63,11 +63,11 @@ namespace RPG.AbilitySystem
         
         public override void OnHit(StatSheet target)
         {
-            Debug.Log($"Damage on hit reached. Bool: {(bool)GetStat<bool>("ONHIT")}");
+            //Debug.Log($"Damage on hit reached. Bool: {(bool)GetStat<bool>("ONHIT")}");
 
             if ((bool)GetStat<bool>("ONHIT"))
             {
-                Debug.Log($"It's onhit! Do damage: {(int)GetStat<int>("AMOUNT")}");
+                //Debug.Log($"It's onhit! Do damage: {(int)GetStat<int>("AMOUNT")}");
                 target.TakesDamage((int)GetStat<int>("AMOUNT")); 
             }
 
