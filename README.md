@@ -1,4 +1,4 @@
-ReadMe Last updated 1/1/2025
+ReadMe Last updated 3/6/2025
 
 # Momentum
 
@@ -56,3 +56,4 @@ Permutations: Perhaps the player and enemies get one free stance change per roun
 ## BattleUI
 
 3/5/2025: BattleUI and BattleScene set up. (Size doesn't work, scale works at 0.53x for now)
+3/6/2025: Battle test now set up and working, uses Ability and Behavior classes. Abilities selected at random, still needs a UI.
