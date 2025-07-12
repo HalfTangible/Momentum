@@ -108,7 +108,7 @@ namespace RPG.Battle {
             //Debug.Log("WhosNext called");
             //This happens first because I just remembered end-of-round effects are a thing I want to do later.
             //If either the player or the NPC are at 0 Momentum, then the round ends and a new one begins that refreshes their momentum.
-            if (player.GetMomentumCurrent() <= 0 || npc.GetMomentumCurrent() <= 0)
+            if (player.momentum.Current <= 0 || npc.momentum.Current <= 0)
             {
                 //Debug.Log("If1 in");
                 NewRound();
@@ -118,14 +118,14 @@ namespace RPG.Battle {
 
             //Check the sheets of our two combatants (for now; later we'll make it so it returns the next person in each party).
             //If one of these characters is dead, then that side loses.
-            if (player.GetHealthCurrent() <= 0)
+            if (player.health.Current <= 0)
             {
 
                 //Debug.Log("If2a in");
                 PlayerLose();
                 return;
             }
-            else if (npc.GetHealthCurrent() <= 0)
+            else if (npc.health.Current <= 0)
             {
 
                 //Debug.Log("If2b in");
@@ -139,12 +139,12 @@ namespace RPG.Battle {
 
             //The sheet with the higher Momentum goes next.
 
-            if (npc.GetMomentumCurrent() > player.GetMomentumCurrent())
+            if (npc.momentum.Current > player.momentum.Current)
             {
 
                 //Debug.Log("If3A in");
                 currentPhase = BattlePhase.NonPlayerTurn; }
-            else if (player.GetMomentumCurrent() > npc.GetMomentumCurrent())
+            else if (player.momentum.Current > npc.momentum.Current)
             {
 
                 //Debug.Log("If3B in");
