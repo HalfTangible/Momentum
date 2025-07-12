@@ -55,9 +55,9 @@ namespace RPG.AbilitySystem
             //if(user.momentum + user.skill >= target.momentum + target.skill + target.skill
             //then add the user's overwhelming behavior to the ability
 
-            int threshold = user.momentum.Current + user.skill.Current - (target.momentum.Current + target.skill.Current * 2);
+            //int threshold = user.momentum.Current + user.skill.Current - (target.momentum.Current + target.skill.Current * 2);
             //If the user's skill and momentum are enough to overcome the target's skill and momentum, then the ability overwhelms
-            bool overwhelming = threshold > 0;
+            bool overwhelming = BattleUtility.CheckOverwhelm(user, target);
 
             //For the purposes of the prototyping stage we will apply the behaviors a second time for free, which in this case means double damage.
 
@@ -65,7 +65,7 @@ namespace RPG.AbilitySystem
 
             target.AbilityHit(behaviors);
             if (overwhelming){
-                Debug.Log($"{user.characterName} overwhelms {characterName}!");
+                Debug.Log($"{user.characterName} overwhelms {target.characterName}!");
 
                 //Note: Check to see if this works with DOTS and the like; I don't know if I need to instantiate a new behaviors list or something.
 

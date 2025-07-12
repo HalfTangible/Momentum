@@ -5,6 +5,7 @@ using RPG.StatSystem;
 using System.Runtime.CompilerServices;
 using System;
 using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 namespace RPG.AbilitySystem
 {
@@ -32,13 +33,25 @@ namespace RPG.AbilitySystem
 
         public override void OnHit(StatSheet target)
         {
-            target.GetStatByName(targetStat).ApplyBuff(amount);
+            if (target.GetStatByName(targetStat) != null)
+            {
+                target.GetStatByName(targetStat).ApplyBuff(amount);
+                base.OnHit(target);
+            }
+            else
+                Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
         }
+
 
         public override void Finished(StatSheet target)
         {
-            target.GetStatByName(targetStat).ApplyBuff(amount * -1);
-            base.Finished(target);
+            if (target.GetStatByName(targetStat) != null)
+            {
+                target.GetStatByName(targetStat).ApplyBuff(amount * -1);
+                base.Finished(target);
+            }
+            else
+                Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
         }
 
         public override object GetStat<T>(string key)

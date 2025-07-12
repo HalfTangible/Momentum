@@ -51,30 +51,30 @@ namespace RPG.Battle.UI
 
         public void UpdateUI()
         {
-            //Debug.Log($"Updating UI: Player HP = {playerSheet?.GetHealthCurrent() ?? -1}, NPC HP = {npcSheet?.GetHealthCurrent() ?? -1}");
+            //Debug.Log($"Updating UI: Player HP = {playerSheet?.health.Current ?? -1}, NPC HP = {npcSheet?.health.Current ?? -1}");
 
             if (playerSheet != null)
             {
                 if (playerNameText == null) Debug.LogError("playerNameText is null!");
-                else playerNameText.text = playerSheet.GetName();
+                else playerNameText.text = playerSheet.characterName;
 
                 if (playerMomentumText == null) Debug.LogError("playerMomentumText is null!");
-                else playerMomentumText.text = $"Momentum: {playerSheet.GetMomentumCurrent()}";
+                else playerMomentumText.text = $"Momentum: {playerSheet.momentum.Current}";
 
                 if (playerHealthText == null) Debug.LogError("playerHealthText is null!");
-                else playerHealthText.text = $"HP: {playerSheet.GetHealthCurrent()}";
+                else playerHealthText.text = $"HP: {playerSheet.health.Current}";
             }
 
             if (npcSheet != null)
             {
                 if (npcNameText == null) Debug.LogError("npcNameText is null!");
-                else npcNameText.text = npcSheet.GetName();
+                else npcNameText.text = npcSheet.characterName;
 
                 if (npcMomentumText == null) Debug.LogError("npcMomentumText is null!");
-                else npcMomentumText.text = $"Momentum: {npcSheet.GetMomentumCurrent()}";
+                else npcMomentumText.text = $"Momentum: {npcSheet.momentum.Current}";
 
                 if (npcHealthText == null) Debug.LogError("npcHealthText is null!");
-                else npcHealthText.text = $"HP: {npcSheet.GetHealthCurrent()}";
+                else npcHealthText.text = $"HP: {npcSheet.health.Current}";
             }
 
             if (battleEngine != null)
@@ -91,7 +91,7 @@ namespace RPG.Battle.UI
                             turnIndicatorText.text = "Enemy's Turn";
                             break;
                         case BattlePhase.Finish:
-                            turnIndicatorText.text = playerSheet.GetHealthCurrent() <= 0 ? "Defeat!" : "Victory!";
+                            turnIndicatorText.text = playerSheet.health.Current <= 0 ? "Defeat!" : "Victory!";
                             break;
                         default:
                             turnIndicatorText.text = "Waiting...";
@@ -100,42 +100,6 @@ namespace RPG.Battle.UI
                 }
             }
         }
-
-        /*
-        public void UpdateUI()
-        {
-            Debug.Log($"Updating UI: Player HP = {playerSheet?.GetHealthCurrent()}, NPC HP = {npcSheet?.GetHealthCurrent()}");
-
-            if (playerSheet != null)
-            {
-                playerNameText.text = playerSheet.GetName();
-                playerMomentumText.text = $"Momentum: {playerSheet.GetMomentumCurrent()}";
-                playerHealthText.text = $"HP: {playerSheet.GetHealthCurrent()}";
-            }
-
-            if (npcSheet != null)
-            {
-                npcNameText.text = npcSheet.GetName();
-                npcMomentumText.text = $"Momentum: {npcSheet.GetMomentumCurrent()}";
-                npcHealthText.text = $"HP: {npcSheet.GetHealthCurrent()}";
-            }
-
-            if (battleEngine != null)
-            {
-                switch (battleEngine.GetCurrentPhase())
-                {
-                    case Battlephase.BattlePhase.PlayerTurn:
-                        turnIndicatorText.text = "Player's Turn";
-                        break;
-                    case Battlephase.BattlePhase.NonPlayerTurn:
-                        turnIndicatorText.text = "Enemy's Turn";
-                        break;
-                    default:
-                        turnIndicatorText.text = "Waiting...";
-                        break;
-                }
-            }
-        }*/
 
         // Call this from BattleEngine to update specific sheets
         public void RefreshUI(RPG.StatSystem.StatSheet player, RPG.StatSystem.StatSheet npc)

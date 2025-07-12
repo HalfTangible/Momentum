@@ -76,7 +76,7 @@ namespace RPG.AbilitySystem
             //With the OnHit done, we check to see if the effect continues.
         }
 
-        public void Initialize(int amount)
+        public override void Initialize(int amount)
         {
             Initialize(amount, true);
         }
