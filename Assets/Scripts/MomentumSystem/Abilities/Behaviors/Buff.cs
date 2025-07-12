@@ -55,22 +55,16 @@ namespace RPG.AbilitySystem
                 case "BUFFTARGETS":
                     //UnityEngine.Debug.Log("A_Key matched BUFFTARGETS");
                     return buffTargets;
-                    break;
                 case "TARGETSTAT":
                     targetStat = buffTargets[targetStat_index];
                     return targetStat;
-                    break;
                 case "TARGETSTAT_INDEX":
                     return targetStat_index;
-                    break;
                 default:
                     return base.GetStat<T>(key);
-                    break;
 
 
             }
-            return base.GetStat<T>(key);
-
         }
 
         public override int GetListIndex(string key)
@@ -80,7 +74,6 @@ namespace RPG.AbilitySystem
                 case "BUFFTARGETS":
                     //UnityEngine.Debug.Log("B_Key matched BUFFTARGETS");
                     return targetStat_index;
-                    break;
             }
             return base.GetListIndex(key);
         }
@@ -98,7 +91,6 @@ namespace RPG.AbilitySystem
                 case "BUFFTARGETS":
                     //UnityEngine.Debug.Log("B_Key matched BUFFTARGETS");
                     return "TARGETSTAT";
-                break;
             }
 
             UnityEngine.Debug.Log($"B_GetListKey in Buff doesn't recognize {key}");

@@ -6,12 +6,20 @@ using UnityEngine;
 
 namespace RPG.StatSystem
 {
+
+    public enum StatType
+    {
+        Character, // e.g., skill, motive, means; min 1, no max
+        Resource,  // e.g., health, mana; min 0, has max
+        Unbounded  // e.g., Momentum; no max, can go negative
+    }
+
     [System.Serializable]
     public class Stat
     {
         [SerializeField] private string name;
+        [SerializeField] private StatType type;
         [SerializeField] private int max;
-        [SerializeField] private bool isStaticValue = false;
         [SerializeField] private int baseStat;
         [SerializeField] private int buff;
         [SerializeField] private int debuff;
@@ -22,10 +30,18 @@ namespace RPG.StatSystem
             get
             {
                 int current = baseStat + buff - debuff;
-                int min = isStaticValue ? 1 : 0;
-                if (!isStaticValue && max == 0) // Special case for momentum
-                    return current;
-                return isStaticValue ? Mathf.Max(current, min) : Mathf.Clamp(current, min, max);
+                switch (type)
+                {
+                    case StatType.Character:
+                        return Mathf.Max(current, GetMin()); // Min 1, no max
+                    case StatType.Resource:
+                        return Mathf.Clamp(current, GetMin(), max); // Min 0, max defined
+                    case StatType.Unbounded:
+                        return current; // No limits
+                    default:
+                        Debug.LogWarning($"Unknown StatType for {name}: {type}");
+                        return current;
+                }
             }
             set => baseStat = value; // Updates baseStat, current applies clamping
         }
@@ -34,7 +50,7 @@ namespace RPG.StatSystem
         public int Max
         {
             get => max;
-            set => max = value;
+            set => max = type == StatType.Resource ? value : 0;
         }
 
         public string Name
@@ -43,35 +59,29 @@ namespace RPG.StatSystem
             set => name = value;
         }
 
-        public bool IsStaticValue
-        {
-            get => isStaticValue;
-            set => isStaticValue = value;
-        }
-
         public int BaseStat
         {
             get => baseStat;
             set => baseStat = value;
         }
 
-        public Stat(int initial)
+        public Stat(int initial, StatType type)
         {
-            max = initial;
+            this.type = type;
+            max = type == StatType.Resource ? initial : 0;
             baseStat = initial;
             buff = 0;
             debuff = 0;
-            isStaticValue = false;
         }
 
         public void ApplyBuff(int amount) => buff += amount;
         public void ApplyDebuff(int amount) => debuff += amount;
 
-        public int GetMin() => isStaticValue ? 1 : 0;
+        public int GetMin() => type == StatType.Character ? 1 : 0;
 
         public void LevelUp(int amount)
         {
-            // Add level-up logic here if needed
+            // Add level-up logic here once we decide how level ups will work.
         }
     }
 }

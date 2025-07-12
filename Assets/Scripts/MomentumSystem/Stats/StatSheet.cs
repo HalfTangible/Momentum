@@ -25,11 +25,11 @@ namespace RPG.StatSystem
             abilities = new List<Ability>();
             continuingEffects = new List<ABehavior>();
 
-            health = new Stat(10) { Name = "HEALTH", IsStaticValue = false };
-            momentum = new Stat(10) { Name = "MOMENTUM", IsStaticValue = false, Max = 0 };
-            motive = new Stat(10) { Name = "MOTIVE", IsStaticValue = true };
-            means = new Stat(10) { Name = "MEANS", IsStaticValue = true };
-            skill = new Stat(3) { Name = "SKILL", IsStaticValue = true };
+            health = new Stat(10, StatType.Resource) { Name = "HEALTH" };
+            momentum = new Stat(10, StatType.Unbounded) { Name = "MOMENTUM" };
+            motive = new Stat(10, StatType.Character) { Name = "MOTIVE" };
+            means = new Stat(10, StatType.Character) { Name = "MEANS" };
+            skill = new Stat(3, StatType.Character) { Name = "SKILL" };
         }
 
         public void AddAbility(Ability newAbility) => abilities.Add(newAbility);
@@ -51,6 +51,7 @@ namespace RPG.StatSystem
         public void Heal(int amount) => health.Current += amount;
         public void Buff(string statName, int amount) => GetStatByName(statName)?.ApplyBuff(amount);
         public void Debuff(string statName, int amount) => GetStatByName(statName)?.ApplyDebuff(amount);
+        public bool isAlive() => health.Current > 0;
 
         public Stat[] GetStats() => new[] { health, momentum, motive, means, skill };
 

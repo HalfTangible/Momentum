@@ -55,7 +55,7 @@ public class TestBattle1 : MonoBehaviour
                 expectedDamage += (int) behavior.GetStat<int>("AMOUNT");
         }
 
-        int expectedEnemyHealth = enemy.GetHealthCurrent() - expectedDamage;
+        int expectedEnemyHealth = enemy.health.Current - expectedDamage;
 
 
 
@@ -66,13 +66,13 @@ public class TestBattle1 : MonoBehaviour
         //Debug.Log($"Player health: {player.GetHealthCurrent()}, Enemy health: {player.GetHealthCurrent()}");
         //Debug.Log("The player attacks the enemy!");
         abilityInstance.OnHit(player, enemy);
-        Debug.Log($"Player health: {player.GetHealthCurrent()}, Enemy health: {enemy.GetHealthCurrent()}");
+        Debug.Log($"Player health: {player.health.Current}, Enemy health: {enemy.health.Current}");
         //Expected result: enemy health should be reduced by the damage of the basic attack.
         //
 
 
 
-        if (enemy.GetHealthCurrent() == expectedEnemyHealth)
+        if (enemy.health.Current == expectedEnemyHealth)
             return true;
         else
             return false;

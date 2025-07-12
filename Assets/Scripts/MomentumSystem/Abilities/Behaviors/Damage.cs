@@ -92,7 +92,7 @@ namespace RPG.AbilitySystem
         public void Initialize(int amount, bool onHit, int rounds, int turns)
         {
 
-            InitializeStats(amount, onHit, rounds, turns);
+            base.InitializeStats(amount, onHit, rounds, turns);
 
         }
 
