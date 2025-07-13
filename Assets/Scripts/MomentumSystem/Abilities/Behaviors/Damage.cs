@@ -24,34 +24,36 @@ namespace RPG.AbilitySystem
             //Actually... apply would need to be used by the ability, wouldn't it?
         }*/
 
-        public bool EachTurn(StatSheet target)
+        public override void Apply(StatSheet target)
+        {
+            target.TakesDamage((int)GetStat<int>("AMOUNT"));
+        }
+
+        public override bool EachTurn(StatSheet target)
         {
             int turnsRemaining = (int) GetStat<int>("TURNS");
 
             if(turnsRemaining > 0)
             {
-                target.TakesDamage((int) GetStat<int>("AMOUNT"));
+                Apply(target);
                 SetStat("TURNS", --turnsRemaining);
             }
 
-
-            
             return Continues();
         }
 
-        public bool EachRound(StatSheet target)
+        public override bool EachRound(StatSheet target)
         {
             int roundsRemaining = (int) GetStat<int>("ROUNDS");
 
             if (roundsRemaining > 0)
             {
-                target.TakesDamage((int) GetStat<int>("AMOUNT"));
+                Apply(target);
                 SetStat("ROUNDS", --roundsRemaining);
             }
-            
+
             return Continues();
         }
-
 
 
         public override void Finished(StatSheet target) 

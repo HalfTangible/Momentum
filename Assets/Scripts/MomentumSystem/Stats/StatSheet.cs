@@ -48,9 +48,9 @@ namespace RPG.StatSystem
 
         public void SpendMomentum(int amount) => momentum.Current -= amount;
         public void TakesDamage(int amount) => health.Current -= amount;
-        public void Heal(int amount) => health.Current += amount;
-        public void Buff(string statName, int amount) => GetStatByName(statName)?.ApplyBuff(amount);
-        public void Debuff(string statName, int amount) => GetStatByName(statName)?.ApplyDebuff(amount);
+        public void Heals(int amount) => health.Current += amount;
+        public void Buffs(string statName, int amount) => GetStatByName(statName)?.ApplyBuff(amount);
+        public void Debuffs(string statName, int amount) => GetStatByName(statName)?.ApplyDebuff(amount);
         public bool isAlive() => health.Current > 0;
 
         public Stat[] GetStats() => new[] { health, momentum, motive, means, skill };
@@ -74,12 +74,45 @@ namespace RPG.StatSystem
             return null;
         }
 
-        public void NewRound()
+        public void RefreshMomentum()
         {
-            if (health.Current > 0)
+            if (health.Current <= 0) return;
+            momentum.Current += motive.Current;
+        }
+        //EachTurn and EachRound in the behavior already sends back whether it's done or not.
+        public void ApplyRoundEffects()
+        {
+            if (health.Current <= 0) return;
+            List<ABehavior> toRemove = new List<ABehavior>();
+            foreach (ABehavior behavior in continuingEffects)
             {
-                momentum.Current = momentum.Current + motive.Current;
+                if (!behavior.EachRound(this)) //EachRound returns a check to see if it's done.
+                    toRemove.Add(behavior);
+                
+            }
+            foreach (ABehavior behavior in toRemove)
+            {
+                behavior.Finished(this);
+                continuingEffects.Remove(behavior);
+            }
+        }
+
+        public void ApplyTurnEffects()
+        {
+            if (health.Current <= 0) return;
+            List<ABehavior> toRemove = new List<ABehavior>();
+            foreach (ABehavior behavior in continuingEffects)
+            {
+                if (!behavior.EachTurn(this)) //EachTurn returns a check to see if it's done.
+                    toRemove.Add(behavior);
+            }
+            foreach (ABehavior behavior in toRemove)
+            {
+                behavior.Finished(this);
+                continuingEffects.Remove(behavior);
             }
         }
     }
+
+
 }

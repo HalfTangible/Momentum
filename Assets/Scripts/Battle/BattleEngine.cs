@@ -15,7 +15,6 @@ namespace RPG.Battle {
     public class BattleEngine : MonoBehaviour
     {
 
-        
         BattlePhase currentPhase;
         BattleUI battleUI;
         StatSheet player;
@@ -25,6 +24,7 @@ namespace RPG.Battle {
 
         List<Ability> playerAbilities;
         List<Ability> npcAbilities;
+        List<StatSheet> allParticipants;
 
         // Start is called before the first frame update
         void Start()
@@ -45,6 +45,10 @@ namespace RPG.Battle {
 
             npc.AddAbility(Instantiate(basicAttack));
             npc.AddAbility(Instantiate(heavyAttack));
+
+            
+            allParticipants.Add(player);
+            allParticipants.Add(npc);
 
             Setup();
             battleUI?.RefreshUI(player, npc); // Initial UI update
@@ -236,10 +240,13 @@ namespace RPG.Battle {
             else 
             {
                 //Debug.Log($"Player: Momentum is {player.GetMomentumCurrent()}; motive is {player.GetMotiveCurrent()} ");
-                player.NewRound(); //Player and NPC gain their Momentum for the round, based on Motive.
+                //player.NewRound(); //Player and NPC gain their Momentum for the round, based on Motive.
                 //Debug.Log($"NPC: Momentum is {npc.GetMomentumCurrent()}; motive is {npc.GetMotiveCurrent()} ");
-                npc.NewRound();
+                //npc.NewRound();
                 //Debug.Log($"Player: Momentum is {player.GetMomentumCurrent()}; NPC is {npc.GetMomentumCurrent()} ");
+                
+                
+                BattleUtility.RoundRefresh(allParticipants);
             }
             
             //Debug.Log("New round started!");

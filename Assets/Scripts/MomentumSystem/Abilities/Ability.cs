@@ -48,8 +48,6 @@ namespace RPG.AbilitySystem
         public void OnHit(StatSheet user, StatSheet target)
         {
 
-            
-
             //What these abilities do on hit
             //First, determine if the behaviors Overwhelm.
             //if(user.momentum + user.skill >= target.momentum + target.skill + target.skill

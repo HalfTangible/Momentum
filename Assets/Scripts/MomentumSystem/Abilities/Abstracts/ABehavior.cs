@@ -41,21 +41,28 @@ namespace RPG.AbilitySystem
             return allKeys;
         }
 
+        public virtual bool EachRound(StatSheet target)
+        {
+            return Continues();
+        }
+
+        public virtual bool EachTurn(StatSheet target)
+        {
+            return Continues();
+        }
+
 
         public virtual void OnHit(StatSheet target)
         {
-            //Don't forget to implement the effects in the child classes when you override them.
-            //With the OnHit done, we check to see if the effect continues.
-            //If it does, we apply the ability to the target. They'll handle it from there.
-            //Actually that function seems to have been implemented in StatSheet already... hrm.
-            //Move it here, perhaps?
-            //Nah, if we implement armor or something we'll want to check WhenHit() or something.
-            Apply(target);
+            //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
+            //its actual effect.
         }
 
+        
         public virtual void Apply(StatSheet target)
         {
-
+            //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
+            //its actual effect.
         }
 
         public bool Continues()
