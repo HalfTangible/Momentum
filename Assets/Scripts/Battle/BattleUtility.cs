@@ -11,6 +11,12 @@ public static class BattleUtility
         return ((user.momentum.Current + user.skill.Current) >= (target.momentum.Current + (target.skill.Current * 2)));
     }
 
+    public static void RoundRefresh(List<StatSheet> statSheets, List<StatSheet> statSheets2)
+    {
+        RoundRefresh(statSheets);
+        RoundRefresh(statSheets2);
+    }
+
     public static bool RoundRefresh(List<StatSheet> statSheets)
     {
         bool momentumPending = false;
@@ -38,30 +44,44 @@ public static class BattleUtility
         }
     }
 
-    public static StatSheet NextToFight(List<StatSheet> allParticipants)
+    public static StatSheet NextToFight(List<StatSheet> playerParty, List<StatSheet> enemyParty)
     {
         //Sort all the StatSheets based on the Momentum of the participants.
         //Return the character with the highest momentum.
         //Actually, sorting them isn't necessary if you're just returning whoever's next.
-        
-        StatSheet nextToFight = allParticipants[0];
-        /*
-        for(int i = 1; i < allParticipants.Count; i++)
+
+        SortParty(playerParty);
+        SortParty(enemyParty);
+
+
+        // Get the first living character from each party
+        StatSheet player = playerParty.Find(p => p.isAlive());
+        StatSheet enemy = enemyParty.Find(e => e.isAlive());
+
+        // If no living players or enemies, return null
+        if (player == null && enemy == null)
+            return null;
+        if (player == null)
+            return enemy;
+        if (enemy == null)
+            return player;
+
+        // Compare momentum of the first living characters
+        return player.momentum.Current >= enemy.momentum.Current ? player : enemy;
+
+
+    }
+
+    public static void SortParty(List<StatSheet> party)
+    {
+        party.Sort((a, b) =>
         {
-            if (!nextToFight.isAlive())
-                nextToFight = allParticipants[i];
-            else
-                if (nextToFight.momentum.Current < allParticipants[i].momentum.Current)
-                nextToFight = allParticipants[i];
-        }*/
-
-        //Very inefficient
-        //Get a list for the player party and the enemy party
-        //Sort those two lists, with the dead at the very back, then compare the first person in each list.
-        //It's a bit more annoying to code but it means we only have to sort the entirety of each array *once*.
-
-        return nextToFight;
-
-
+            // Dead characters go to the end
+            if (!a.isAlive() && !b.isAlive()) return 0; // Both dead, no change
+            if (!a.isAlive()) return 1; // a dead, b alive, a goes after
+            if (!b.isAlive()) return -1; // b dead, a alive, a goes before
+            // Both alive, sort by momentum descending
+            return b.momentum.Current.CompareTo(a.momentum.Current);
+        });
     }
 }

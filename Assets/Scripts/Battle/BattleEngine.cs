@@ -24,7 +24,8 @@ namespace RPG.Battle {
 
         List<Ability> playerAbilities;
         List<Ability> npcAbilities;
-        List<StatSheet> allParticipants;
+        List<StatSheet> playerParty;
+        List<StatSheet> enemyParty;
 
         // Start is called before the first frame update
         void Start()
@@ -32,6 +33,11 @@ namespace RPG.Battle {
             advanceTurn = false;
             battleUI = FindObjectOfType<BattleUI>();
             if (battleUI == null) Debug.LogError("BattleUI not found in scene!");
+
+            // Initialize parties
+
+            playerParty = new List<StatSheet>();
+            enemyParty = new List<StatSheet>();
 
             // Initialize test characters
             player = new StatSheet { characterName = "Hero" };
@@ -47,12 +53,12 @@ namespace RPG.Battle {
             npc.AddAbility(Instantiate(heavyAttack));
 
             
-            allParticipants.Add(player);
-            allParticipants.Add(npc);
+            playerParty.Add(player);
+            enemyParty.Add(npc);
 
             Setup();
             battleUI?.RefreshUI(player, npc); // Initial UI update
-            WhosNext(player, npc);           // Start the battle
+            WhosNext(playerParty, enemyParty); // Start the battle
 
         }
 
@@ -82,14 +88,16 @@ namespace RPG.Battle {
                 {
                     case BattlePhase.PlayerTurn:
                         currentPhase = BattlePhase.Waiting;
-                        PlayerTurn(player);
+                        PlayerTurn();
                         break;
                     case BattlePhase.NonPlayerTurn:
                         currentPhase = BattlePhase.Waiting;
-                        NonPlayerTurn(npc);
+                        NonPlayerTurn();
                         break;
                     case BattlePhase.WhosNext:
-                        WhosNext(player, npc);
+                        BattleUtility.SortParty(playerParty);
+                        BattleUtility.SortParty(enemyParty);
+                        WhosNext(playerParty[0], enemyParty[0]);
                         break;
                     case BattlePhase.NewRound:
                         currentPhase = BattlePhase.Waiting;
@@ -105,6 +113,11 @@ namespace RPG.Battle {
             currentPhase = BattlePhase.Setup;
             advanceTurn = false;
             //Debug.Log("Battle setup complete.");
+        }
+
+        public void WhosNext(List<StatSheet> playerParty, List<StatSheet> enemyParty)
+        {
+            //Sort the list based on the 
         }
 
         public void WhosNext(StatSheet player, StatSheet npc)
@@ -163,27 +176,20 @@ namespace RPG.Battle {
             //Debug.Log("If3 out");
         }
 
-        public void PlayerTurn(StatSheet player)
+
+        public void PlayerTurn()
         {
             //Player selects an action and spends Momentum.
-            // Placeholder: For now, just reduce Momentum and deal damage
+            // For now it uses the same random ability selection as the enemy.
+
             Debug.Log("Player's turn!");
 
-            if (player.GetAbilities().Count > 0)
-            {
-                int temp = Random.Range(0, player.GetAbilities().Count);
-                Ability selectedAbility = player.GetAbilities()[temp];
-                selectedAbility.OnHit(player, npc);
-            }
-            else
-            {
-                Debug.LogWarning("NPC has no abilities (somehow)");
-                return;
-            }
+            CharacterTurn(playerParty, enemyParty);
+
             EndTurn();
         }
 
-        public void NonPlayerTurn(StatSheet npc)
+        public void NonPlayerTurn()
         {
             //Eventually we'll want to assign viable attacks and weights to decide what ability each character uses.
             //For now, just have them select heavy or basic attacks at random.
@@ -203,22 +209,35 @@ namespace RPG.Battle {
             //SUGGESTION: Instantiate ability before sending it through OnHit? Then when the ability is done it destroys itself so we don't overuse memory?
             //ALT: On Overwhelm, instantiate a copy of the ability, then modify that copy's behaviors with the Overwhelming effects. That way we only burden the memory with
             //Overwhelming attacks and so long as we destroy the overwhelming abilities and their effects once they're done we won't have any problems.
-
-            if (npc.GetAbilities().Count > 0)
-            {
-                int temp = Random.Range(0, npc.GetAbilities().Count);
-                Ability selectedAbility = npc.GetAbilities()[temp];
-                selectedAbility.OnHit(npc, player);
-            }
-            else
-            {
-                Debug.LogWarning("NPC has no abilities (somehow)");
-                return;
-            }
+            CharacterTurn(enemyParty, playerParty);
 
             EndTurn();
             
         }
+
+        public void CharacterTurn(List<StatSheet> party, List<StatSheet> opposingParty)
+        {
+            StatSheet attacker = party[0];
+
+            //Select a random foe in the opposingParty
+            int temp = Random.Range(0, opposingParty.Count);
+            StatSheet defender = opposingParty[temp];
+
+
+            if (attacker.GetAbilities().Count > 0)
+            {
+                temp = Random.Range(0, attacker.GetAbilities().Count);
+                Ability selectedAbility = attacker.GetAbilities()[temp];
+                selectedAbility.OnHit(attacker, defender);
+            }
+            else
+            {
+                Debug.LogWarning($"Character during {currentPhase} has no abilities (somehow)");
+                return;
+            }
+        }
+
+
 
         public void EndTurn()
         {
@@ -244,9 +263,9 @@ namespace RPG.Battle {
                 //Debug.Log($"NPC: Momentum is {npc.GetMomentumCurrent()}; motive is {npc.GetMotiveCurrent()} ");
                 //npc.NewRound();
                 //Debug.Log($"Player: Momentum is {player.GetMomentumCurrent()}; NPC is {npc.GetMomentumCurrent()} ");
-                
-                
-                BattleUtility.RoundRefresh(allParticipants);
+
+                BattleUtility.RoundRefresh(playerParty);
+                BattleUtility.RoundRefresh(enemyParty);
             }
             
             //Debug.Log("New round started!");
