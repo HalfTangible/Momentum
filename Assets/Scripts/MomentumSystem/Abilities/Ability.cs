@@ -13,7 +13,7 @@ namespace RPG.AbilitySystem
         [SerializeField] private string abilityName;
         [SerializeField] private string description;
         [SerializeField] private int momentumCost;
-        [SerializeField] protected List<ABehavior> behaviors = new List<ABehavior>();
+        [SerializeField] protected List<ABehavior> behaviorList = new List<ABehavior>();
 
         // Start is called before the first frame update
 
@@ -40,11 +40,6 @@ namespace RPG.AbilitySystem
         
         }
 
-/*        public Ability(string name)
-        {
-            Name = name;
-        }
-*/
         public void OnHit(StatSheet user, StatSheet target)
         {
 
@@ -61,22 +56,34 @@ namespace RPG.AbilitySystem
 
             Debug.Log($"{user.characterName} attacks {target.characterName} with {this.abilityName}.");
 
-            target.AbilityHit(behaviors);
-            if (overwhelming){
-                Debug.Log($"{user.characterName} overwhelms {target.characterName}!");
+            foreach (ABehavior behavior in behaviorList)
+            {
+                if ((bool) behavior.GetStat<bool>("ONUSER"))
+                {
+                    user.AbilityHit(behavior);
+                }
+                else
+                {
+                    target.AbilityHit(behavior);
+                    Debug.Log($"Ability (after hit): {user.characterName}: {user.momentum.Current} + {user.skill.Current} vs {target.characterName}: {target.momentum.Current} + {target.skill.Current * 2}.");
+                    if (overwhelming)
+                    {
+                        Debug.Log($"{user.characterName} overwhelms {target.characterName}!");
 
-                //Note: Check to see if this works with DOTS and the like; I don't know if I need to instantiate a new behaviors list or something.
+                        //Note: Check to see if this works with DOTS and the like; I don't know if I need to instantiate a new behaviors list or something.
 
-                target.AbilityHit(behaviors);
+                        target.AbilityHit(behavior);
+                    }
+                }
             }
-
+            
             user.SpendMomentum(momentumCost);
 
         }
 
         bool Finished()
         {
-            foreach (var behavior in behaviors)
+            foreach (var behavior in behaviorList)
             {
                 if (behavior.Continues())
                 return false;
@@ -86,7 +93,7 @@ namespace RPG.AbilitySystem
 
         public List<ABehavior> GetBehaviors()
         {
-            return behaviors;
+            return behaviorList;
         }
 
         public string GetName()

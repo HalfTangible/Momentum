@@ -59,10 +59,22 @@ namespace RPG.StatSystem
             set => name = value;
         }
 
-        public int BaseStat
+        public int Base
         {
             get => baseStat;
             set => baseStat = value;
+        }
+
+        public int Buff
+        {
+            get => buff;
+            set => buff = value;
+        }
+
+        public int Debuff
+        {
+            get => debuff;
+            set => debuff = value;
         }
 
         public Stat(int initial, StatType type)

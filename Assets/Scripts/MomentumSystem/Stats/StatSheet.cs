@@ -41,9 +41,14 @@ namespace RPG.StatSystem
         {
             foreach (ABehavior a in input)
             {
-                a.OnHit(this);
-                if (a.Continues()) continuingEffects.Add(a);
+                AbilityHit(a);
             }
+        }
+
+        public void AbilityHit(ABehavior a)
+        {
+            a.OnHit(this);
+            if (a.Continues()) continuingEffects.Add(a);
         }
 
         public void SpendMomentum(int amount) => momentum.Current -= amount;
