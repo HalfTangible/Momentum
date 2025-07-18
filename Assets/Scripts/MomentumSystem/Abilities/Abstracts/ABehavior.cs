@@ -18,8 +18,10 @@ namespace RPG.AbilitySystem
         protected int turnsRemaining;
         [SerializeField]
         protected bool onHit;
-
         [SerializeField]
+        protected bool onUser;
+
+        //[SerializeField]
         protected List<string> allKeys;
         //bool Continues();
         //bool Finished();
@@ -32,7 +34,7 @@ namespace RPG.AbilitySystem
         public ABehavior()
         {
             allKeys = new List<string>();
-            allKeys.AddRange(new[] { "AMOUNT", "ONHIT", "ROUNDS", "TURNS" });
+            allKeys.AddRange(new[] { "AMOUNT", "ONHIT", "ROUNDS", "TURNS", "ONUSER" });
             allKeys.Sort();
         }
 
@@ -41,21 +43,28 @@ namespace RPG.AbilitySystem
             return allKeys;
         }
 
+        public virtual bool EachRound(StatSheet target)
+        {
+            return Continues();
+        }
+
+        public virtual bool EachTurn(StatSheet target)
+        {
+            return Continues();
+        }
+
 
         public virtual void OnHit(StatSheet target)
         {
-            //Don't forget to implement the effects in the child classes when you override them.
-            //With the OnHit done, we check to see if the effect continues.
-            //If it does, we apply the ability to the target. They'll handle it from there.
-            //Actually that function seems to have been implemented in StatSheet already... hrm.
-            //Move it here, perhaps?
-            //Nah, if we implement armor or something we'll want to check WhenHit() or something.
-            Apply(target);
+            //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
+            //its actual effect.
         }
 
+        
         public virtual void Apply(StatSheet target)
         {
-
+            //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
+            //its actual effect.
         }
 
         public bool Continues()
@@ -77,6 +86,8 @@ namespace RPG.AbilitySystem
 
         public virtual object GetStat<T>(string key)
         {
+
+            key = key.Trim().ToUpper();
             //When calling this from a child class (base.GetStat(key)) make sure to do data fields unique to the child class first.
 
             switch (key)
@@ -99,6 +110,11 @@ namespace RPG.AbilitySystem
                 case "TURNS":
                     if (turnsRemaining is T tTurns)
                         return tTurns;
+                    break;
+
+                case "ONUSER":
+                    if (onUser is T tOnUser)
+                        return tOnUser;
                     break;
 
                 default:
@@ -144,6 +160,9 @@ namespace RPG.AbilitySystem
         public virtual void SetStat(string key, string value)
         {
             //UnityEngine.Debug.Log($"Set stats Method. Key = {key}, value = {value}");
+
+            key = key.Trim().ToUpper();
+
             switch (key)
             {
                 case "AMOUNT":
@@ -160,6 +179,10 @@ namespace RPG.AbilitySystem
 
                 case "TURNS":
                     turnsRemaining = ParseInput<int>(value); // Parses to an int.
+                    break;
+
+                case "ONUSER":
+                    onUser = ParseInput<bool>(value);
                     break;
 
                 default:
@@ -192,6 +215,7 @@ namespace RPG.AbilitySystem
             SetStat("ONHIT", onHit);
             SetStat("ROUNDS", roundsRemaining);
             SetStat("TURNS", turnsRemaining);
+            SetStat("ONUSER", false);
 
             //if you wanna use InitializeStats in a child class call it with base
             //Like this: base.InitializeStats(amount,onHit,rounds,turns);
@@ -222,142 +246,11 @@ namespace RPG.AbilitySystem
             {
                 throw new NotSupportedException($"Type {typeof(T)} is not supported by the ParseInput method, dude.");
             }
-            /*
-            switch (typeof(inputType))
-            {
-                case int:
-                    if(int.TryParse(input, out int intValue))
-                        return intValue;
-                    throw new ArgumentException("Expected an integer value");
-                case bool:
-                    if (bool.TryParse(input, out bool boolValue))
-                        return boolValue;
-                    throw new ArgumentException("Expected a bool value");
-                default:
-                    return input;
-            }*/
+
         }
 
 
     }
 }
-        /*
-        public List<string> GetStats()
-        {
-            return Stats;
-        }
-
-        public T GetThis<T>(string toGet.ToUppercase())
-        {
-            switch(toGet):
-                case "AMOUNT":
-                return amount;
-
-                case "ONHIT":
-                return onHit;
-
-                case "ROUNDS":
-                return roundsRemaining;
-
-                case "TURNS":
-                return turnsRemaining;
-
-
-        }*/
-        /*
-        public object FindValueByKey(string key)
-        {
-            UnityEngine.Debug.Log($"Finding value by key: {key}");
-            
-            return FindStatByKey(key).value;
-        }
-        
-        public BehaviorStat FindStatByKey(string key)
-        {
-            UnityEngine.Debug.Log($"Finding stat by key: {key}");
-            foreach (BehaviorStat stat in stats)
-            {
-                if (stat.key == key)
-                {
-                    UnityEngine.Debug.Log($"Stat found!");
-                    return stat;
-                }
-            }
-           
-                throw new KeyNotFoundException($"The key '{key}' was not found in the stats pseudo-dictionary.");
-
-
-        }
-
-        public void UpdateStatByKey(string key, object value)
-        {
-            foreach(BehaviorStat stat in stats)
-            {
-                if (stat.key == key)
-                {
-                    stat.value = value;
-                    return;
-                }
-            }
-        }
-
-        public List<string> GetAllKeys()
-        {
-            UnityEngine.Debug.Log("Getting all keys");
-            List<string> allKeys = new List<string>();
-
-            foreach (BehaviorStat stat in stats)
-            {
-                UnityEngine.Debug.Log($"Getting key: {stat.key}");
-                allKeys.Add(stat.key);
-            }
-
-            return allKeys;
-        }
-
-        public void AddStat(string key, object value)
-        {
-            AddStat(new BehaviorStat(key, value));
-        }
-
-        public void AddStat(BehaviorStat stat)
-        {
-            stats.Add(stat);
-        }
-
-        protected virtual void InitializeStats(int amount, bool onHit, int roundsRemaining, int turnsRemaining)
-        {
-            stats.Clear();
-            stats.Add(new BehaviorStat("AMOUNT", amount));
-            stats.Add(new BehaviorStat("ONHIT", onHit));
-            stats.Add(new BehaviorStat("ROUNDS", roundsRemaining));
-            stats.Add(new BehaviorStat("TURNS", turnsRemaining));
-
-            //if you wanna use InitializeStats in a child class call it with base
-            //Like this: base.InitializeStats(amount,onHit,rounds,turns);
-        }*/
-
-    
-    /*
-    [System.Serializable]
-    public class BehaviorStat
-    {
-        //Because apparently dictionaries aren't serializable. Which is stupid.
-        //Like, I get it, but it's stupid to have to work through.
-        //It doesn't serialize objects either. So I guess we're doing simple data types because there's no way doing a couple hundred JSON actions at the start of a game is worth it.
-        //Yeah it'd be easier to code at this point but we're trying to be efficient with the game's memory usage right now
-        
-        [SerializeField]
-        public string key;
-        [SerializeField]
-        public object value;
-
-        public BehaviorStat(string key, object value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-
-    }*/
 
     

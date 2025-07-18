@@ -1,5 +1,43 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8663819538853560146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972cb67e3521bd24bad021c3e3deb707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 3
+  roundsRemaining: 0
+  turnsRemaining: 0
+  onHit: 1
+  onUser: 1
+  targetStat: MOMENTUM
+  targetStat_index: 0
+--- !u!114 &-2445890887789213234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972cb67e3521bd24bad021c3e3deb707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 3
+  roundsRemaining: 0
+  turnsRemaining: 0
+  onHit: 1
+  onUser: 1
+  targetStat: MOMENTUM
+  targetStat_index: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14,9 +52,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: Heavy Attack
   description: A heavier attack, used for testing the battle system.
-  momentumCost: 5
-  behaviors:
-  - {fileID: 8695791953063331779}
+  momentumCost: 7
+  behaviorList:
+  - {fileID: 137600451063594675}
+  - {fileID: -8663819538853560146}
+--- !u!114 &137600451063594675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6afac855e9fbb354cb29b3e45fc8429e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 3
+  roundsRemaining: 0
+  turnsRemaining: 0
+  onHit: 1
+  onUser: 0
 --- !u!114 &8695791953063331779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33,8 +89,4 @@ MonoBehaviour:
   roundsRemaining: 0
   turnsRemaining: 0
   onHit: 1
-  allKeys:
-  - AMOUNT
-  - ONHIT
-  - ROUNDS
-  - TURNS
+  onUser: 0

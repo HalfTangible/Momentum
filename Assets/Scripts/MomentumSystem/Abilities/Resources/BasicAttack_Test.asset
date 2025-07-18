@@ -1,5 +1,22 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6561313265344574532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6afac855e9fbb354cb29b3e45fc8429e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 2
+  roundsRemaining: 0
+  turnsRemaining: 0
+  onHit: 1
+  onUser: 0
 --- !u!114 &-548506956908672024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16,11 +33,7 @@ MonoBehaviour:
   roundsRemaining: 0
   turnsRemaining: 0
   onHit: 1
-  allKeys:
-  - AMOUNT
-  - ONHIT
-  - ROUNDS
-  - TURNS
+  onUser: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36,5 +49,5 @@ MonoBehaviour:
   abilityName: Basic Attack
   description: A light attack, used for testing the battle system.
   momentumCost: 3
-  behaviors:
-  - {fileID: -548506956908672024}
+  behaviorList:
+  - {fileID: -6561313265344574532}

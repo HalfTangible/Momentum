@@ -15,7 +15,6 @@ namespace RPG.Battle {
     public class BattleEngine : MonoBehaviour
     {
 
-        
         BattlePhase currentPhase;
         BattleUI battleUI;
         StatSheet player;
@@ -25,6 +24,8 @@ namespace RPG.Battle {
 
         List<Ability> playerAbilities;
         List<Ability> npcAbilities;
+        List<StatSheet> playerParty;
+        List<StatSheet> enemyParty;
 
         // Start is called before the first frame update
         void Start()
@@ -32,6 +33,11 @@ namespace RPG.Battle {
             advanceTurn = false;
             battleUI = FindObjectOfType<BattleUI>();
             if (battleUI == null) Debug.LogError("BattleUI not found in scene!");
+
+            // Initialize parties
+
+            playerParty = new List<StatSheet>();
+            enemyParty = new List<StatSheet>();
 
             // Initialize test characters
             player = new StatSheet { characterName = "Hero" };
@@ -46,9 +52,12 @@ namespace RPG.Battle {
             npc.AddAbility(Instantiate(basicAttack));
             npc.AddAbility(Instantiate(heavyAttack));
 
+            
+            playerParty.Add(player);
+            enemyParty.Add(npc);
+
             Setup();
             battleUI?.RefreshUI(player, npc); // Initial UI update
-            WhosNext(player, npc);           // Start the battle
 
         }
 
@@ -67,7 +76,7 @@ namespace RPG.Battle {
             if (currentPhase == BattlePhase.Waiting && advanceTurn)
             {
                 advanceTurn = false;
-                WhosNext(player, npc);
+                WhosNext();
             }
 
             if (advanceTurn && currentPhase != BattlePhase.Finish)
@@ -78,18 +87,20 @@ namespace RPG.Battle {
                 {
                     case BattlePhase.PlayerTurn:
                         currentPhase = BattlePhase.Waiting;
-                        PlayerTurn(player);
+                        PlayerTurn();
                         break;
                     case BattlePhase.NonPlayerTurn:
                         currentPhase = BattlePhase.Waiting;
-                        NonPlayerTurn(npc);
+                        NonPlayerTurn();
                         break;
-                    case BattlePhase.WhosNext:
-                        WhosNext(player, npc);
+                    case BattlePhase.EndTurn:
+                        currentPhase = BattlePhase.Waiting;
+                        NewRoundCheck();
+                        WhosNext();
                         break;
                     case BattlePhase.NewRound:
                         currentPhase = BattlePhase.Waiting;
-                        NewRound();
+                        NewRoundCheck();
                         break;
 
                 }
@@ -100,150 +111,132 @@ namespace RPG.Battle {
         {
             currentPhase = BattlePhase.Setup;
             advanceTurn = false;
+
+            WhosNext(); // Start the battle
             //Debug.Log("Battle setup complete.");
         }
 
-        public void WhosNext(StatSheet player, StatSheet npc)
+        public void WhosNext()
         {
-            //Debug.Log("WhosNext called");
-            //This happens first because I just remembered end-of-round effects are a thing I want to do later.
-            //If either the player or the NPC are at 0 Momentum, then the round ends and a new one begins that refreshes their momentum.
-            if (player.GetMomentumCurrent() <= 0 || npc.GetMomentumCurrent() <= 0)
-            {
-                //Debug.Log("If1 in");
-                NewRound();
-            }
 
-            //Debug.Log("If1 out");
+            BattleUtility.SortParty(playerParty);
+            BattleUtility.SortParty(enemyParty);
 
-            //Check the sheets of our two combatants (for now; later we'll make it so it returns the next person in each party).
-            //If one of these characters is dead, then that side loses.
-            if (player.GetHealthCurrent() <= 0)
-            {
+            StatSheet nextPlayer = playerParty[0];
+            StatSheet nextEnemy = enemyParty[0];
 
-                //Debug.Log("If2a in");
+            if (!nextPlayer.isAlive())
                 PlayerLose();
-                return;
-            }
-            else if (npc.GetHealthCurrent() <= 0)
-            {
-
-                //Debug.Log("If2b in");
+            else if (!nextEnemy.isAlive())
                 PlayerWin();
-                return;
-            }
+            else if (nextPlayer.momentum.Current >= nextEnemy.momentum.Current)
+                currentPhase = BattlePhase.PlayerTurn;
+            else
+                currentPhase = BattlePhase.NonPlayerTurn;
 
 
-            //Debug.Log($"If2 out. Also: npc momentum = {npc.GetMomentumCurrent()} and player momentum = {player.GetMomentumCurrent()}");
-
-
-            //The sheet with the higher Momentum goes next.
-
-            if (npc.GetMomentumCurrent() > player.GetMomentumCurrent())
-            {
-
-                //Debug.Log("If3A in");
-                currentPhase = BattlePhase.NonPlayerTurn; }
-            else if (player.GetMomentumCurrent() > npc.GetMomentumCurrent())
-            {
-
-                //Debug.Log("If3B in");
-                currentPhase = BattlePhase.PlayerTurn; 
-            }
-            else if (currentPhase != BattlePhase.PlayerTurn && currentPhase != BattlePhase.NonPlayerTurn)
-            {
-                currentPhase = BattlePhase.PlayerTurn; //I'd rather it be random but giving the player an edge is fine and it's also a test RN so who cares
-                //Debug.Log("If3C in");
-            }
-
-            //Debug.Log("If3 out");
         }
 
-        public void PlayerTurn(StatSheet player)
+
+        public void PlayerTurn()
         {
             //Player selects an action and spends Momentum.
-            // Placeholder: For now, just reduce Momentum and deal damage
+            // For now it uses the same random ability selection as the enemy.
+
             Debug.Log("Player's turn!");
 
-            if (player.GetAbilities().Count > 0)
-            {
-                int temp = Random.Range(0, player.GetAbilities().Count);
-                Ability selectedAbility = player.GetAbilities()[temp];
-                selectedAbility.OnHit(player, npc);
-            }
-            else
-            {
-                Debug.LogWarning("NPC has no abilities (somehow)");
-                return;
-            }
+            //Apply turn effects to current actor.
+
+            CharacterTurn(playerParty, enemyParty);
+
             EndTurn();
         }
 
-        public void NonPlayerTurn(StatSheet npc)
+        public void NonPlayerTurn()
         {
             //Eventually we'll want to assign viable attacks and weights to decide what ability each character uses.
             //For now, just have them select heavy or basic attacks at random.
 
             Debug.Log("NPC's turn!");
-            /*
-            // Randomly pick "basic" (2 Momentum, 1 damage) or "heavy" (5 Momentum, 3 damage)
-            bool useHeavy = Random.value > 0.5f && npc.GetMomentumCurrent() >= 5;
-            int momentumCost = useHeavy ? 5 : 2;
-            int damage = useHeavy ? 3 : 1;
-
-            npc.SetMomentumCurrent(npc.GetMomentumCurrent() - momentumCost);
-            player.TakesDamage(damage);*/
-
-
-            //CONCERN: If the ability overwhelms once, will every instance of this ability from then on do Overwhelm?
-            //SUGGESTION: Instantiate ability before sending it through OnHit? Then when the ability is done it destroys itself so we don't overuse memory?
-            //ALT: On Overwhelm, instantiate a copy of the ability, then modify that copy's behaviors with the Overwhelming effects. That way we only burden the memory with
-            //Overwhelming attacks and so long as we destroy the overwhelming abilities and their effects once they're done we won't have any problems.
-
-            if (npc.GetAbilities().Count > 0)
-            {
-                int temp = Random.Range(0, npc.GetAbilities().Count);
-                Ability selectedAbility = npc.GetAbilities()[temp];
-                selectedAbility.OnHit(npc, player);
-            }
-            else
-            {
-                Debug.LogWarning("NPC has no abilities (somehow)");
-                return;
-            }
+            
+            CharacterTurn(enemyParty, playerParty);
 
             EndTurn();
             
         }
 
+        public void CharacterTurn(List<StatSheet> party, List<StatSheet> opposingParty)
+        {
+            //Selects a random attack.
+
+            StatSheet attacker = party[0];
+
+            //Select a random foe in the opposingParty
+            int temp = Random.Range(0, opposingParty.Count);
+            StatSheet defender = opposingParty[temp];
+
+
+            if (attacker.GetAbilities().Count > 0)
+            {
+                temp = Random.Range(0, attacker.GetAbilities().Count);
+                Ability selectedAbility = attacker.GetAbilities()[temp];
+                selectedAbility.OnHit(attacker, defender);
+            }
+            else
+            {
+                Debug.LogWarning($"Character during {currentPhase} has no abilities (somehow)");
+                return;
+            }
+        }
+
+
+
         public void EndTurn()
         {
             
-            currentPhase = BattlePhase.WhosNext;
+            currentPhase = BattlePhase.EndTurn;
             battleUI?.RefreshUI(player, npc); // Update UI after turn
         }
 
-        public void NewRound()
+        public void NewRoundCheck()
         {
-
-            Debug.Log("New round!");
+            bool roundCheck = false;
+            
             //Give all stat sheets in the current battle a refresh on their momentum.
             //Increase their momentum by their motive
             if (currentPhase == BattlePhase.Setup)
             {
                 
             }
-            else 
+            else
             {
                 //Debug.Log($"Player: Momentum is {player.GetMomentumCurrent()}; motive is {player.GetMotiveCurrent()} ");
-                player.NewRound(); //Player and NPC gain their Momentum for the round, based on Motive.
+                //player.NewRound(); //Player and NPC gain their Momentum for the round, based on Motive.
                 //Debug.Log($"NPC: Momentum is {npc.GetMomentumCurrent()}; motive is {npc.GetMotiveCurrent()} ");
-                npc.NewRound();
+                //npc.NewRound();
                 //Debug.Log($"Player: Momentum is {player.GetMomentumCurrent()}; NPC is {npc.GetMomentumCurrent()} ");
+                while (BattleUtility.RoundRefreshCheck(playerParty) || BattleUtility.RoundRefreshCheck(enemyParty))
+                {
+                    BattleUtility.RoundRefresh(playerParty);
+                    BattleUtility.RoundRefresh(enemyParty);
+                    roundCheck = true;
+                }
+
+
+                if (roundCheck)
+                {
+                    Debug.Log("New round!");
+                    BattleUtility.ApplyRoundEffects(enemyParty);
+                    BattleUtility.ApplyRoundEffects(playerParty);
+
+                }
+
             }
+
+            
             
             //Debug.Log("New round started!");
-            currentPhase = BattlePhase.WhosNext;
+            currentPhase = BattlePhase.EndTurn;
             battleUI?.RefreshUI(player, npc);
         }
 
@@ -288,5 +281,5 @@ namespace Battlephase
     [System.Serializable]
     public enum OnPhase { OnHit, WhenHit, StartTurn, EndTurn, StartRound, EndRound, Permanent }
     
-    public enum BattlePhase { Setup, PlayerTurn, NonPlayerTurn, WhosNext, NewRound, Finish, Waiting}
+    public enum BattlePhase { Setup, PlayerTurn, NonPlayerTurn, EndTurn, NewRound, Finish, Waiting}
 }

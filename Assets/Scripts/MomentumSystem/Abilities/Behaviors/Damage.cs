@@ -24,34 +24,36 @@ namespace RPG.AbilitySystem
             //Actually... apply would need to be used by the ability, wouldn't it?
         }*/
 
-        public bool EachTurn(StatSheet target)
+        public override void Apply(StatSheet target)
+        {
+            target.TakesDamage((int)GetStat<int>("AMOUNT"));
+        }
+
+        public override bool EachTurn(StatSheet target)
         {
             int turnsRemaining = (int) GetStat<int>("TURNS");
 
             if(turnsRemaining > 0)
             {
-                target.TakesDamage((int) GetStat<int>("AMOUNT"));
+                Apply(target);
                 SetStat("TURNS", --turnsRemaining);
             }
 
-
-            
             return Continues();
         }
 
-        public bool EachRound(StatSheet target)
+        public override bool EachRound(StatSheet target)
         {
             int roundsRemaining = (int) GetStat<int>("ROUNDS");
 
             if (roundsRemaining > 0)
             {
-                target.TakesDamage((int) GetStat<int>("AMOUNT"));
+                Apply(target);
                 SetStat("ROUNDS", --roundsRemaining);
             }
-            
+
             return Continues();
         }
-
 
 
         public override void Finished(StatSheet target) 
@@ -76,7 +78,7 @@ namespace RPG.AbilitySystem
             //With the OnHit done, we check to see if the effect continues.
         }
 
-        public void Initialize(int amount)
+        public override void Initialize(int amount)
         {
             Initialize(amount, true);
         }
@@ -92,7 +94,7 @@ namespace RPG.AbilitySystem
         public void Initialize(int amount, bool onHit, int rounds, int turns)
         {
 
-            InitializeStats(amount, onHit, rounds, turns);
+            base.InitializeStats(amount, onHit, rounds, turns);
 
         }
 

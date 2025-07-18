@@ -5,6 +5,7 @@ using RPG.StatSystem;
 using System.Runtime.CompilerServices;
 using System;
 using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 namespace RPG.AbilitySystem
 {
@@ -14,7 +15,8 @@ namespace RPG.AbilitySystem
         //This class needs to be able to distinguish between valid targets?
         //No, that would probably be a thing the main ability would need to do.
         //It does, however, need to select a stat to buff. Which means we need a target stat; both one to select for the buff, and one to
-        [SerializeField]
+        
+        //[SerializeField]
         List<string> buffTargets; //For the AbilityEditor's benefit; we need to select which stat we're targetting
         [SerializeField]
         string targetStat; //This will be what stores the target stat for runtime.
@@ -32,13 +34,25 @@ namespace RPG.AbilitySystem
 
         public override void OnHit(StatSheet target)
         {
-            target.GetStatByName(targetStat).ApplyBuff(amount);
+            if (target.GetStatByName(targetStat) != null)
+            {
+                target.GetStatByName(targetStat).ApplyBuff(amount);
+                base.OnHit(target);
+            }
+            else
+                Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
         }
+
 
         public override void Finished(StatSheet target)
         {
-            target.GetStatByName(targetStat).ApplyBuff(amount * -1);
-            base.Finished(target);
+            if (target.GetStatByName(targetStat) != null)
+            {
+                target.GetStatByName(targetStat).ApplyBuff(amount * -1);
+                base.Finished(target);
+            }
+            else
+                Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
         }
 
         public override object GetStat<T>(string key)
@@ -55,22 +69,16 @@ namespace RPG.AbilitySystem
                 case "BUFFTARGETS":
                     //UnityEngine.Debug.Log("A_Key matched BUFFTARGETS");
                     return buffTargets;
-                    break;
                 case "TARGETSTAT":
                     targetStat = buffTargets[targetStat_index];
                     return targetStat;
-                    break;
                 case "TARGETSTAT_INDEX":
                     return targetStat_index;
-                    break;
                 default:
                     return base.GetStat<T>(key);
-                    break;
 
 
             }
-            return base.GetStat<T>(key);
-
         }
 
         public override int GetListIndex(string key)
@@ -80,7 +88,6 @@ namespace RPG.AbilitySystem
                 case "BUFFTARGETS":
                     //UnityEngine.Debug.Log("B_Key matched BUFFTARGETS");
                     return targetStat_index;
-                    break;
             }
             return base.GetListIndex(key);
         }
@@ -98,7 +105,6 @@ namespace RPG.AbilitySystem
                 case "BUFFTARGETS":
                     //UnityEngine.Debug.Log("B_Key matched BUFFTARGETS");
                     return "TARGETSTAT";
-                break;
             }
 
             UnityEngine.Debug.Log($"B_GetListKey in Buff doesn't recognize {key}");

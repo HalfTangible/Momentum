@@ -5,353 +5,119 @@ using RPG.AbilitySystem;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
-namespace RPG.StatSystem { 
+namespace RPG.StatSystem
+{
     [System.Serializable]
     public class StatSheet
     {
-        [SerializeField] private Stat health;
-        [SerializeField] private Stat momentum;
-        [SerializeField] private Stat motive;
-        [SerializeField] private Stat means;
-        [SerializeField] private Stat skill;
+        public Stat health;
+        public Stat momentum;
+        public Stat motive;
+        public Stat means;
+        public Stat skill;
 
-        private List<Ability> abilities;
-        private List<ABehavior> continuingEffects;
-
-        /*
-        private int healthInt;
-        private int momentumInt;
-        private int motiveInt;
-        private int meansInt;
-        private int skillInt;*/
-
-        public void AddAbility(Ability newAbility)
-        {
-            abilities.Add(newAbility);
-        }
-
-        public void AddAbilities(List<Ability> newAbilities)
-        {
-            abilities.AddRange(newAbilities);
-        }
-
-        public void RemoveAbility(Ability oldAbility)
-        {
-            abilities.Remove(oldAbility);
-        }
-        /*
-        
-        //RemoveRange requires a count.
-        public void RemoveAbilities(List<Ability> oldAbilities)
-        {
-            abilities.RemoveRange(oldAbilities);
-        }
-        
-        */
-
-        public List<Ability> GetAbilities()
-        {
-            return abilities;
-        }
+        [SerializeField] private List<Ability> abilities;
+        [SerializeField] private List<ABehavior> continuingEffects;
+        public string characterName;
 
         public StatSheet()
         {
-            continuingEffects = new List<ABehavior>();
             abilities = new List<Ability>();
+            continuingEffects = new List<ABehavior>();
 
-            health = new Stat(10);
-            momentum = new Stat(10);
-            motive = new Stat(10);
-            means = new Stat(10);
-            skill = new Stat(3);
-
-            health.SetName("HEALTH");
-            momentum.SetName("MOMENTUM");
-            motive.SetName("MOTIVE");
-            means.SetName("MEANS");
-            skill.SetName("SKILL");
-
-            health.SetStaticValue(false);
-            momentum.SetStaticValue(false);
-            motive.SetStaticValue(true);
-            means.SetStaticValue(true);
-            skill.SetStaticValue(true);
-
-            momentum.SetMax(0);
-        }
-        /*
-        public void AbilityHit(Ability ability)
-        {
-            //Run checks to see if the ability hits.
-            //If it does
-            AbilityHit(ability.GetBehaviors());
-        }*/
-
-
-        public string characterName;
-
-        public string GetName()
-        {
-            return characterName; //I plan to cosmetic stuff into its own class that links to this class. To get the UI set up I'm using this temp class
+            health = new Stat(10, StatType.Resource) { Name = "HEALTH" };
+            momentum = new Stat(10, StatType.Unbounded) { Name = "MOMENTUM" };
+            motive = new Stat(10, StatType.Character) { Name = "MOTIVE" };
+            means = new Stat(10, StatType.Character) { Name = "MEANS" };
+            skill = new Stat(3, StatType.Character) { Name = "SKILL" };
         }
 
+        public void AddAbility(Ability newAbility) => abilities.Add(newAbility);
+        public void AddAbilities(List<Ability> newAbilities) => abilities.AddRange(newAbilities);
+        public void RemoveAbility(Ability oldAbility) => abilities.Remove(oldAbility);
+        public List<Ability> GetAbilities() => abilities;
 
         public void AbilityHit(List<ABehavior> input)
         {
-            //Debug.Log("AbilityHit was called");
-            
-
             foreach (ABehavior a in input)
             {
-                //Debug.Log("Foreach loop reached");
-                a.OnHit(this);
-                //Check if a is supposed to stay on for extra rounds, turns, etc and if it is add them to the list of continuing effects
-                if (a.Continues())
-                    continuingEffects.Add(a);
-
+                AbilityHit(a);
             }
         }
 
-        public void SpendMomentum(int amount)
+        public void AbilityHit(ABehavior a)
         {
-            SetMomentumCurrent(GetMomentumCurrent() - amount);
+            a.OnHit(this);
+            if (a.Continues()) continuingEffects.Add(a);
         }
 
-        public void TakesDamage(int amount)
-        {
-            //Debug.Log($"Takes damage. Health should now be {GetHealthBase() - amount}");
-            SetHealthBase(GetHealthBase() - amount);
-            //Debug.Log($"{GetHealthCurrent()}");
-        }
+        public void SpendMomentum(int amount) => momentum.Current -= amount;
+        public void TakesDamage(int amount) => health.Current -= amount;
+        public void Heals(int amount) => health.Current += amount;
+        public void Buffs(string statName, int amount) => GetStatByName(statName)?.ApplyBuff(amount);
+        public void Debuffs(string statName, int amount) => GetStatByName(statName)?.ApplyDebuff(amount);
+        public bool isAlive() => health.Current > 0;
 
-        public void Heal(int amount)
-        {
-            TakesDamage(amount * -1);
-        }
-
-        public void Buff(string statName, int amount)
-        {
-            Stat stat = GetStatByName(statName);
-            stat.ApplyBuff(amount);
-        }
-
-        public void Debuff(string statName, int amount)
-        {
-            Stat stat = GetStatByName(statName);
-            stat.ApplyDebuff(amount);
-        }
-
-
-        public Stat[] GetStats()
-        {
-            //return this.FindObjectsOfType<Stat.class>();
-            Stat[] myStats = { health, momentum, motive, means, skill };
-            return myStats;
-        }
+        public Stat[] GetStats() => new[] { health, momentum, motive, means, skill };
 
         public List<string> GetStatNames()
         {
             List<string> allStatNames = new List<string>();
             foreach (Stat stat in GetStats())
             {
-                allStatNames.Add(stat.GetName());
+                allStatNames.Add(stat.Name);
             }
-
             return allStatNames;
         }
 
-
-
         public Stat GetStatByName(string statName)
         {
-            foreach(Stat stat in GetStats())
+            foreach (Stat stat in GetStats())
             {
-                if(statName == stat.GetName())
-                {
-                    return stat;
-                }
+                if (statName == stat.Name) return stat;
             }
-
             return null;
-            //throw new ArgumentNotFoundException("Stat name not found in GetStatByName");
         }
 
-        public void NewRound()
+        public void RefreshMomentum()
         {
-            if(GetHealthCurrent() > 0)
+            if (health.Current <= 0) return;
+            momentum.Current += motive.Current;
+        }
+        //EachTurn and EachRound in the behavior already sends back whether it's done or not.
+        public void ApplyRoundEffects()
+        {
+            if (health.Current <= 0) return;
+            List<ABehavior> toRemove = new List<ABehavior>();
+            foreach (ABehavior behavior in continuingEffects)
             {
-                Debug.Log($"GetMomentumCurrent + GetMotiveCurrent = {GetMomentumCurrent() + GetMotiveCurrent()}");
-                int amount = GetMomentumCurrent() + GetMotiveCurrent();
-                Debug.Log($"Amount: {amount}");
-                SetMomentumCurrent(amount);
-                Debug.Log($"CurrentMomentum: {GetMomentumCurrent()}");
+                if (!behavior.EachRound(this)) //EachRound returns a check to see if it's done.
+                    toRemove.Add(behavior);
+                
+            }
+            foreach (ABehavior behavior in toRemove)
+            {
+                behavior.Finished(this);
+                continuingEffects.Remove(behavior);
             }
         }
 
-
-
-        public Stat GetHealth()
+        public void ApplyTurnEffects()
         {
-            return health;
+            if (health.Current <= 0) return;
+            List<ABehavior> toRemove = new List<ABehavior>();
+            foreach (ABehavior behavior in continuingEffects)
+            {
+                if (!behavior.EachTurn(this)) //EachTurn returns a check to see if it's done.
+                    toRemove.Add(behavior);
+            }
+            foreach (ABehavior behavior in toRemove)
+            {
+                behavior.Finished(this);
+                continuingEffects.Remove(behavior);
+            }
         }
-        public int GetHealthMax()
-        {
-            return health.GetMax();
-        }
-        public int GetHealthMin()
-        {
-            return health.GetMin();
-        }
-        public int GetHealthCurrent()
-        {
-            return health.GetCurrent();
-        }
-        public int GetHealthBase()
-        {
-            return health.GetBaseStat();
-        }
-        public void SetHealth(Stat health)
-        {
-            this.health = health;
-        }
-        public void SetHealthMax(int max)
-        {
-            this.health.SetMax(max);
-        }
-        public void SetHealthBase(int current)
-        {
-            this.health.SetBase(current);
-        }
-
-
-        public Stat GetSkill()
-        {
-            return skill;
-        }
-        public int GetSkillMax()
-        {
-            return skill.GetMax();
-        }
-        public int GetSkillMin()
-        {
-            return skill.GetMin();
-        }
-        public int GetSkillCurrent()
-        {
-            return skill.GetCurrent();
-        }
-        public void SetSkill(Stat a)
-        {
-            this.skill = a;
-        }
-        public void SetSkillMax(int max)
-        {
-            this.skill.SetMax(max);
-        }
-        public void SetSkillCurrent(int current)
-        {
-            this.skill.SetBase(current);
-        }
-
-
-        public Stat GetMomentum()
-        {
-            return momentum;
-        }
-        public int GetMomentumMax()
-        {
-            return momentum.GetMax();
-        }
-        public int GetMomentumMin()
-        {
-            return momentum.GetMin();
-        }
-        public int GetMomentumCurrent()
-        {
-            return momentum.GetCurrent();
-        }
-        public void SetMomentum(Stat momentum)
-        {
-            this.momentum = momentum;
-        }
-        public void SetMomentumMax(int max)
-        {
-            momentum.SetMax(max);
-        }
-        public void SetMomentumCurrent(int current)
-        {
-            momentum.SetBase(current);
-        }
-
-
-
-
-        public Stat GetMeans()
-        {
-            return means;
-        }
-        public int GetMeansMax()
-        {
-            return means.GetMax();
-        }
-        public int GetMeansMin()
-        {
-            return means.GetMin();
-        }
-        public int GetMeansCurrent()
-        {
-            return means.GetCurrent();
-        }
-        public void SetMeans(Stat means)
-        {
-            this.means = means;
-        }
-        public void SetMeansMax(int max)
-        {
-            means.SetMax(max);
-        }
-        public void SetMeansCurrent(int current)
-        {
-            means.SetBase(current);
-        }
-
-
-
-
-        public Stat GetMotive()
-        {
-            return motive;
-        }
-        public int GetMotiveMax()
-        {
-            return motive.GetMax();
-        }
-        public int GetMotiveMin()
-        {
-            return motive.GetMin();
-        }
-        public int GetMotiveCurrent()
-        {
-            return motive.GetCurrent();
-        }
-
-        public void SetMotive(Stat motive)
-        {
-            this.motive = motive;
-        }
-        public void SetMotiveMax(int max)
-        {
-            motive.SetMax(max);
-        }
-        public void SetMotiveCurrent(int current)
-        {
-            motive.SetBase(current);
-        }
-
-
-
-
-
-
     }
+
+
 }

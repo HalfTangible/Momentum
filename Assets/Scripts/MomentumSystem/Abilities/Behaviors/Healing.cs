@@ -8,9 +8,21 @@ namespace RPG.AbilitySystem
     [System.Serializable]
     public class Healing : ABehavior
     {
-        public override void Apply(StatSheet target)
+        public override void OnHit(StatSheet target)
         {
-            target.Heal(amount);
+            //Debug.Log($"Damage on hit reached. Bool: {(bool)GetStat<bool>("ONHIT")}");
+
+            if ((bool)GetStat<bool>("ONHIT"))
+            {
+                //Debug.Log($"It's onhit! Do damage: {(int)GetStat<int>("AMOUNT")}");
+                target.Heals((int)GetStat<int>("AMOUNT"));
+            }
+
+            base.OnHit(target);
+
+            //With the OnHit done, we check to see if the effect continues.
         }
+
+
     }
 }
