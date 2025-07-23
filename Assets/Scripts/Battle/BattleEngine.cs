@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
 
 
 namespace RPG.Battle {
@@ -246,6 +247,9 @@ namespace RPG.Battle {
             //Leave the battle and go to the victory screen, probably gain XP and stuff
             Debug.Log("Player wins!");
             currentPhase = BattlePhase.Finish;
+            Debug.Log("Reloading SampleScene");
+            SceneManager.LoadScene("SampleScene");
+
         }
 
         public void PlayerLose()
@@ -253,6 +257,8 @@ namespace RPG.Battle {
             //Leave the battle and go to the defeat screen
             Debug.Log("Player loses!");
             currentPhase = BattlePhase.Finish;
+            Debug.Log("Reloading SampleScene");
+            SceneManager.LoadScene("SampleScene");
         }
 
         public void Finish()

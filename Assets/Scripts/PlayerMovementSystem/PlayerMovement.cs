@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -30,5 +31,18 @@ public class PlayerMovement : MonoBehaviour
     {
         //rb.velocity = new Vector2(speedX, speedY);
         rb.MovePosition(rb.position + movement * movSpeed * Time.fixedDeltaTime);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            // Store enemy reference or ID if needed (optional for now)
+            // For example: GameManager.Instance.SetCurrentEnemy(other.gameObject);
+            UnityEngine.Debug.Log($"Hitting {other.gameObject.name}");
+            Destroy(other.gameObject);
+            UnityEngine.Debug.Log($"Destroyed {other.gameObject.name}");
+            SceneManager.LoadScene("BattleScene");
+        }
     }
 }
