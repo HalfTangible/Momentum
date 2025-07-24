@@ -48,6 +48,10 @@ namespace RPG.StatSystem
         public void AbilityHit(ABehavior a)
         {
             a.OnHit(this);
+
+            //Reminder: need to account for things like buff and debuff which are OnHit and end with the turn.
+            //Can just have a check at the end of the turn that removes the buff/debuff and then add them, yeah?
+
             if (a.Continues()) continuingEffects.Add(a);
         }
 
