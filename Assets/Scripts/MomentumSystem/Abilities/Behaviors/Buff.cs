@@ -16,7 +16,7 @@ namespace RPG.AbilitySystem
         //No, that would probably be a thing the main ability would need to do.
         //It does, however, need to select a stat to buff. Which means we need a target stat; both one to select for the buff, and one to
         
-        //[SerializeField]
+        [SerializeField]
         List<string> buffTargets; //For the AbilityEditor's benefit; we need to select which stat we're targetting
         [SerializeField]
         string targetStat; //This will be what stores the target stat for runtime.
