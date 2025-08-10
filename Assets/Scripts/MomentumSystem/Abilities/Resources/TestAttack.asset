@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: TestAttack
   m_EditorClassIdentifier: 
   abilityName: Basic attack
-  description: A basic attack we're using for the test battle.
-  behaviors:
-  - {fileID: 860698484317160302}
+  description: A test behavior for the audience. Hi guys~
+  momentumCost: 0
+  behaviorList: []
 --- !u!114 &860698484317160302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,8 +32,4 @@ MonoBehaviour:
   roundsRemaining: 2
   turnsRemaining: 0
   onHit: 1
-  allKeys:
-  - AMOUNT
-  - ONHIT
-  - ROUNDS
-  - TURNS
+  onUser: 0
