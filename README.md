@@ -1,4 +1,4 @@
-ReadMe Last updated 3/6/2025
+ReadMe Last updated 10/27/2025
 
 # Momentum
 
@@ -17,6 +17,7 @@ The main purpose of this project for the moment is to create tools in Unity base
 12/31/24: Rule tile created for grass. Grid layers made and can be drawn but their size is not consistent with the character sprite.
 1/1/25: Consistency issue resolved.
 REMEMBER: Crop your sprits down so there isn't any extra canvas space. Unity assumes this is the case and will mess up your sprite size accordingly.
+10/27/25: Added basic tilemap by Majek on Fiverr
 
 ## Dialogue
 
