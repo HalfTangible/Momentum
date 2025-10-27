@@ -1,4 +1,4 @@
-ReadMe Last updated 3/6/2025
+ReadMe Last updated 10/27/2025
 
 # Momentum
 
