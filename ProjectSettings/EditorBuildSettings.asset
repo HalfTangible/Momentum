@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/SummerForestMap.unity
+    guid: 468d9d6abb3f44649a8c0db6d4873bab
   - enabled: 1
     path: Assets/Scenes/BattleScene.unity
     guid: c7a63d898093ef64495ca6a66fefd7d9
