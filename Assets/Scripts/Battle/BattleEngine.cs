@@ -243,22 +243,20 @@ namespace RPG.Battle {
 
         public void PlayerWin()
         {
-
-            //Leave the battle and go to the victory screen, probably gain XP and stuff
             Debug.Log("Player wins!");
             currentPhase = BattlePhase.Finish;
-            Debug.Log("Reloading SampleScene");
-            SceneManager.LoadScene("SampleScene");
-
+            Debug.Log($"Returning to: {BattleData.PreviousScene}");
+            BattleData.IsReturningFromBattle = true;
+            SceneManager.LoadScene(BattleData.PreviousScene);
         }
 
         public void PlayerLose()
         {
-            //Leave the battle and go to the defeat screen
             Debug.Log("Player loses!");
             currentPhase = BattlePhase.Finish;
-            Debug.Log("Reloading SampleScene");
-            SceneManager.LoadScene("SampleScene");
+            Debug.Log($"Returning to: {BattleData.PreviousScene}");
+            BattleData.IsReturningFromBattle = true;
+            SceneManager.LoadScene(BattleData.PreviousScene);
         }
 
         public void Finish()
