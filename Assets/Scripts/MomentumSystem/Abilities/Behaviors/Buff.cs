@@ -22,6 +22,7 @@ namespace RPG.AbilitySystem
         string targetStat; //This will be what stores the target stat for runtime.
         [SerializeField]
         int targetStat_index = 0;
+        int amountApplied = 0;
 
         // https://x.com/HalfTangible/status/2009771283555156221
 
@@ -34,53 +35,34 @@ namespace RPG.AbilitySystem
             allKeys.Sort();
         }
 
-        public override void BeforeHit(StatSheet target)
+        public override void Affects(StatSheet target)
         {
-            Debug.Log($"[Buff.BeforeHit] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
+            Debug.Log($"[Buff.Affects] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
 
             if (target.GetStatByName(targetStat) != null)
             {
                 target.GetStatByName(targetStat).ApplyBuff(amount);
-                base.BeforeHit(target);
+                amountApplied += amount;
+                base.Affects(target);
             }
             else
-                Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
+                Debug.LogWarning($"Buff.Affects: Invalid target stat '{targetStat}' for {target.characterName}");
         }
 
-        public override void OnHit(StatSheet target)
+        public override void Overwhelms(StatSheet target)
         {
-            Debug.Log($"[Buff.OnHit] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
-
-            if (target.GetStatByName(targetStat) != null)
-            {
-                target.GetStatByName(targetStat).ApplyBuff(amount);
-                base.OnHit(target);
-            }
-            else
-                Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
-        }
-
-        public override void AfterHit(StatSheet target)
-        {
-            Debug.Log($"[Buff] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
-
-            if (target.GetStatByName(targetStat) != null)
-            {
-                target.GetStatByName(targetStat).ApplyBuff(amount);
-                base.AfterHit(target);
-            }
-            else
-                Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
+            Affects(target);
         }
 
 
         public override void Finished(StatSheet target)
         {
             Debug.Log("Buff.Finished() called.");
-            if (target.GetStatByName(targetStat) != null && applied)
+            if (target.GetStatByName(targetStat) != null)
             {
                 Debug.Log($"Start of Finished: {target.GetStatByName(targetStat).Buff}");
-                target.GetStatByName(targetStat).ApplyBuff(amount * -1);
+                target.GetStatByName(targetStat).ApplyBuff(amountApplied * -1);
+                amountApplied = 0;
                 base.Finished(target);
                 Debug.Log($"Finished: {target.GetStatByName(targetStat).Buff}");
             }

@@ -59,27 +59,23 @@ namespace RPG.AbilitySystem
         }
 
 
-        public virtual void OnHit(StatSheet target)
+        public virtual void Affects(StatSheet target)
         {
             //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
             //its actual effect.
         }
-        
+
+        public virtual void Overwhelms(StatSheet target)
+        {
+            //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
+            //its actual effect.
+        }
+        /*
         public virtual void Apply(StatSheet target)
         {
             //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
             //its actual effect.
-        }
-
-        public virtual void BeforeHit(StatSheet target)
-        {
-
-        }
-
-        public virtual void AfterHit(StatSheet target)
-        {
-
-        }
+        }*/
 
         public bool Continues()
         {

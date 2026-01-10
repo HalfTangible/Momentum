@@ -8,10 +8,14 @@ public static class BattleUtility
     public static bool CheckOverwhelm(StatSheet user, StatSheet target)
     {
         //user momentum + skill >= target momentum + skill * 2
+        
         Debug.Log("BattleUtility: Check Overwhelm!");
-        Debug.Log($"{user.characterName} threshold: {user.momentum.Base} + {user.momentum.Buff} - {user.momentum.Debuff} + Skill: {user.skill.Current} ");
-        Debug.Log($"{target.characterName}: {target.momentum.Base} + {target.momentum.Buff} - {target.momentum.Debuff} + {target.skill.Current * 2}.");
-        return ((user.momentum.Current + user.skill.Current) >= (target.momentum.Current + (target.skill.Current * 2)));
+        Debug.Log($"{user.characterName} threshold: {user.momentum.Base} + Buff: {user.momentum.Buff} - Debuff: {user.momentum.Debuff} + Skill: {user.skill.Current} ");
+        Debug.Log($"{target.characterName} threshold: {target.momentum.Base} + Buff: {target.momentum.Buff} - Debuff: {target.momentum.Debuff} + Skill * 2: {target.skill.Current * 2}.");
+        Debug.Log($"ifOverwhelm = (user.momentum.Current: {user.momentum.Current} + user.skill.Current: {user.skill.Current}) >= (target.momentum.Current: {target.momentum.Current}) + target.skill*Current*2: ({target.skill.Current * 2}))");
+        bool ifOverwhelm = (user.momentum.Current + user.skill.Current) >= (target.momentum.Current + (target.skill.Current * 2));
+        Debug.Log($"ifOverwhelm = {ifOverwhelm}");
+        return ifOverwhelm;
     }
 
     public static bool RoundRefreshCheck(List<StatSheet> statSheets)

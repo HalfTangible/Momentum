@@ -25,7 +25,7 @@ namespace RPG.StatSystem
             abilities = new List<Ability>();
             continuingEffects = new List<ABehavior>();
 
-            health = new Stat(10, StatType.Resource) { Name = "HEALTH" };
+            health = new Stat(100, StatType.Resource) { Name = "HEALTH" };
             momentum = new Stat(10, StatType.Unbounded) { Name = "MOMENTUM" };
             motive = new Stat(10, StatType.Character) { Name = "MOTIVE" };
             means = new Stat(10, StatType.Character) { Name = "MEANS" };
@@ -39,20 +39,18 @@ namespace RPG.StatSystem
 
         public void AbilityHit(List<ABehavior> input)
         {
-            foreach (ABehavior a in input)
+            foreach (ABehavior behavior in input)
             {
-                AbilityHit(a);
+                AbilityHit(behavior);
             }
         }
 
-        public void AbilityHit(ABehavior a)
+        public void AbilityHit(ABehavior behavior)
         {
-            a.OnHit(this);
-
             //Reminder: need to account for things like buff and debuff which are OnHit and end with the turn.
             //Can just have a check at the end of the turn that removes the buff/debuff and then add them, yeah?
 
-            if (a.Continues()) continuingEffects.Add(a);
+            if (behavior.Continues()) continuingEffects.Add(behavior);
         }
 
         public void SpendMomentum(int amount) => momentum.Current -= amount;

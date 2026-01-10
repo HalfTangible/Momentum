@@ -40,89 +40,52 @@ namespace RPG.AbilitySystem
         
         }
 
-        public void BeforeHit(StatSheet user, StatSheet target)
+        public void UseAbility1(StatSheet user, StatSheet target)
         {
-            foreach (ABehavior behavior in behaviorList)
-            {
-                if (behavior.GetStat<bool>("BEFOREHIT") == true)
-                {
-                    behavior.Apply(target);
-                }
-            }
-        }
+            bool momentumPaid = false;
 
-        public void OnHit(StatSheet user, StatSheet target)
-        {
-
-            //What these abilities do on hit
-            //First, determine if the behaviors Overwhelm.
-            //if(user.momentum + user.skill >= target.momentum + target.skill + target.skill
-            //then add the user's overwhelming behavior to the ability
-
-            //int threshold = user.momentum.Current + user.skill.Current - (target.momentum.Current + target.skill.Current * 2);
-            //If the user's skill and momentum are enough to overcome the target's skill and momentum, then the ability overwhelms
-            bool overwhelming = BattleUtility.CheckOverwhelm(user, target);
-
-            //For the purposes of the prototyping stage we will apply the behaviors a second time for free, which in this case means double damage.
-
-            Debug.Log($"{user.characterName} attacks {target.characterName} with {this.abilityName}.");
 
             foreach (ABehavior behavior in behaviorList)
             {
+                bool beforeHit = (bool)behavior.GetStat<bool>("BEFOREHIT");
+                bool onHit = (bool)behavior.GetStat<bool>("ONHIT");
+                bool afterHit = (bool)behavior.GetStat<bool>("AFTERHIT");
+                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
+                bool overwhelming = false;
 
-                if (behavior.GetStat<bool>("ONHIT") == true)
+                StatSheet affected = onUser ? user : target;
+
+                if (beforeHit && onUser)
+                    behavior.Affects(affected);
+
+                Debug.Log($"Ability: {abilityName} is checking Overwhelm!");
+                overwhelming = BattleUtility.CheckOverwhelm(user, target); //This is done here in case any beforeHit effects would change the Overwhelm check.
+                Debug.Log($"Ability: Overwhelming? {overwhelming}");
+
+                //We'll need to change Affects so that it checks Overwhelming and has an effect
+
+                if (onHit)
+                    behavior.Affects(affected);
+
+                if (!momentumPaid)
                 {
-
-                    if ((bool)behavior.GetStat<bool>("ONUSER"))
-                    {
-                        user.AbilityHit(behavior);
-                    }
-                    else
-                    {
-                        target.AbilityHit(behavior);
-                        Debug.Log($"Ability (after hit): {user.characterName}: {user.momentum.Current} + {user.skill.Current} vs {target.characterName}: {target.momentum.Current} + {target.skill.Current * 2}.");
-                        if (overwhelming)
-                        {
-                            Debug.Log($"{user.characterName} overwhelms {target.characterName}!");
-
-                            //Note: Check to see if this works with DOTS and the like; I don't know if I need to instantiate a new behaviors list or something.
-
-                            target.AbilityHit(behavior);
-                        }
-                    }
+                    user.SpendMomentum(momentumCost);
+                    momentumPaid = true;
                 }
-            }
-            Debug.Log("Momentum: " + user.momentum.getValues());
-            Debug.Log($"{user.characterName} is spending {momentumCost} momentum. Before: {user.momentum.Current}");
-            user.SpendMomentum(momentumCost);
-            Debug.Log($"{user.characterName} after spend: {user.momentum.Current}");
 
-            foreach (ABehavior behavior in behaviorList)
-            {
-                Debug.Log($"{behavior.GetType().Name}: {behavior.Continues()}");
-                Debug.Log($"Continues?: {!behavior.Continues()}");
-                if (!behavior.Continues())
-                {
-                    Debug.Log($"Finished called for {behavior.GetType().Name}");
-                    behavior.Finished(target);
-                }
-            }
+                if (afterHit)
+                    behavior.Affects(affected);
 
-            Debug.Log($"{user.characterName} after OnHit: {user.momentum.Current}");
-            Debug.Log($"{user.momentum.getValues()}");
+
+                if (behavior.Continues())
+                    affected.AbilityHit(behavior);
+                else
+                    behavior.Finished(affected);
+            }
 
         }
 
-        public void AfterHit(StatSheet user, StatSheet target)
-        {
-            foreach (ABehavior behavior in behaviorList)
-            {
-                if (behavior.GetStat<bool>("AFTERHIT") == true)
-                {
-                    behavior.Apply(target);
-                }
-            }
-        }
+
 
 
         bool Finished()
