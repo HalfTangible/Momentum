@@ -20,6 +20,11 @@ namespace RPG.AbilitySystem
         protected bool onHit;
         [SerializeField]
         protected bool onUser;
+        [SerializeField]
+        protected bool beforeHit;
+        [SerializeField]
+        protected bool afterHit;
+
 
         //[SerializeField]
         protected List<string> allKeys;
@@ -34,7 +39,7 @@ namespace RPG.AbilitySystem
         public ABehavior()
         {
             allKeys = new List<string>();
-            allKeys.AddRange(new[] { "AMOUNT", "ONHIT", "ROUNDS", "TURNS", "ONUSER" });
+            allKeys.AddRange(new[] { "AMOUNT", "ONHIT", "ROUNDS", "TURNS", "ONUSER", "BEFOREHIT", "AFTERHIT" });
             allKeys.Sort();
         }
 
@@ -54,18 +59,23 @@ namespace RPG.AbilitySystem
         }
 
 
-        public virtual void OnHit(StatSheet target)
+        public virtual void Affects(StatSheet target)
         {
             //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
             //its actual effect.
         }
 
-        
-        public virtual void Apply(StatSheet target)
+        public virtual void Overwhelms(StatSheet target)
         {
             //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
             //its actual effect.
         }
+        /*
+        public virtual void Apply(StatSheet target)
+        {
+            //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
+            //its actual effect.
+        }*/
 
         public bool Continues()
         {
@@ -77,6 +87,7 @@ namespace RPG.AbilitySystem
 
         public virtual void Finished(StatSheet target)
         {
+            Debug.Log("ABehavior.Finished() called.");
             //This behavior is called when the ability's behaviors are done.
             //If this is a buff, then it removes the buff; debuff, same deal.
             //return false;
@@ -115,6 +126,16 @@ namespace RPG.AbilitySystem
                 case "ONUSER":
                     if (onUser is T tOnUser)
                         return tOnUser;
+                    break;
+
+                case "BEFOREHIT":
+                    if (beforeHit is T tBeforeHit)
+                        return tBeforeHit;
+                    break;
+
+                case "AFTERHIT":
+                    if (afterHit is T tAfterHit)
+                        return tAfterHit;
                     break;
 
                 default:
@@ -185,6 +206,14 @@ namespace RPG.AbilitySystem
                     onUser = ParseInput<bool>(value);
                     break;
 
+                case "BEFOREHIT":
+                    beforeHit = ParseInput<bool>(value);
+                    break;
+
+                case "AFTERHIT":
+                    afterHit = ParseInput<bool>(value);
+                    break;
+
                 default:
                     throw new ArgumentException($"Unknown key: {key}");
             }
@@ -216,6 +245,8 @@ namespace RPG.AbilitySystem
             SetStat("ROUNDS", roundsRemaining);
             SetStat("TURNS", turnsRemaining);
             SetStat("ONUSER", false);
+            SetStat("BEFOREHIT", false);
+            SetStat("AFTERHIT", false);
 
             //if you wanna use InitializeStats in a child class call it with base
             //Like this: base.InitializeStats(amount,onHit,rounds,turns);

@@ -1,24 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8663819538853560146
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 972cb67e3521bd24bad021c3e3deb707, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  amount: 3
-  roundsRemaining: 0
-  turnsRemaining: 0
-  onHit: 1
-  onUser: 1
-  targetStat: MOMENTUM
-  targetStat_index: 0
 --- !u!114 &-2445890887789213234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36,7 +17,40 @@ MonoBehaviour:
   turnsRemaining: 0
   onHit: 1
   onUser: 1
+  beforeHit: 0
+  afterHit: 0
+  buffTargets:
+  - MOMENTUM
+  - MOTIVE
+  - MEANS
+  - SKILL
   targetStat: MOMENTUM
+  targetStat_index: 0
+--- !u!114 &-906695136425453393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972cb67e3521bd24bad021c3e3deb707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 10
+  roundsRemaining: 0
+  turnsRemaining: 0
+  onHit: 1
+  onUser: 0
+  beforeHit: 0
+  afterHit: 0
+  buffTargets:
+  - MOMENTUM
+  - MOTIVE
+  - MEANS
+  - SKILL
+  targetStat: 
   targetStat_index: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -55,7 +69,7 @@ MonoBehaviour:
   momentumCost: 7
   behaviorList:
   - {fileID: 137600451063594675}
-  - {fileID: -8663819538853560146}
+  - {fileID: 6399330887327224361}
 --- !u!114 &137600451063594675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,11 +82,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6afac855e9fbb354cb29b3e45fc8429e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amount: 3
+  amount: 4
   roundsRemaining: 0
   turnsRemaining: 0
   onHit: 1
   onUser: 0
+  beforeHit: 0
+  afterHit: 0
+--- !u!114 &6399330887327224361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972cb67e3521bd24bad021c3e3deb707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 3
+  roundsRemaining: 0
+  turnsRemaining: 0
+  onHit: 0
+  onUser: 1
+  beforeHit: 1
+  afterHit: 0
+  buffTargets:
+  - MOMENTUM
+  - MOTIVE
+  - MEANS
+  - SKILL
+  targetStat: MOMENTUM
+  targetStat_index: 0
 --- !u!114 &8695791953063331779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,3 +132,5 @@ MonoBehaviour:
   turnsRemaining: 0
   onHit: 1
   onUser: 0
+  beforeHit: 0
+  afterHit: 0

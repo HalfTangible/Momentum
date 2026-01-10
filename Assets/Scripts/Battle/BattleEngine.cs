@@ -15,6 +15,7 @@ using UnityEngine.SceneManagement;
 namespace RPG.Battle {
     public class BattleEngine : MonoBehaviour
     {
+        public event System.Action<BattlePhase> OnPhaseChanged;   // ADD THIS LINE
 
         BattlePhase currentPhase;
         BattleUI battleUI;
@@ -53,7 +54,6 @@ namespace RPG.Battle {
             npc.AddAbility(Instantiate(basicAttack));
             npc.AddAbility(Instantiate(heavyAttack));
 
-            
             playerParty.Add(player);
             enemyParty.Add(npc);
 
@@ -141,16 +141,30 @@ namespace RPG.Battle {
 
         public void PlayerTurn()
         {
-            //Player selects an action and spends Momentum.
-            // For now it uses the same random ability selection as the enemy.
+           
+            Debug.Log("Player's turn - waiting for input");
+            currentPhase = BattlePhase.Waiting;           // Pause flow
+            battleUI?.ShowAbilitySelection(player);       // Tell UI: "show buttons!"
+            OnPhaseChanged?.Invoke(currentPhase);         // Let anyone listening know
+            
+        }
 
-            Debug.Log("Player's turn!");
+        public void PlayerSelectsAbility(Ability selectedAbility)
+        {
+            if (currentPhase != BattlePhase.Waiting) return;
 
-            //Apply turn effects to current actor.
+            Debug.Log($"Player selected: {selectedAbility.name}");
 
-            CharacterTurn(playerParty, enemyParty);
+            // Execute the chosen ability
+            StatSheet attacker = playerParty[0];
+            StatSheet defender = enemyParty[Random.Range(0, enemyParty.Count)]; // or target selection later
 
-            EndTurn();
+            ExecuteAbility(attacker, defender, selectedAbility);
+
+            // After action, proceed
+            currentPhase = BattlePhase.EndTurn;
+            OnPhaseChanged?.Invoke(currentPhase);
+            battleUI?.HideAbilitySelection();
         }
 
         public void NonPlayerTurn()
@@ -181,13 +195,94 @@ namespace RPG.Battle {
             {
                 temp = Random.Range(0, attacker.GetAbilities().Count);
                 Ability selectedAbility = attacker.GetAbilities()[temp];
-                selectedAbility.OnHit(attacker, defender);
+                ExecuteAbility(attacker, defender, selectedAbility);
             }
             else
             {
                 Debug.LogWarning($"Character during {currentPhase} has no abilities (somehow)");
                 return;
             }
+        }
+
+        private void ExecuteAbility(StatSheet user, StatSheet target, Ability ability)
+        {
+            // Fetch behaviors once
+            List<ABehavior> behaviors = ability.GetBehaviors();
+
+            // Phase 1: BeforeHit effects
+            foreach (ABehavior behavior in behaviors)
+            {
+                bool beforeHit = (bool)behavior.GetStat<bool>("BEFOREHIT");
+                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
+
+                if (beforeHit)
+                {
+                    StatSheet affected = onUser ? user : target;
+                    behavior.Affects(affected);
+                }
+            }
+
+            // Phase 2: Determine Overwhelming
+            Debug.Log("BattleEngine: Checking Overwhelm!");
+            bool overwhelming = BattleUtility.CheckOverwhelm(user, target);
+            Debug.Log($"BattleEngine: Overwhelming? {overwhelming}");
+
+            if (overwhelming)
+            {
+                Debug.Log($"Overwhelm triggered for {ability.name} used by {user.characterName} on {target.characterName}!");
+            }
+
+            // Phase 3: OnHit effects
+            foreach (ABehavior behavior in behaviors)
+            {
+                
+                bool onHit = (bool)behavior.GetStat<bool>("ONHIT");
+                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
+
+                if (onHit)
+                {
+                    StatSheet affected = onUser ? user : target;
+                    behavior.Affects(affected);
+
+                    if (overwhelming && !onUser)
+                    {
+                        behavior.Overwhelms(target);
+                    }
+                }
+            }
+
+
+
+            // Phase 4: Pay momentum (always from user)
+            user.SpendMomentum(ability.MomentumCost);
+
+            // Phase 5: AfterHit effects
+            foreach (ABehavior behavior in behaviors)
+            {
+                bool afterHit = (bool)behavior.GetStat<bool>("AFTERHIT");
+                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
+
+                if (afterHit)
+                {
+                    StatSheet affected = onUser ? user : target;
+                    behavior.Affects(affected);
+                }
+            }
+
+            // Phase 6: Cleanup – finish non-continuing behaviors
+            foreach (ABehavior behavior in behaviors)
+            {   
+                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
+
+                if (!behavior.Continues())
+                {
+                    StatSheet affected = onUser ? user : target;
+                    behavior.Finished(affected);
+                }
+            }
+
+            // Optional: Refresh UI after execution
+            battleUI?.RefreshUI(player, npc);
         }
 
 

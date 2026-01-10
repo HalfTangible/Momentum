@@ -24,6 +24,11 @@ namespace RPG.StatSystem
         [SerializeField] private int buff;
         [SerializeField] private int debuff;
 
+        public string getValues()
+        {
+            return $"Name: {name}, type: {type}, Max: {max}, baseStat: {baseStat}, buff: {buff}, debuff: {debuff}";
+        }
+
         // Public property for current value, with clamping logic
         public int Current
         {
@@ -86,7 +91,12 @@ namespace RPG.StatSystem
             debuff = 0;
         }
 
-        public void ApplyBuff(int amount) => buff += amount;
+        //public void ApplyBuff(int amount) => buff += amount;
+        public void ApplyBuff(int amount)
+        {
+            Debug.Log($"[Stat.ApplyBuff] {Name}: buff += {amount} (old buff: {buff}, new buff: {buff + amount})");
+            buff += amount;
+        }
         public void ApplyDebuff(int amount) => debuff += amount;
 
         public int GetMin() => type == StatType.Character ? 1 : 0;

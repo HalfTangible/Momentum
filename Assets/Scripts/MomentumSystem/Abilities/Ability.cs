@@ -40,46 +40,53 @@ namespace RPG.AbilitySystem
         
         }
 
-        public void OnHit(StatSheet user, StatSheet target)
+        public void UseAbility1(StatSheet user, StatSheet target)
         {
+            bool momentumPaid = false;
 
-            //What these abilities do on hit
-            //First, determine if the behaviors Overwhelm.
-            //if(user.momentum + user.skill >= target.momentum + target.skill + target.skill
-            //then add the user's overwhelming behavior to the ability
-
-            //int threshold = user.momentum.Current + user.skill.Current - (target.momentum.Current + target.skill.Current * 2);
-            //If the user's skill and momentum are enough to overcome the target's skill and momentum, then the ability overwhelms
-            bool overwhelming = BattleUtility.CheckOverwhelm(user, target);
-
-            //For the purposes of the prototyping stage we will apply the behaviors a second time for free, which in this case means double damage.
-
-            Debug.Log($"{user.characterName} attacks {target.characterName} with {this.abilityName}.");
 
             foreach (ABehavior behavior in behaviorList)
             {
-                if ((bool) behavior.GetStat<bool>("ONUSER"))
+                bool beforeHit = (bool)behavior.GetStat<bool>("BEFOREHIT");
+                bool onHit = (bool)behavior.GetStat<bool>("ONHIT");
+                bool afterHit = (bool)behavior.GetStat<bool>("AFTERHIT");
+                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
+                bool overwhelming = false;
+
+                StatSheet affected = onUser ? user : target;
+
+                if (beforeHit && onUser)
+                    behavior.Affects(affected);
+
+                Debug.Log($"Ability: {abilityName} is checking Overwhelm!");
+                overwhelming = BattleUtility.CheckOverwhelm(user, target); //This is done here in case any beforeHit effects would change the Overwhelm check.
+                Debug.Log($"Ability: Overwhelming? {overwhelming}");
+
+                //We'll need to change Affects so that it checks Overwhelming and has an effect
+
+                if (onHit)
+                    behavior.Affects(affected);
+
+                if (!momentumPaid)
                 {
-                    user.AbilityHit(behavior);
+                    user.SpendMomentum(momentumCost);
+                    momentumPaid = true;
                 }
+
+                if (afterHit)
+                    behavior.Affects(affected);
+
+
+                if (behavior.Continues())
+                    affected.AbilityHit(behavior);
                 else
-                {
-                    target.AbilityHit(behavior);
-                    Debug.Log($"Ability (after hit): {user.characterName}: {user.momentum.Current} + {user.skill.Current} vs {target.characterName}: {target.momentum.Current} + {target.skill.Current * 2}.");
-                    if (overwhelming)
-                    {
-                        Debug.Log($"{user.characterName} overwhelms {target.characterName}!");
-
-                        //Note: Check to see if this works with DOTS and the like; I don't know if I need to instantiate a new behaviors list or something.
-
-                        target.AbilityHit(behavior);
-                    }
-                }
+                    behavior.Finished(affected);
             }
-            
-            user.SpendMomentum(momentumCost);
 
         }
+
+
+
 
         bool Finished()
         {

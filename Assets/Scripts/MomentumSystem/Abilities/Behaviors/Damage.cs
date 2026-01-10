@@ -24,18 +24,13 @@ namespace RPG.AbilitySystem
             //Actually... apply would need to be used by the ability, wouldn't it?
         }*/
 
-        public override void Apply(StatSheet target)
-        {
-            target.TakesDamage((int)GetStat<int>("AMOUNT"));
-        }
-
         public override bool EachTurn(StatSheet target)
         {
             int turnsRemaining = (int) GetStat<int>("TURNS");
 
             if(turnsRemaining > 0)
             {
-                Apply(target);
+                Affects(target);
                 SetStat("TURNS", --turnsRemaining);
             }
 
@@ -48,7 +43,7 @@ namespace RPG.AbilitySystem
 
             if (roundsRemaining > 0)
             {
-                Apply(target);
+                Affects(target);
                 SetStat("ROUNDS", --roundsRemaining);
             }
 
@@ -63,19 +58,19 @@ namespace RPG.AbilitySystem
             base.Finished(target);
         }
         
-        public override void OnHit(StatSheet target)
+        public override void Affects(StatSheet target)
         {
-            //Debug.Log($"Damage on hit reached. Bool: {(bool)GetStat<bool>("ONHIT")}");
 
-            if ((bool)GetStat<bool>("ONHIT"))
-            {
-                //Debug.Log($"It's onhit! Do damage: {(int)GetStat<int>("AMOUNT")}");
-                target.TakesDamage((int)GetStat<int>("AMOUNT")); 
-            }
-
-            base.OnHit(target);
+            target.TakesDamage((int)GetStat<int>("AMOUNT")); 
+            
+            base.Affects(target);
 
             //With the OnHit done, we check to see if the effect continues.
+        }
+
+        public override void Overwhelms(StatSheet target)
+        {
+            Affects(target);
         }
 
         public override void Initialize(int amount)
