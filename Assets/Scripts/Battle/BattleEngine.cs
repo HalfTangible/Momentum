@@ -15,6 +15,7 @@ using UnityEngine.SceneManagement;
 namespace RPG.Battle {
     public class BattleEngine : MonoBehaviour
     {
+        public event System.Action<BattlePhase> OnPhaseChanged;   // ADD THIS LINE
 
         BattlePhase currentPhase;
         BattleUI battleUI;
@@ -141,16 +142,30 @@ namespace RPG.Battle {
 
         public void PlayerTurn()
         {
-            //Player selects an action and spends Momentum.
-            // For now it uses the same random ability selection as the enemy.
+           
+            Debug.Log("Player's turn - waiting for input");
+            currentPhase = BattlePhase.Waiting;           // Pause flow
+            battleUI?.ShowAbilitySelection(player);       // Tell UI: "show buttons!"
+            OnPhaseChanged?.Invoke(currentPhase);         // Let anyone listening know
+            
+        }
 
-            Debug.Log("Player's turn!");
+        public void PlayerSelectsAbility(Ability selectedAbility)
+        {
+            if (currentPhase != BattlePhase.Waiting) return;
 
-            //Apply turn effects to current actor.
+            Debug.Log($"Player selected: {selectedAbility.name}");
 
-            CharacterTurn(playerParty, enemyParty);
+            // Execute the chosen ability
+            StatSheet attacker = playerParty[0];
+            StatSheet defender = enemyParty[Random.Range(0, enemyParty.Count)]; // or target selection later
 
-            EndTurn();
+            selectedAbility.OnHit(attacker, defender);
+
+            // After action, proceed
+            currentPhase = BattlePhase.EndTurn;
+            OnPhaseChanged?.Invoke(currentPhase);
+            battleUI?.HideAbilitySelection();
         }
 
         public void NonPlayerTurn()

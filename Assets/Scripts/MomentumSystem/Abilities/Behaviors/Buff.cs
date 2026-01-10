@@ -23,6 +23,8 @@ namespace RPG.AbilitySystem
         [SerializeField]
         int targetStat_index = 0;
 
+        // https://x.com/HalfTangible/status/2009771283555156221
+
         public Buff()
         {
             StatSheet temp = new StatSheet();
@@ -32,8 +34,23 @@ namespace RPG.AbilitySystem
             allKeys.Sort();
         }
 
+        public override void BeforeHit(StatSheet target)
+        {
+            Debug.Log($"[Buff.BeforeHit] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
+
+            if (target.GetStatByName(targetStat) != null)
+            {
+                target.GetStatByName(targetStat).ApplyBuff(amount);
+                base.BeforeHit(target);
+            }
+            else
+                Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
+        }
+
         public override void OnHit(StatSheet target)
         {
+            Debug.Log($"[Buff.OnHit] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
+
             if (target.GetStatByName(targetStat) != null)
             {
                 target.GetStatByName(targetStat).ApplyBuff(amount);
@@ -43,16 +60,34 @@ namespace RPG.AbilitySystem
                 Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
         }
 
-
-        public override void Finished(StatSheet target)
+        public override void AfterHit(StatSheet target)
         {
+            Debug.Log($"[Buff] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
+
             if (target.GetStatByName(targetStat) != null)
             {
-                target.GetStatByName(targetStat).ApplyBuff(amount * -1);
-                base.Finished(target);
+                target.GetStatByName(targetStat).ApplyBuff(amount);
+                base.AfterHit(target);
             }
             else
                 Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
+        }
+
+
+        public override void Finished(StatSheet target)
+        {
+            Debug.Log("Buff.Finished() called.");
+            if (target.GetStatByName(targetStat) != null && applied)
+            {
+                Debug.Log($"Start of Finished: {target.GetStatByName(targetStat).Buff}");
+                target.GetStatByName(targetStat).ApplyBuff(amount * -1);
+                base.Finished(target);
+                Debug.Log($"Finished: {target.GetStatByName(targetStat).Buff}");
+            }
+            else
+                Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
+
+            Debug.Log(target.GetStatByName(targetStat).getValues());
         }
 
         public override object GetStat<T>(string key)

@@ -40,6 +40,17 @@ namespace RPG.AbilitySystem
         
         }
 
+        public void BeforeHit(StatSheet user, StatSheet target)
+        {
+            foreach (ABehavior behavior in behaviorList)
+            {
+                if (behavior.GetStat<bool>("BEFOREHIT") == true)
+                {
+                    behavior.Apply(target);
+                }
+            }
+        }
+
         public void OnHit(StatSheet user, StatSheet target)
         {
 
@@ -58,28 +69,61 @@ namespace RPG.AbilitySystem
 
             foreach (ABehavior behavior in behaviorList)
             {
-                if ((bool) behavior.GetStat<bool>("ONUSER"))
+
+                if (behavior.GetStat<bool>("ONHIT") == true)
                 {
-                    user.AbilityHit(behavior);
-                }
-                else
-                {
-                    target.AbilityHit(behavior);
-                    Debug.Log($"Ability (after hit): {user.characterName}: {user.momentum.Current} + {user.skill.Current} vs {target.characterName}: {target.momentum.Current} + {target.skill.Current * 2}.");
-                    if (overwhelming)
+
+                    if ((bool)behavior.GetStat<bool>("ONUSER"))
                     {
-                        Debug.Log($"{user.characterName} overwhelms {target.characterName}!");
-
-                        //Note: Check to see if this works with DOTS and the like; I don't know if I need to instantiate a new behaviors list or something.
-
+                        user.AbilityHit(behavior);
+                    }
+                    else
+                    {
                         target.AbilityHit(behavior);
+                        Debug.Log($"Ability (after hit): {user.characterName}: {user.momentum.Current} + {user.skill.Current} vs {target.characterName}: {target.momentum.Current} + {target.skill.Current * 2}.");
+                        if (overwhelming)
+                        {
+                            Debug.Log($"{user.characterName} overwhelms {target.characterName}!");
+
+                            //Note: Check to see if this works with DOTS and the like; I don't know if I need to instantiate a new behaviors list or something.
+
+                            target.AbilityHit(behavior);
+                        }
                     }
                 }
             }
-            
+            Debug.Log("Momentum: " + user.momentum.getValues());
+            Debug.Log($"{user.characterName} is spending {momentumCost} momentum. Before: {user.momentum.Current}");
             user.SpendMomentum(momentumCost);
+            Debug.Log($"{user.characterName} after spend: {user.momentum.Current}");
+
+            foreach (ABehavior behavior in behaviorList)
+            {
+                Debug.Log($"{behavior.GetType().Name}: {behavior.Continues()}");
+                Debug.Log($"Continues?: {!behavior.Continues()}");
+                if (!behavior.Continues())
+                {
+                    Debug.Log($"Finished called for {behavior.GetType().Name}");
+                    behavior.Finished(target);
+                }
+            }
+
+            Debug.Log($"{user.characterName} after OnHit: {user.momentum.Current}");
+            Debug.Log($"{user.momentum.getValues()}");
 
         }
+
+        public void AfterHit(StatSheet user, StatSheet target)
+        {
+            foreach (ABehavior behavior in behaviorList)
+            {
+                if (behavior.GetStat<bool>("AFTERHIT") == true)
+                {
+                    behavior.Apply(target);
+                }
+            }
+        }
+
 
         bool Finished()
         {
