@@ -103,6 +103,25 @@ namespace RPG.AbilitySystem.Editor
             }
             //RenameAbilityAsset((EditorGUILayout.TextField(selectedAbility.GetName())));
 
+            EditorGUILayout.LabelField("Category:");
+            AbilityCategory newCategory = (AbilityCategory)EditorGUILayout.EnumPopup(selectedAbility.Category);
+            if (newCategory != selectedAbility.Category)
+            {
+                selectedAbility.Category = newCategory;
+                EditorUtility.SetDirty(selectedAbility);
+                AssetDatabase.SaveAssets();
+                Repaint();
+            }
+
+            EditorGUILayout.LabelField("Type:");
+            AbilityType newType = (AbilityType)EditorGUILayout.EnumPopup(selectedAbility.Type);
+            if (newType != selectedAbility.Type)
+            {
+                selectedAbility.Type = newType;
+                EditorUtility.SetDirty(selectedAbility);
+                AssetDatabase.SaveAssets();
+                Repaint();
+            }
 
             EditorGUILayout.LabelField("Description: ");
 
@@ -125,6 +144,10 @@ namespace RPG.AbilitySystem.Editor
                 AssetDatabase.SaveAssets();
                 Repaint();
             }
+
+
+
+
             //Then put up a button that adds a new behavior to the ability based on a drop down menu.
             EditorGUILayout.LabelField("Behaviors:");
             ShowBehaviors();

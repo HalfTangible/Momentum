@@ -15,4 +15,4 @@ MonoBehaviour:
   abilityName: Rage
   description: 
   momentumCost: 10
-  behaviors: []
+  behaviorList: []

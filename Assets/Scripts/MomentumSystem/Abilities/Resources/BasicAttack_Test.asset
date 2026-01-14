@@ -17,6 +17,8 @@ MonoBehaviour:
   turnsRemaining: 0
   onHit: 1
   onUser: 0
+  beforeHit: 0
+  afterHit: 0
 --- !u!114 &-548506956908672024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34,6 +36,8 @@ MonoBehaviour:
   turnsRemaining: 0
   onHit: 1
   onUser: 0
+  beforeHit: 0
+  afterHit: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46,6 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5d5eecd2258734993fd7942eb4d09f, type: 3}
   m_Name: BasicAttack_Test
   m_EditorClassIdentifier: 
+  category: 0
+  type: 0
   abilityName: Basic Attack
   description: A light attack, used for testing the battle system.
   momentumCost: 3

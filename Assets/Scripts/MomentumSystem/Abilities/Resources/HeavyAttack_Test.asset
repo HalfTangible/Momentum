@@ -64,6 +64,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5d5eecd2258734993fd7942eb4d09f, type: 3}
   m_Name: HeavyAttack_Test
   m_EditorClassIdentifier: 
+  category: 0
+  type: 0
   abilityName: Heavy Attack
   description: A heavier attack, used for testing the battle system.
   momentumCost: 7

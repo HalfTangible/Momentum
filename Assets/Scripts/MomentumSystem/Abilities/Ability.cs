@@ -10,12 +10,27 @@ namespace RPG.AbilitySystem
     [CreateAssetMenu(fileName = "Ability", menuName = "RPG/Ability", order = 1)]
     public class Ability : ScriptableObject
     {
+        [SerializeField] private AbilityCategory category = AbilityCategory.Uncategorized;
+        [SerializeField] private AbilityType type = AbilityType.Typeless;
         [SerializeField] private string abilityName;
         [SerializeField] private string description;
         [SerializeField] private int momentumCost;
         [SerializeField] protected List<ABehavior> behaviorList = new List<ABehavior>();
 
+
         // Start is called before the first frame update
+
+        public AbilityCategory Category
+        {
+            get => category;
+            set => category = value;
+        }
+
+        public AbilityType Type
+        {
+            get => type;
+            set => type = value;
+        }
 
         public string AbilityName
         {
@@ -123,5 +138,20 @@ namespace RPG.AbilitySystem
             this.abilityName = abilityName;
         }
 
+    }
+
+    public enum AbilityCategory
+    {
+        Offensive,
+        Defensive,
+        Uncategorized
+    }
+
+    public enum AbilityType
+    {
+        Physical,
+        Magical,
+        Skill,
+        Typeless
     }
 }
