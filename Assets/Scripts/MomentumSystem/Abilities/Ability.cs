@@ -154,4 +154,5 @@ namespace RPG.AbilitySystem
         Skill,
         Typeless
     }
+
 }

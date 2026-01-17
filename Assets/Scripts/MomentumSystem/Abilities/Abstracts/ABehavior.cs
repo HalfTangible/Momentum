@@ -9,7 +9,8 @@ namespace RPG.AbilitySystem
     [System.Serializable]
     public abstract class ABehavior : ScriptableObject
     {
-        //void Apply(StatSheet user, StatSheet target);
+        [SerializeField]
+        protected BehaviorType behaviorType;
         [SerializeField]
         protected int amount;
         [SerializeField]
@@ -281,6 +282,11 @@ namespace RPG.AbilitySystem
         }
 
 
+    }
+
+    public enum BehaviorType
+    {
+        None
     }
 }
 

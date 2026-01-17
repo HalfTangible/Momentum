@@ -16,6 +16,9 @@ namespace RPG.StatSystem
         public Stat means;
         public Stat skill;
 
+        public int wards;
+        public int counters;
+
         [SerializeField] private List<Ability> abilities;
         [SerializeField] private List<ABehavior> continuingEffects;
         public string characterName;
