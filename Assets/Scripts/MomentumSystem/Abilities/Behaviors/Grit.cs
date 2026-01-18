@@ -52,6 +52,11 @@ namespace RPG.AbilitySystem
             //With the OnHit done, we check to see if the effect continues.
         }
 
+        public override int ModifyIncomingDamage(int incomingAmount)
+        {
+            return incomingAmount - amount; // Default: no change
+        }
+
         public override void Overwhelms(StatSheet target)
         {
             Affects(target);

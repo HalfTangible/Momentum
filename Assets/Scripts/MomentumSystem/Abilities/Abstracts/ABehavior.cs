@@ -54,6 +54,11 @@ namespace RPG.AbilitySystem
             return Continues();
         }
 
+        public virtual int ModifyIncomingDamage(int incomingAmount)
+        {
+            return incomingAmount; // Default: no change
+        }
+
         public virtual bool EachTurn(StatSheet target)
         {
             return Continues();

@@ -60,8 +60,10 @@ namespace RPG.AbilitySystem
         
         public override void Affects(StatSheet target)
         {
-
-            target.TakesDamage((int)GetStat<int>("AMOUNT")); 
+            int finalDamage = target.ApplyDefenses((int)GetStat<int>("AMOUNT"));
+            
+            if(finalDamage > 0)
+                target.TakesDamage(finalDamage); 
             
             base.Affects(target);
 

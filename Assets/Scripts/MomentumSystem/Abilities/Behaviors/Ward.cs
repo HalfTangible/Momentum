@@ -44,8 +44,7 @@ namespace RPG.AbilitySystem
 
         public override void Affects(StatSheet target)
         {
-
-            
+            target.AddWard(amount);
 
             base.Affects(target);
 

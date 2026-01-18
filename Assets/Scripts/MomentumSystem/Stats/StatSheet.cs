@@ -18,6 +18,7 @@ namespace RPG.StatSystem
 
         public int wards;
         public int counters;
+        public int shield;
 
         [SerializeField] private List<Ability> abilities;
         [SerializeField] private List<ABehavior> continuingEffects;
@@ -40,12 +41,82 @@ namespace RPG.StatSystem
         public void RemoveAbility(Ability oldAbility) => abilities.Remove(oldAbility);
         public List<Ability> GetAbilities() => abilities;
 
+        public void AddWard(int amount)
+        {
+            wards += amount;
+        }
+
+        public void RemoveWard()
+        {
+            wards--;
+        }
+
+        public void AddShield(int amount)
+        {
+            shield += amount;
+        }
+
+        public void AddCounter(int amount)
+        {
+            counters += amount;
+        }
+
+        public void AbilityHit(Ability ability)
+        {
+            AbilityHit(ability.GetBehaviors());
+        }
+
         public void AbilityHit(List<ABehavior> input)
         {
             foreach (ABehavior behavior in input)
             {
                 AbilityHit(behavior);
             }
+        }
+
+        public int ApplyDefenses(int incomingDamage)
+        {
+            if(wards > 0)
+            {
+                wards--;
+                return 0;
+            }
+
+            int damageAfterDefenses = incomingDamage;
+
+            //Then shielding absorbs what's left
+            if (shield >= damageAfterDefenses && damageAfterDefenses > 0)
+            {
+                shield -= damageAfterDefenses;
+                return 0;
+            }
+            else if (shield < damageAfterDefenses && shield > 0)
+            {
+                damageAfterDefenses -= shield;
+                shield = 0;
+            }
+
+            foreach (ABehavior behavior in continuingEffects)
+            {
+                // Safe type check + cast
+                if (behavior is Grit gritBehavior && damageAfterDefenses > 1)
+                {
+                    // Assuming Grit has a public field/property like this
+                    damageAfterDefenses = behavior.ModifyIncomingDamage(damageAfterDefenses); 
+                    Debug.Log($"Grit reduced damage. Initial amount: {incomingDamage} New total: {damageAfterDefenses}");
+                }
+
+                // Exit early if we've reduced it to 1 or below
+                if (damageAfterDefenses <= 1)
+                {
+                    damageAfterDefenses = 1;  // Optional: enforce minimum here
+                    break;                    // Stops looping — no need to check more Grit behaviors
+                }
+                //Later: We're going to have Wards in the game as a behavior. We might decide later to have them only trigger against certain levels of damage to make their
+                //shielding effect more potent. If so, we'll put in a check for Ward behavior here.
+            }
+            return damageAfterDefenses;
+            //If counters exist, we can trigger them elsewhere; this is for calculating damage.
         }
 
         public void AbilityHit(ABehavior behavior)
