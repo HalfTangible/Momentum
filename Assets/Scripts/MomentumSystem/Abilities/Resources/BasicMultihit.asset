@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9101ba74f2098434e834d5c49582fc5a, type: 3}
+  m_Name: BasicMultihit
+  m_EditorClassIdentifier: 
+  category: 0
+  type: 0
+  abilityName: Combo
+  description: A series of quick jabs
+  momentumCost: 2
+  behaviorList:
+  - {fileID: 8428019666932457564}
+  repeats: 3
+--- !u!114 &8428019666932457564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6afac855e9fbb354cb29b3e45fc8429e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  behaviorType: 0
+  amount: 3
+  roundsRemaining: 0
+  turnsRemaining: 0
+  onHit: 1
+  onUser: 0
+  beforeHit: 0
+  afterHit: 0

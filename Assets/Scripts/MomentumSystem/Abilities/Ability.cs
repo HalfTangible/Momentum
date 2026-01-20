@@ -55,6 +55,7 @@ namespace RPG.AbilitySystem
         
         }
 
+        /*
         public void UseAbility1(StatSheet user, StatSheet target)
         {
             bool momentumPaid = false;
@@ -99,7 +100,7 @@ namespace RPG.AbilitySystem
             }
 
         }
-
+        */
 
 
 

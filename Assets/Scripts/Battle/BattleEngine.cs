@@ -212,15 +212,58 @@ namespace RPG.Battle {
             // Phase 1: BeforeHit effects
             foreach (ABehavior behavior in behaviors)
             {
-                bool beforeHit = (bool)behavior.GetStat<bool>("BEFOREHIT");
-                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
 
-                if (beforeHit)
+                if (behavior.actsBeforeHit())
                 {
-                    StatSheet affected = onUser ? user : target;
+                    StatSheet affected = behavior.hitsUser() ? user : target;
                     behavior.Affects(affected);
                 }
             }
+
+
+            if (ability is Multihit multihit)
+            {
+                int times = multihit.getRepeats();
+                do
+                {
+                    Debug.Log($"Multihit loops {times} more times.");
+                    times--;
+                    ExecuteAbility_OnHit(user, target, ability);
+                }while (times > 0);
+                
+            }
+            else
+            {
+                ExecuteAbility_OnHit(user, target, ability);
+            }
+            // Phase 5: AfterHit effects
+            foreach (ABehavior behavior in behaviors)
+            {
+
+                if (behavior.actsAfterHit())
+                {
+                    StatSheet affected = behavior.hitsUser() ? user : target;
+                    behavior.Affects(affected);
+                }
+            }
+
+            // Phase 6: Cleanup – finish non-continuing behaviors
+            foreach (ABehavior behavior in behaviors)
+            {   
+                if (!behavior.Continues())
+                {
+                    StatSheet affected = behavior.hitsUser() ? user : target;
+                    behavior.Finished(affected);
+                }
+            }
+
+            // Optional: Refresh UI after execution
+            battleUI?.RefreshUI(player, npc);
+        }
+
+        private void ExecuteAbility_OnHit(StatSheet user, StatSheet target, Ability ability)
+        {
+            List<ABehavior> behaviors = ability.GetBehaviors();
 
             // Phase 2: Determine Overwhelming
             Debug.Log("BattleEngine: Checking Overwhelm!");
@@ -235,54 +278,20 @@ namespace RPG.Battle {
             // Phase 3: OnHit effects
             foreach (ABehavior behavior in behaviors)
             {
-                
-                bool onHit = (bool)behavior.GetStat<bool>("ONHIT");
-                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
-
-                if (onHit)
+                if (behavior.actsOnHit())
                 {
-                    StatSheet affected = onUser ? user : target;
+                    StatSheet affected = behavior.hitsUser() ? user : target;
                     behavior.Affects(affected);
 
-                    if (overwhelming && !onUser)
+                    if (overwhelming && !behavior.hitsUser())
                     {
                         behavior.Overwhelms(target);
                     }
                 }
             }
 
-
-
             // Phase 4: Pay momentum (always from user)
             user.SpendMomentum(ability.MomentumCost);
-
-            // Phase 5: AfterHit effects
-            foreach (ABehavior behavior in behaviors)
-            {
-                bool afterHit = (bool)behavior.GetStat<bool>("AFTERHIT");
-                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
-
-                if (afterHit)
-                {
-                    StatSheet affected = onUser ? user : target;
-                    behavior.Affects(affected);
-                }
-            }
-
-            // Phase 6: Cleanup – finish non-continuing behaviors
-            foreach (ABehavior behavior in behaviors)
-            {   
-                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
-
-                if (!behavior.Continues())
-                {
-                    StatSheet affected = onUser ? user : target;
-                    behavior.Finished(affected);
-                }
-            }
-
-            // Optional: Refresh UI after execution
-            battleUI?.RefreshUI(player, npc);
         }
 
 

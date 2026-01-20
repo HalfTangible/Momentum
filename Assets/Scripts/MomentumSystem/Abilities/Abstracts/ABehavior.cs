@@ -44,6 +44,26 @@ namespace RPG.AbilitySystem
             allKeys.Sort();
         }
 
+        public bool hitsUser()
+        {
+            return onUser;
+        }
+
+        public bool actsOnHit()
+        {
+            return onHit;
+        }
+
+        public bool actsBeforeHit()
+        {
+            return beforeHit;
+        }
+
+        public bool actsAfterHit()
+        {
+            return afterHit;
+        }
+
         public List<string> GetAllKeys()
         {
             return allKeys;
