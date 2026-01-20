@@ -47,12 +47,15 @@ namespace RPG.Battle {
 
             Ability basicAttack = Resources.Load<Ability>("BasicAttack_Test");
             Ability heavyAttack = Resources.Load<Ability>("HeavyAttack_Test");
+            Ability multiAttack = Resources.Load<Ability>("BasicMultihit_Test");
 
             player.AddAbility(Instantiate(basicAttack));
             player.AddAbility(Instantiate(heavyAttack));
+            player.AddAbility(Instantiate(multiAttack));
 
             npc.AddAbility(Instantiate(basicAttack));
             npc.AddAbility(Instantiate(heavyAttack));
+            npc.AddAbility(Instantiate(multiAttack));
 
             playerParty.Add(player);
             enemyParty.Add(npc);
