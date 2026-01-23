@@ -15,7 +15,7 @@ MonoBehaviour:
   category: 0
   type: 0
   abilityName: Combo
-  description: A series of quick jabs
+  description: A series of quick jabs.
   momentumCost: 2
   behaviorList:
   - {fileID: 8428019666932457564}

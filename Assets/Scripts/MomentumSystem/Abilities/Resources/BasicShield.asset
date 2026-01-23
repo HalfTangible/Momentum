@@ -15,7 +15,8 @@ MonoBehaviour:
   category: 2
   type: 3
   abilityName: 
-  description: 
+  description: Grants a shell of extra health before losing HP. Best used against
+    single hit attacks.
   momentumCost: 0
   behaviorList:
   - {fileID: 3073763169233734988}

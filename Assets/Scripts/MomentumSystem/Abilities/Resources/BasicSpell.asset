@@ -32,10 +32,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e98ddd55369b56843b879f98248e21a0, type: 3}
   m_Name: BasicSpell
   m_EditorClassIdentifier: 
-  category: 2
-  type: 3
-  abilityName: 
-  description: 
+  category: 0
+  type: 1
+  abilityName: Firebolt
+  description: Basic spell. Goes off after a slight delay (treated as the higher
+    momentum)
   momentumCost: 0
   behaviorList:
   - {fileID: -8193614053857078013}
