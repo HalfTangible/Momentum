@@ -13,6 +13,7 @@ namespace RPG.AbilitySystem
         //When they go off, they go off at their original Momentum, but for that time, the caster will be unable to act.
         //Possibly overpowered?
         //The spell's delay will be directly tied to the momentum cost.
+        int delay;
 
         public void WhileCasting()
         {

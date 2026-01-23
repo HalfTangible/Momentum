@@ -10,6 +10,7 @@ using Debug = UnityEngine.Debug;
 namespace RPG.AbilitySystem
 {
     [System.Serializable]
+    [DisplayName("Buff - Stat Increase")]
     public class Buff : ABehavior
     {
         //This class needs to be able to distinguish between valid targets?

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6afac855e9fbb354cb29b3e45fc8429e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  behaviorType: 0
   amount: 2
   roundsRemaining: 0
   turnsRemaining: 0
@@ -31,6 +32,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6afac855e9fbb354cb29b3e45fc8429e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  behaviorType: 0
   amount: 2
   roundsRemaining: 0
   turnsRemaining: 0

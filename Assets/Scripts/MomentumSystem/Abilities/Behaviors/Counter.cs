@@ -5,6 +5,7 @@ using RPG.StatSystem;
 
 namespace RPG.AbilitySystem
 {
+    [DisplayName("Counter - Reaction")]
     [System.Serializable]
     public class Counter : ABehavior
     {

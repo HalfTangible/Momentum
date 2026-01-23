@@ -337,6 +337,9 @@ MonoBehaviour:
       baseStat: 1
       buff: 0
       debuff: 0
+    wards: 0
+    counters: 0
+    shield: 0
     abilities: []
     continuingEffects: []
     characterName: 
@@ -376,6 +379,9 @@ MonoBehaviour:
       baseStat: 1
       buff: 0
       debuff: 0
+    wards: 0
+    counters: 0
+    shield: 0
     abilities: []
     continuingEffects: []
     characterName: 

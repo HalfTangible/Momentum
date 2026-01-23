@@ -5,6 +5,7 @@ using RPG.StatSystem;
 
 namespace RPG.AbilitySystem
 {
+    [DisplayName("Grit - Damage Reduction")]
     [System.Serializable]
     public class Grit : ABehavior
     {

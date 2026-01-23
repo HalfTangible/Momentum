@@ -5,6 +5,7 @@ using RPG.StatSystem;
 
 namespace RPG.AbilitySystem
 {
+    [DisplayName("Shield - Tempory health")]
     [System.Serializable]
     public class Shield : ABehavior
     {

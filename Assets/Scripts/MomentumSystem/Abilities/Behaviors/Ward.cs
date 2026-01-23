@@ -5,7 +5,8 @@ using RPG.StatSystem;
 
 namespace RPG.AbilitySystem
 {
-
+    [DisplayName("Ward - Nullify ability")]
+    [System.Serializable]
     public class Ward : ABehavior
     {
         public override bool EachTurn(StatSheet target)
