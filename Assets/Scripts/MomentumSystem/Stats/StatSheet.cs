@@ -76,34 +76,43 @@ namespace RPG.StatSystem
 
         public int ApplyDefenses(int incomingDamage)
         {
-            if(wards > 0)
+            Debug.Log($"{characterName}.ApplyDefenses; incomingDamage = {incomingDamage}");
+            Debug.Log($"Wards: {wards}");
+
+            if (wards > 0)
             {
                 wards--;
+                Debug.Log($"Ward applied. {wards} left.");
                 return 0;
             }
 
             int damageAfterDefenses = incomingDamage;
-
+            Debug.Log($"Shields: {shield}");
             //Then shielding absorbs what's left
             if (shield >= damageAfterDefenses && damageAfterDefenses > 0)
             {
                 shield -= damageAfterDefenses;
+                Debug.Log($"Shields left: {shield}, Damage going through: 0");
                 return 0;
             }
             else if (shield < damageAfterDefenses && shield > 0)
             {
                 damageAfterDefenses -= shield;
+                Debug.Log($"Shields left: 0, Shields left: {shield}");
                 shield = 0;
             }
 
+            Debug.Log($"Before {continuingEffects.Count} continuingEffects: {damageAfterDefenses}");
+
             foreach (ABehavior behavior in continuingEffects)
             {
+                Debug.Log($"{behavior.name}");
                 // Safe type check + cast
                 if (behavior is Grit gritBehavior && damageAfterDefenses > 1)
                 {
                     // Assuming Grit has a public field/property like this
                     damageAfterDefenses = behavior.ModifyIncomingDamage(damageAfterDefenses); 
-                    Debug.Log($"Grit reduced damage. Initial amount: {incomingDamage} New total: {damageAfterDefenses}");
+                    Debug.Log($"Grit reduced damage. New total: {damageAfterDefenses}");
                 }
 
                 // Exit early if we've reduced it to 1 or below
@@ -115,6 +124,7 @@ namespace RPG.StatSystem
                 //Later: We're going to have Wards in the game as a behavior. We might decide later to have them only trigger against certain levels of damage to make their
                 //shielding effect more potent. If so, we'll put in a check for Ward behavior here.
             }
+            Debug.Log($"After all behaviors, total is: {damageAfterDefenses}");
             return damageAfterDefenses;
             //If counters exist, we can trigger them elsewhere; this is for calculating damage.
         }
@@ -123,8 +133,10 @@ namespace RPG.StatSystem
         {
             //Reminder: need to account for things like buff and debuff which are OnHit and end with the turn.
             //Can just have a check at the end of the turn that removes the buff/debuff and then add them, yeah?
-
+            Debug.Log($"{behavior.name} hits {characterName}. Continues? {behavior.Continues()} Turns: { behavior.getTurns()}, Rounds: { behavior.getRounds()}");
+            
             if (behavior.Continues()) continuingEffects.Add(behavior);
+
         }
 
         public void SpendMomentum(int amount) => momentum.Current -= amount;

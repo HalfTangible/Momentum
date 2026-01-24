@@ -49,6 +49,16 @@ namespace RPG.AbilitySystem
             return onUser;
         }
 
+        public int getRounds()
+        {
+            return roundsRemaining;
+        }
+
+        public int getTurns()
+        {
+            return turnsRemaining;
+        }
+
         public bool actsOnHit()
         {
             return onHit;
@@ -84,7 +94,6 @@ namespace RPG.AbilitySystem
             return Continues();
         }
 
-
         public virtual void Affects(StatSheet target)
         {
             //This exists to be overwritten in other classes. By having it here and overridden, Behaviors can all be called this way but will have different effects based on
@@ -103,7 +112,7 @@ namespace RPG.AbilitySystem
             //its actual effect.
         }*/
 
-        public bool Continues()
+        public virtual bool Continues()
         {
             //Called at the end of apply. The code checks to see if the ability is done.
             if (roundsRemaining > 0 || turnsRemaining > 0)

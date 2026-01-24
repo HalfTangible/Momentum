@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8193614053857078013
+--- !u!114 &-6935683411565183854
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6afac855e9fbb354cb29b3e45fc8429e, type: 3}
+  m_Script: {fileID: 11500000, guid: b2ccc516dae9ab8458783a27930ceee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   behaviorType: 0
   amount: 10
   roundsRemaining: 0
   turnsRemaining: 0
-  onHit: 1
-  onUser: 0
+  onHit: 0
+  onUser: 1
   beforeHit: 0
   afterHit: 0
 --- !u!114 &11400000
@@ -29,14 +29,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e98ddd55369b56843b879f98248e21a0, type: 3}
-  m_Name: BasicSpell
+  m_Script: {fileID: 11500000, guid: 2e5d5eecd2258734993fd7942eb4d09f, type: 3}
+  m_Name: BasicWard_Test
   m_EditorClassIdentifier: 
-  category: 0
-  type: 1
-  abilityName: Firebolt
-  description: Basic spell. Goes off after a slight delay (treated as the higher
-    momentum)
-  momentumCost: 0
+  category: 2
+  type: 3
+  abilityName: Ward
+  description: Blocks single enemy abilities. Best used against spells.
+  momentumCost: 3
   behaviorList:
-  - {fileID: -8193614053857078013}
+  - {fileID: -6935683411565183854}

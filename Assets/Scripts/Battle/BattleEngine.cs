@@ -15,7 +15,7 @@ using UnityEngine.SceneManagement;
 namespace RPG.Battle {
     public class BattleEngine : MonoBehaviour
     {
-        public event System.Action<BattlePhase> OnPhaseChanged;   // ADD THIS LINE
+        public event System.Action<BattlePhase> OnPhaseChanged;
 
         BattlePhase currentPhase;
         BattleUI battleUI;
@@ -45,17 +45,25 @@ namespace RPG.Battle {
             player = new StatSheet { characterName = "Hero" };
             npc = new StatSheet { characterName = "Goblin" };
 
-            Ability basicAttack = Resources.Load<Ability>("BasicAttack_Test");
+            List<Ability> abilityTestPool = new List<Ability>();
+
+            abilityTestPool.Add(Resources.Load<Ability>("BasicAttack_Test"));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicMultihit_Test")); //Goes off as expected. Have not tried to test its Overwhelm effect yet.
+            abilityTestPool.Add(Resources.Load<Ability>("BasicSpell_Test"));
+
+            abilityTestPool.Add(Resources.Load<Ability>("BasicCounter_Test"));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicGrit_Test"));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicMultihit_Test"));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicWard_Test"));
+
             Ability heavyAttack = Resources.Load<Ability>("HeavyAttack_Test");
-            Ability multiAttack = Resources.Load<Ability>("BasicMultihit_Test");
 
-            player.AddAbility(Instantiate(basicAttack));
-            player.AddAbility(Instantiate(heavyAttack));
-            player.AddAbility(Instantiate(multiAttack));
-
-            npc.AddAbility(Instantiate(basicAttack));
-            npc.AddAbility(Instantiate(heavyAttack));
-            npc.AddAbility(Instantiate(multiAttack));
+            foreach (Ability ability in abilityTestPool)
+            {
+                Debug.Log($"Adding {ability.name} to the PC and NPC");
+                player.AddAbility(Instantiate(ability));
+                npc.AddAbility(Instantiate(ability));
+            }
 
             playerParty.Add(player);
             enemyParty.Add(npc);
@@ -154,6 +162,13 @@ namespace RPG.Battle {
 
         public void PlayerSelectsAbility(Ability selectedAbility)
         {
+
+            if (selectedAbility == null)
+            {
+                Debug.LogError("Player selected NULL ability!");
+                return;
+            }
+
             if (currentPhase != BattlePhase.Waiting) return;
 
             Debug.Log($"Player selected: {selectedAbility.name}");
@@ -209,15 +224,25 @@ namespace RPG.Battle {
 
         private void ExecuteAbility(StatSheet user, StatSheet target, Ability ability)
         {
+
+            if (ability == null)
+            {
+                Debug.LogError("ExecuteAbility: NULL ability passed!");
+                return;
+            }
+
+            Debug.Log($"ExecuteAbility called with ability: '{ability.name}'");
+
             // Fetch behaviors once
             List<ABehavior> behaviors = ability.GetBehaviors();
 
             // Phase 1: BeforeHit effects
             foreach (ABehavior behavior in behaviors)
             {
-
+                
                 if (behavior.actsBeforeHit())
                 {
+                    Debug.Log($"{behavior.name} triggers in ExecuteAbility (BeforeHit)");
                     StatSheet affected = behavior.hitsUser() ? user : target;
                     behavior.Affects(affected);
                 }
@@ -242,9 +267,10 @@ namespace RPG.Battle {
             // Phase 5: AfterHit effects
             foreach (ABehavior behavior in behaviors)
             {
-
+                
                 if (behavior.actsAfterHit())
                 {
+                    Debug.Log($"{behavior.name} triggers in ExecuteAbility (AfterHit)");
                     StatSheet affected = behavior.hitsUser() ? user : target;
                     behavior.Affects(affected);
                 }
@@ -252,11 +278,16 @@ namespace RPG.Battle {
 
             // Phase 6: Cleanup – finish non-continuing behaviors
             foreach (ABehavior behavior in behaviors)
-            {   
+            {
+                StatSheet affected = behavior.hitsUser() ? user : target;
+
                 if (!behavior.Continues())
                 {
-                    StatSheet affected = behavior.hitsUser() ? user : target;
+                    Debug.Log($"{behavior.name} triggers in ExecuteAbility (Finished)");
                     behavior.Finished(affected);
+                } else if (behavior.Continues())
+                {
+                    affected.AbilityHit(behavior);
                 }
             }
 
@@ -266,10 +297,24 @@ namespace RPG.Battle {
 
         private void ExecuteAbility_OnHit(StatSheet user, StatSheet target, Ability ability)
         {
+
+            if (ability == null)
+            {
+                Debug.LogError("ExecuteAbility_OnHit called with NULL ability!");
+                return;
+            }
+            else 
+            {
+                Debug.Log($"{ability.name} triggers in BattleEngine.ExecuteAbility_OnHit");
+            }
+
+
+
+
             List<ABehavior> behaviors = ability.GetBehaviors();
 
             // Phase 2: Determine Overwhelming
-            Debug.Log("BattleEngine: Checking Overwhelm!");
+            
             bool overwhelming = BattleUtility.CheckOverwhelm(user, target);
             Debug.Log($"BattleEngine: Overwhelming? {overwhelming}");
 
@@ -281,6 +326,7 @@ namespace RPG.Battle {
             // Phase 3: OnHit effects
             foreach (ABehavior behavior in behaviors)
             {
+                Debug.Log($"{behavior.name} triggers in ExecuteAbility_OnHit");
                 if (behavior.actsOnHit())
                 {
                     StatSheet affected = behavior.hitsUser() ? user : target;
@@ -292,7 +338,7 @@ namespace RPG.Battle {
                     }
                 }
             }
-
+            Debug.Log($"{ability.name} pays {ability.MomentumCost} momentum.");
             // Phase 4: Pay momentum (always from user)
             user.SpendMomentum(ability.MomentumCost);
         }

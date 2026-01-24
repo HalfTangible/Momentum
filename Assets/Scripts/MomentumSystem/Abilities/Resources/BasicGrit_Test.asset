@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviorType: 0
-  amount: 10
-  roundsRemaining: 0
+  amount: 2
+  roundsRemaining: 1
   turnsRemaining: 0
   onHit: 1
-  onUser: 0
+  onUser: 1
   beforeHit: 0
   afterHit: 0
 --- !u!114 &11400000
@@ -30,12 +30,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e5d5eecd2258734993fd7942eb4d09f, type: 3}
-  m_Name: BasicGrit
+  m_Name: BasicGrit_Test
   m_EditorClassIdentifier: 
   category: 1
   type: 0
   abilityName: Grit
   description: Reduce all damage by a flat amount. Best used against multihit attacks.
-  momentumCost: 0
+  momentumCost: 3
   behaviorList:
   - {fileID: -1271102324085681999}

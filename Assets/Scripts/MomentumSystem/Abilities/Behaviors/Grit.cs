@@ -46,8 +46,6 @@ namespace RPG.AbilitySystem
         public override void Affects(StatSheet target)
         {
 
-           
-
             base.Affects(target);
 
             //With the OnHit done, we check to see if the effect continues.
@@ -55,6 +53,7 @@ namespace RPG.AbilitySystem
 
         public override int ModifyIncomingDamage(int incomingAmount)
         {
+            Debug.Log($"Grit: {incomingAmount} - {amount}");
             return incomingAmount - amount; // Default: no change
         }
 
