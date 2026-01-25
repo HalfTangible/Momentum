@@ -53,10 +53,10 @@ namespace RPG.Battle {
 
             abilityTestPool.Add(Resources.Load<Ability>("BasicCounter_Test"));
             abilityTestPool.Add(Resources.Load<Ability>("BasicGrit_Test"));
-            abilityTestPool.Add(Resources.Load<Ability>("BasicMultihit_Test"));
             abilityTestPool.Add(Resources.Load<Ability>("BasicWard_Test"));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicShield_Test"));
 
-            Ability heavyAttack = Resources.Load<Ability>("HeavyAttack_Test");
+            abilityTestPool.Add(Resources.Load<Ability>("HeavyAttack_Test"));
 
             foreach (Ability ability in abilityTestPool)
             {

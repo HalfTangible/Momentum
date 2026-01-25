@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviorType: 0
-  amount: 2
+  amount: 7
   roundsRemaining: 0
   turnsRemaining: 0
   onHit: 1
