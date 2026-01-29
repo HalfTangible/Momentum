@@ -7,51 +7,47 @@ using RPG.StatSystem;
 
 [CreateAssetMenu(fileName = "CharacterSheet", menuName = "RPG/CharacterSheet", order = 2)]
 public class CharacterSheet : ScriptableObject
-{
-    //Character Image
+{/*
+    [Header("Identity")]
+    public string characterName = "Unnamed";
 
-    //Character animations
-
-    //Character stats
-    [Header("Stats")]
-    [SerializeField] StatSheet statSheet = new StatSheet();
+    [Header("Base Stats Template")]
+    public Stat health = new Stat(100, StatType.Resource) { Name = "HEALTH" };
+    public Stat momentum = new Stat(10, StatType.Unbounded) { Name = "MOMENTUM" };
+    public Stat motive = new Stat(10, StatType.Character) { Name = "MOTIVE" };
+    public Stat means = new Stat(10, StatType.Character) { Name = "MEANS" };
+    public Stat skill = new Stat(3, StatType.Character) { Name = "SKILL" };
 
     //Character abilities
     [Header("Abilities")]
     [SerializeField] private List<Ability> abilities = new List<Ability>();
 
-    /*
-     [Header("Character Identity")]
-    [SerializeField] private string characterName;
-    [SerializeField] private Sprite characterPortrait; // For menus
-    [SerializeField] private GameObject characterModel; // For combat scenes or 3D use
 
-    [Header("Stats")]
-    [SerializeField] private StatSheet statSheet;
+    public StatSheet CreateRuntimeInstance()
+    {
+        var runtime = new StatSheet
+        {
+            characterName = characterName,
 
-    [Header("Combat Attributes")]
-    [SerializeField] private int attackPower;
-    [SerializeField] private int defensePower;
-    [SerializeField] private float speed;
+            // Clone stats so runtime changes don't affect template
+            health = health.Clone(),
+            momentum = momentum.Clone(),
+            motive = motive.Clone(),
+            means = means.Clone(),
+            skill = skill.Clone(),
 
-    [Header("Abilities")]
-    [SerializeField] private List<Ability> abilities; // Define an Ability class for skills/spells
+            abilities = new List<Ability>(startingAbilities),
 
-    [Header("AI Attributes (For Enemies)")]
-    [SerializeField] private bool isPlayerControlled = true;
-    [SerializeField] private AIBehaviorType aiBehavior; // Enum to define behavior patterns like Aggressive, Defensive, etc.
+            // Runtime defaults
+            wards = 0,
+            counters = 0,
+            shield = 0,
+            continuingEffects = new List<ABehavior>()
+        };
 
-    // Getters and Setters
-    public string CharacterName => characterName;
-    public Sprite CharacterPortrait => characterPortrait;
-    public GameObject CharacterModel => characterModel;
-    public StatSheet StatSheet => statSheet;
-    public int AttackPower => attackPower;
-    public int DefensePower => defensePower;
-    public float Speed => speed;
-    public List<Ability> Abilities => abilities;
-    public bool IsPlayerControlled => isPlayerControlled;
-    public AIBehaviorType AIBehavior => aiBehavior;
-     
-     */
+        return runtime;
+    }
+
+    */
+
 }

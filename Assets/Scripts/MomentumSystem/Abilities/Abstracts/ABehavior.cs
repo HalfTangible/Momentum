@@ -9,7 +9,8 @@ namespace RPG.AbilitySystem
     [System.Serializable]
     public abstract class ABehavior : ScriptableObject
     {
-        //void Apply(StatSheet user, StatSheet target);
+        [SerializeField]
+        protected BehaviorType behaviorType;
         [SerializeField]
         protected int amount;
         [SerializeField]
@@ -43,6 +44,36 @@ namespace RPG.AbilitySystem
             allKeys.Sort();
         }
 
+        public bool hitsUser()
+        {
+            return onUser;
+        }
+
+        public int getRounds()
+        {
+            return roundsRemaining;
+        }
+
+        public int getTurns()
+        {
+            return turnsRemaining;
+        }
+
+        public bool actsOnHit()
+        {
+            return onHit;
+        }
+
+        public bool actsBeforeHit()
+        {
+            return beforeHit;
+        }
+
+        public bool actsAfterHit()
+        {
+            return afterHit;
+        }
+
         public List<string> GetAllKeys()
         {
             return allKeys;
@@ -53,11 +84,15 @@ namespace RPG.AbilitySystem
             return Continues();
         }
 
+        public virtual int ModifyIncomingDamage(int incomingAmount)
+        {
+            return incomingAmount; // Default: no change
+        }
+
         public virtual bool EachTurn(StatSheet target)
         {
             return Continues();
         }
-
 
         public virtual void Affects(StatSheet target)
         {
@@ -77,7 +112,7 @@ namespace RPG.AbilitySystem
             //its actual effect.
         }*/
 
-        public bool Continues()
+        public virtual bool Continues()
         {
             //Called at the end of apply. The code checks to see if the ability is done.
             if (roundsRemaining > 0 || turnsRemaining > 0)
@@ -281,6 +316,11 @@ namespace RPG.AbilitySystem
         }
 
 
+    }
+
+    public enum BehaviorType
+    {
+        None
     }
 }
 

@@ -15,7 +15,7 @@ using UnityEngine.SceneManagement;
 namespace RPG.Battle {
     public class BattleEngine : MonoBehaviour
     {
-        public event System.Action<BattlePhase> OnPhaseChanged;   // ADD THIS LINE
+        public event System.Action<BattlePhase> OnPhaseChanged;
 
         BattlePhase currentPhase;
         BattleUI battleUI;
@@ -45,14 +45,25 @@ namespace RPG.Battle {
             player = new StatSheet { characterName = "Hero" };
             npc = new StatSheet { characterName = "Goblin" };
 
-            Ability basicAttack = Resources.Load<Ability>("BasicAttack_Test");
-            Ability heavyAttack = Resources.Load<Ability>("HeavyAttack_Test");
+            List<Ability> abilityTestPool = new List<Ability>();
 
-            player.AddAbility(Instantiate(basicAttack));
-            player.AddAbility(Instantiate(heavyAttack));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicAttack_Test"));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicMultihit_Test")); //Goes off as expected. Have not tried to test its Overwhelm effect yet.
+            abilityTestPool.Add(Resources.Load<Ability>("BasicSpell_Test"));
 
-            npc.AddAbility(Instantiate(basicAttack));
-            npc.AddAbility(Instantiate(heavyAttack));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicCounter_Test"));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicGrit_Test"));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicWard_Test"));
+            abilityTestPool.Add(Resources.Load<Ability>("BasicShield_Test"));
+
+            abilityTestPool.Add(Resources.Load<Ability>("HeavyAttack_Test"));
+
+            foreach (Ability ability in abilityTestPool)
+            {
+                Debug.Log($"Adding {ability.name} to the PC and NPC");
+                player.AddAbility(Instantiate(ability));
+                npc.AddAbility(Instantiate(ability));
+            }
 
             playerParty.Add(player);
             enemyParty.Add(npc);
@@ -151,6 +162,13 @@ namespace RPG.Battle {
 
         public void PlayerSelectsAbility(Ability selectedAbility)
         {
+
+            if (selectedAbility == null)
+            {
+                Debug.LogError("Player selected NULL ability!");
+                return;
+            }
+
             if (currentPhase != BattlePhase.Waiting) return;
 
             Debug.Log($"Player selected: {selectedAbility.name}");
@@ -206,24 +224,97 @@ namespace RPG.Battle {
 
         private void ExecuteAbility(StatSheet user, StatSheet target, Ability ability)
         {
+
+            if (ability == null)
+            {
+                Debug.LogError("ExecuteAbility: NULL ability passed!");
+                return;
+            }
+
+            Debug.Log($"ExecuteAbility called with ability: '{ability.name}'");
+
             // Fetch behaviors once
             List<ABehavior> behaviors = ability.GetBehaviors();
 
             // Phase 1: BeforeHit effects
             foreach (ABehavior behavior in behaviors)
             {
-                bool beforeHit = (bool)behavior.GetStat<bool>("BEFOREHIT");
-                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
-
-                if (beforeHit)
+                
+                if (behavior.actsBeforeHit())
                 {
-                    StatSheet affected = onUser ? user : target;
+                    Debug.Log($"{behavior.name} triggers in ExecuteAbility (BeforeHit)");
+                    StatSheet affected = behavior.hitsUser() ? user : target;
                     behavior.Affects(affected);
                 }
             }
 
+
+            if (ability is Multihit multihit)
+            {
+                int times = multihit.getRepeats();
+                do
+                {
+                    Debug.Log($"Multihit loops {times} more times.");
+                    times--;
+                    ExecuteAbility_OnHit(user, target, ability);
+                }while (times > 0);
+                
+            }
+            else
+            {
+                ExecuteAbility_OnHit(user, target, ability);
+            }
+            // Phase 5: AfterHit effects
+            foreach (ABehavior behavior in behaviors)
+            {
+                
+                if (behavior.actsAfterHit())
+                {
+                    Debug.Log($"{behavior.name} triggers in ExecuteAbility (AfterHit)");
+                    StatSheet affected = behavior.hitsUser() ? user : target;
+                    behavior.Affects(affected);
+                }
+            }
+
+            // Phase 6: Cleanup – finish non-continuing behaviors
+            foreach (ABehavior behavior in behaviors)
+            {
+                StatSheet affected = behavior.hitsUser() ? user : target;
+
+                if (!behavior.Continues())
+                {
+                    Debug.Log($"{behavior.name} triggers in ExecuteAbility (Finished)");
+                    behavior.Finished(affected);
+                } else if (behavior.Continues())
+                {
+                    affected.AbilityHit(behavior);
+                }
+            }
+
+            // Optional: Refresh UI after execution
+            battleUI?.RefreshUI(player, npc);
+        }
+
+        private void ExecuteAbility_OnHit(StatSheet user, StatSheet target, Ability ability)
+        {
+
+            if (ability == null)
+            {
+                Debug.LogError("ExecuteAbility_OnHit called with NULL ability!");
+                return;
+            }
+            else 
+            {
+                Debug.Log($"{ability.name} triggers in BattleEngine.ExecuteAbility_OnHit");
+            }
+
+
+
+
+            List<ABehavior> behaviors = ability.GetBehaviors();
+
             // Phase 2: Determine Overwhelming
-            Debug.Log("BattleEngine: Checking Overwhelm!");
+            
             bool overwhelming = BattleUtility.CheckOverwhelm(user, target);
             Debug.Log($"BattleEngine: Overwhelming? {overwhelming}");
 
@@ -235,54 +326,21 @@ namespace RPG.Battle {
             // Phase 3: OnHit effects
             foreach (ABehavior behavior in behaviors)
             {
-                
-                bool onHit = (bool)behavior.GetStat<bool>("ONHIT");
-                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
-
-                if (onHit)
+                Debug.Log($"{behavior.name} triggers in ExecuteAbility_OnHit");
+                if (behavior.actsOnHit())
                 {
-                    StatSheet affected = onUser ? user : target;
+                    StatSheet affected = behavior.hitsUser() ? user : target;
                     behavior.Affects(affected);
 
-                    if (overwhelming && !onUser)
+                    if (overwhelming && !behavior.hitsUser())
                     {
                         behavior.Overwhelms(target);
                     }
                 }
             }
-
-
-
+            Debug.Log($"{ability.name} pays {ability.MomentumCost} momentum.");
             // Phase 4: Pay momentum (always from user)
             user.SpendMomentum(ability.MomentumCost);
-
-            // Phase 5: AfterHit effects
-            foreach (ABehavior behavior in behaviors)
-            {
-                bool afterHit = (bool)behavior.GetStat<bool>("AFTERHIT");
-                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
-
-                if (afterHit)
-                {
-                    StatSheet affected = onUser ? user : target;
-                    behavior.Affects(affected);
-                }
-            }
-
-            // Phase 6: Cleanup – finish non-continuing behaviors
-            foreach (ABehavior behavior in behaviors)
-            {   
-                bool onUser = (bool)behavior.GetStat<bool>("ONUSER");
-
-                if (!behavior.Continues())
-                {
-                    StatSheet affected = onUser ? user : target;
-                    behavior.Finished(affected);
-                }
-            }
-
-            // Optional: Refresh UI after execution
-            battleUI?.RefreshUI(player, npc);
         }
 
 

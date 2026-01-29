@@ -5,6 +5,7 @@ using RPG.StatSystem;
 
 namespace RPG.AbilitySystem
 {
+    [DisplayName("Healing - Health Recovery")]
     [System.Serializable]
     public class Healing : ABehavior
     {

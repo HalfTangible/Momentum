@@ -7,30 +7,40 @@ public class PlayerMovement : MonoBehaviour
 {
     //Attach this and a 2d rigidbody to an object, then set gravity to 0
 
-    public float movSpeed;
+    [SerializeField] private float moveSpeed = 5f;
     //float speedX, speedY;
     Rigidbody2D rb;
     Vector2 movement;
-    
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        // Critical for smooth movement with Cinemachine
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;  // Optional but helps
     }
 
     // Update is called once per frame
     void Update()
     {
-        //speedX = Input.GetAxisRaw("Horizontal") * movSpeed;
-        //speedY = Input.GetAxisRaw("Vertical") * movSpeed;
-        movement.x = Input.GetAxisRaw("Horizontal") * movSpeed;
-        movement.y = Input.GetAxisRaw("Vertical") * movSpeed;
+        // Read input once per frame (raw = -1/0/1)
+        movement.x = Input.GetAxisRaw("Horizontal");
+        movement.y = Input.GetAxisRaw("Vertical");
+
+        // Normalize so diagonal isn't faster
+        if (movement.sqrMagnitude > 1f)
+            movement.Normalize();
     }
 
-    void FixedUpdate() //Update can vary with the framerate, so FixedUpdate works better for physics. (consistently called 50x a second)
+    void FixedUpdate()
     {
-        //rb.velocity = new Vector2(speedX, speedY);
-        rb.MovePosition(rb.position + movement * movSpeed * Time.fixedDeltaTime);
+        // Apply movement using velocity (smoothest for Cinemachine)
+        rb.velocity = movement * moveSpeed;
+
+        // Alternative (if you prefer position-based):
+        // rb.MovePosition(rb.position + moveInput * moveSpeed * Time.fixedDeltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

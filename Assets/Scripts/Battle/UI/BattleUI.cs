@@ -7,12 +7,16 @@ using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 using System.Collections.Generic;
 using RPG.AbilitySystem;
+using System.Linq;
 
 //Thank you Grok
 namespace RPG.Battle.UI
 {
     public class BattleUI : MonoBehaviour
     {
+        private enum MenuState { Main, Offensive, Defensive, Items }
+        private MenuState currentMenu = MenuState.Main;
+
         [Header("Player UI Elements")]
         [SerializeField] private TMP_Text playerNameText;
         [SerializeField] private TMP_Text playerMomentumText;
@@ -31,7 +35,7 @@ namespace RPG.Battle.UI
         [SerializeField] private Transform abilityPanel;          // Panel with VerticalLayoutGroup
 
         [SerializeField] private BattleEngine battleEngine; // Drag in Inspector
-
+        [SerializeField] private GameObject backButtonPrefab;
 
 
         // Temporary for testing
@@ -111,6 +115,8 @@ namespace RPG.Battle.UI
             }
         }
 
+
+        /*
         public void ShowAbilitySelection(StatSheet player)
         {
             // Clear previous buttons
@@ -146,8 +152,87 @@ namespace RPG.Battle.UI
                 LayoutRebuilder.ForceRebuildLayoutImmediate(abilityPanel.GetComponent<RectTransform>());
                 LayoutRebuilder.ForceRebuildLayoutImmediate(abilityPanel.GetComponent<RectTransform>()); // Twice is common hack
             }
+        }*/
+
+        public void ShowAbilitySelection(StatSheet player)
+        {
+            ClearAbilityButtons();
+            currentMenu = MenuState.Main;  // Reset to main menu
+            ShowMainMenu(player);
         }
 
+        private void ShowMainMenu(StatSheet player)
+        {
+            // Clear any old buttons
+            ClearAbilityButtons();
+
+            // Create main menu buttons
+            CreateMenuButton("Offensive", () => ShowCategory(player, AbilityCategory.Offensive));
+            CreateMenuButton("Defensive", () => ShowCategory(player, AbilityCategory.Defensive));
+            CreateMenuButton("Uncategorized (Debug)", () => ShowCategory(player, AbilityCategory.Uncategorized));
+            CreateMenuButton("Items", () => Debug.Log("Items menu - not implemented yet"));
+            CreateMenuButton("Flee", () => Debug.Log("Attempt to flee"));
+
+            LayoutRebuild();
+        }
+
+        private void ShowCategory(StatSheet player, AbilityCategory category)
+        {
+            ClearAbilityButtons();
+
+            // Add Back button at top
+            CreateMenuButton("Back", () => ShowMainMenu(player), backButtonPrefab);
+
+            var abilities = player.GetAbilities()
+                .Where(a => a.Category == category)
+                .ToList();
+
+            if (abilities.Count == 0)
+            {
+                Debug.LogWarning($"No {category} abilities found!");
+                CreateMenuButton("No abilities", () => { }, backButtonPrefab);
+            }
+            else
+            {
+                foreach (var ability in abilities)
+                {
+                    GameObject buttonObj = Instantiate(abilityButtonPrefab, abilityPanel);
+                    Button button = buttonObj.GetComponent<Button>();
+                    TMP_Text buttonText = buttonObj.GetComponentInChildren<TMP_Text>(true);
+
+                    buttonText.text = $"{ability.AbilityName}\nCost: {ability.MomentumCost}";
+
+                    Ability captured = ability;
+                    button.onClick.AddListener(() => battleEngine.PlayerSelectsAbility(captured));
+
+                    createdAbilityButtons.Add(buttonObj);
+                }
+            }
+
+            LayoutRebuild();
+        }
+
+        private void CreateMenuButton(string text, System.Action onClick, GameObject prefabOverride = null)
+        {
+            GameObject prefab = prefabOverride != null ? prefabOverride : abilityButtonPrefab;
+            GameObject buttonObj = Instantiate(prefab, abilityPanel);
+            Button button = buttonObj.GetComponent<Button>();
+            TMP_Text txt = buttonObj.GetComponentInChildren<TMP_Text>(true);
+
+            txt.text = text;
+            button.onClick.AddListener(() => onClick());
+
+            createdAbilityButtons.Add(buttonObj);
+        }
+
+        private void LayoutRebuild()
+        {
+            if (abilityPanel != null)
+            {
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(abilityPanel.GetComponent<RectTransform>());
+            }
+        }
 
         public void HideAbilitySelection()
         {

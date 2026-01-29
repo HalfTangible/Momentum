@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e5d5eecd2258734993fd7942eb4d09f, type: 3}
+  m_Name: BasicShield_Test
+  m_EditorClassIdentifier: 
+  category: 1
+  type: 3
+  abilityName: Shield
+  description: Grants a shell of extra health before losing HP. Best used against
+    single hit attacks.
+  momentumCost: 3
+  behaviorList:
+  - {fileID: 3073763169233734988}
+--- !u!114 &3073763169233734988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65bca9e3738907d4eb5b33968936415f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  behaviorType: 0
+  amount: 10
+  roundsRemaining: 0
+  turnsRemaining: 0
+  onHit: 0
+  onUser: 1
+  beforeHit: 0
+  afterHit: 0

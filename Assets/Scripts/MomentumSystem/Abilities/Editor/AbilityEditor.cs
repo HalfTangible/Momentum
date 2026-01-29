@@ -5,7 +5,9 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System;
+using Debug = UnityEngine.Debug;
 
 namespace RPG.AbilitySystem.Editor
 {
@@ -13,14 +15,11 @@ namespace RPG.AbilitySystem.Editor
     {
 
         Ability selectedAbility = null;
-
         string newAbilityName = null;
-
-        private List<string> behaviorOptions = new List<string> { "Damage", "Healing", "Buff", "Debuff" };
-
+        //private List<string> behaviorOptions = new List<string> { "Damage", "Healing", "Buff", "Debuff" };
         private int selectedBehaviorIndex = 0;
-
-
+        private List<Type> behaviorTypes = new List<Type>();
+        private List<string> behaviorDisplayNames = new List<string>();
 
         [MenuItem("Window/Ability Editor")]
         public static void ShowEditorWindow()
@@ -54,7 +53,68 @@ namespace RPG.AbilitySystem.Editor
 
         private void OnEnable()
         {
-            Selection.selectionChanged += OnSelectionChanged; //DO NOT add the brackets, we're adding it to a list to be called later on
+            Selection.selectionChanged += OnSelectionChanged;
+
+            behaviorTypes.Clear();
+            behaviorDisplayNames.Clear();
+
+            // Discover all concrete ABehavior subclasses once
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
+            {
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (type.IsSubclassOf(typeof(ABehavior)) && !type.IsAbstract && !type.IsGenericTypeDefinition)
+                    {
+                        behaviorTypes.Add(type);
+
+                        string displayName;
+
+                        try
+                        {
+                            var attr = Attribute.GetCustomAttribute(type, typeof(DisplayNameAttribute)) as DisplayNameAttribute;
+                            displayName = attr != null ? attr.Name : type.Name.Replace("Behavior", "");
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarning($"Failed to get display name for {type.FullName}: {e.Message}");
+                            displayName = type.Name; // Fallback
+                        }
+
+                        behaviorDisplayNames.Add(displayName);
+                    }
+                }
+            }
+
+            // Safety: ensure lengths match (should never happen, but log if it does)
+            if (behaviorTypes.Count != behaviorDisplayNames.Count)
+            {
+                Debug.LogError($"Mismatch! Types: {behaviorTypes.Count}, Names: {behaviorDisplayNames.Count}");
+                // Truncate to shortest
+                int min = Mathf.Min(behaviorTypes.Count, behaviorDisplayNames.Count);
+                behaviorTypes = behaviorTypes.GetRange(0, min);
+                behaviorDisplayNames = behaviorDisplayNames.GetRange(0, min);
+            }
+
+            // Sort safely
+            var sortedPairs = new List<(string Name, Type Type)>();
+            for (int i = 0; i < behaviorDisplayNames.Count; i++)
+            {
+                sortedPairs.Add((behaviorDisplayNames[i], behaviorTypes[i]));
+            }
+
+            sortedPairs.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
+
+            behaviorDisplayNames.Clear();
+            behaviorTypes.Clear();
+
+            foreach (var pair in sortedPairs)
+            {
+                behaviorDisplayNames.Add(pair.Name);
+                behaviorTypes.Add(pair.Type);
+            }
+
+            selectedBehaviorIndex = Mathf.Clamp(selectedBehaviorIndex, 0, behaviorDisplayNames.Count - 1);
         }
 
         private void OnSelectionChanged()
@@ -85,6 +145,8 @@ namespace RPG.AbilitySystem.Editor
         {
             if (selectedAbility == null) return;
 
+            EditorGUILayout.LabelField("Base Ability Properties", EditorStyles.boldLabel);
+
             if (newAbilityName == null)
             {
                 newAbilityName = selectedAbility.GetAbilityName();
@@ -102,7 +164,6 @@ namespace RPG.AbilitySystem.Editor
                 Repaint();
             }
             //RenameAbilityAsset((EditorGUILayout.TextField(selectedAbility.GetName())));
-
 
             EditorGUILayout.LabelField("Description: ");
 
@@ -125,8 +186,24 @@ namespace RPG.AbilitySystem.Editor
                 AssetDatabase.SaveAssets();
                 Repaint();
             }
+
+            selectedAbility.Category = (AbilityCategory)EditorGUILayout.EnumPopup("Category", selectedAbility.Category);
+            selectedAbility.Type = (AbilityType)EditorGUILayout.EnumPopup("Type", selectedAbility.Type);
+
+            // Draw subclass-specific fields (if any)
+            Type abilityType = selectedAbility.GetType();
+            if (abilityType != typeof(Ability))
+            {
+                EditorGUILayout.Space(10);
+                EditorGUILayout.LabelField($"Specific Properties ({abilityType.Name})", EditorStyles.boldLabel);
+
+                // Draw all public serialized fields from the subclass
+                DrawSerializedFields(selectedAbility, abilityType);
+            }
+
+
             //Then put up a button that adds a new behavior to the ability based on a drop down menu.
-            EditorGUILayout.LabelField("Behaviors:");
+            EditorGUILayout.LabelField("Behaviors", EditorStyles.boldLabel);
             ShowBehaviors();
         }
 
@@ -137,7 +214,7 @@ namespace RPG.AbilitySystem.Editor
             {
 
                 GUILayout.BeginHorizontal();
-                selectedBehaviorIndex = EditorGUILayout.Popup("Select behavior to add:", selectedBehaviorIndex, behaviorOptions.ToArray());
+                selectedBehaviorIndex = EditorGUILayout.Popup("Select behavior to add:", selectedBehaviorIndex, behaviorDisplayNames.ToArray());
                 if (GUILayout.Button("Add Behavior"))
                 {
                     CreateNewBehavior();
@@ -254,169 +331,74 @@ namespace RPG.AbilitySystem.Editor
 
 
         }
+
         private void CreateNewBehavior()
         {
-            ABehavior newBehavior = null;
+            if (selectedBehaviorIndex < 0 || selectedBehaviorIndex >= behaviorTypes.Count)
+                return;
 
-            string newBehaviorName = behaviorOptions[selectedBehaviorIndex];
+            Type selectedType = behaviorTypes[selectedBehaviorIndex];
 
+            // Create instance of the selected type
+            ABehavior newBehavior = (ABehavior)ScriptableObject.CreateInstance(selectedType);
 
-            switch (newBehaviorName)
-            {
-                case "Damage":
-                    newBehavior = ScriptableObject.CreateInstance<Damage>();
+            newBehavior.Initialize(10);  // Your default init
 
-                    break;
-                case "Healing":
-                    newBehavior = ScriptableObject.CreateInstance<Healing>();
-
-                    break;
-                case "Buff":
-                    newBehavior = ScriptableObject.CreateInstance<Buff>();
-                    break;
-            }
-
-            newBehavior.Initialize(10);
             AssetDatabase.AddObjectToAsset(newBehavior, selectedAbility);
             selectedAbility.GetBehaviors().Add(newBehavior);
+
             EditorUtility.SetDirty(selectedAbility);
             EditorUtility.SetDirty(newBehavior);
             AssetDatabase.SaveAssets();
             Repaint();
         }
-        //throw new NotImplementedException("You didn't finish the creation of a new behavior method.");
-    }
-}
 
-        /*        private void ShowBehaviors()
+        // Helper: Draw public serialized fields of a type
+        private void DrawSerializedFields(object target, Type type)
+        {
+            var fields = type.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                             .Where(f => f.GetCustomAttribute<SerializeField>() != null);
+
+            foreach (var field in fields)
+            {
+                object value = field.GetValue(target);
+                object newValue = value;
+
+                string label = ObjectNames.NicifyVariableName(field.Name);
+
+                if (field.FieldType == typeof(int))
+                    newValue = EditorGUILayout.IntField(label, (int)value);
+                else if (field.FieldType == typeof(float))
+                    newValue = EditorGUILayout.FloatField(label, (float)value);
+                else if (field.FieldType == typeof(bool))
+                    newValue = EditorGUILayout.Toggle(label, (bool)value);
+                else if (field.FieldType == typeof(string))
+                    newValue = EditorGUILayout.TextField(label, (string)value);
+                else if (field.FieldType.IsEnum)
+                    newValue = EditorGUILayout.EnumPopup(label, (Enum)value);
+                else
                 {
-                    //Each behavior should get its own node.
-                    //There should be an option at the end of the list to add more behaviors
-                    //Connected to that should be a list of the valid behavior types. For now it's just damage.
-                    //If a behavior is added, we need to Repaint.
-                    if (selectedAbility.GetBehaviors() != null)
-                    {
-                        foreach (var behavior in selectedAbility.GetBehaviors())
-                        {
-                            //GUILayout.BeginVertical();
-                            EditorGUILayout.LabelField($"{behavior.GetType().Name} stats:");
-                            //GUILayout.BeginHorizontal();
-                            //Show the different behavior stats
-                            foreach(string key in behavior.GetAllKeys())
-                            {
+                    // Fallback: show as object field (for complex types)
+                    newValue = EditorGUILayout.ObjectField(label, (UnityEngine.Object)value, field.FieldType, true);
+                }
 
-                                EditorGUILayout.LabelField($"{key}: ");
-                                string previousString = behavior.GetStat<object>(key).ToString();
-                                string currentString = EditorGUILayout.TextField(previousString);
+                if (!Equals(value, newValue))
+                {
+                    field.SetValue(target, newValue);
+                    MarkDirty(target as UnityEngine.Object);
+                }
+            }
+        }
 
-                                if(previousString != currentString)
-                                {
-                                    behavior.SetStat(key, currentString);
-                                    EditorUtility.SetDirty(behavior);
-                                    AssetDatabase.SaveAssets();
-                                }
-                            }
-                            //Add button to remove each behavior
-                            //GUILayout.EndHorizontal();
-                            //GUILayout.EndVertical();
-                        }
-                    }
-
-                    if (GUILayout.Button("Add Behavior"))
-                    {
-                        // Example of creating a new Damage behavior (or any other behavior you want)
-                        ABehavior newBehavior;
-
-                        //If damage is selected
-                        /*newBehavior = new Damage(10);*/
-
-        /*
-        newBehavior = ScriptableObject.CreateInstance<Damage>();
-                newBehavior.Initialize(10);
-                AssetDatabase.AddObjectToAsset(newBehavior, selectedAbility);
-                selectedAbility.GetBehaviors().Add(newBehavior);
-                EditorUtility.SetDirty(selectedAbility);
-                EditorUtility.SetDirty(newBehavior);
+        private void MarkDirty(UnityEngine.Object obj)
+        {
+            if (obj != null)
+            {
+                EditorUtility.SetDirty(obj);
                 AssetDatabase.SaveAssets();
                 Repaint();
             }
-
-
-        }*/
-
-        /*
-         * private void WriteBehaviors(List<ABehavior> behaviors)
-        {
-            //GUILayout.BeginArea();
-
-            foreach (ABehavior behavior in behaviors)
-            {
-                GUILayout.BeginHorizontal();
-                //Display behavior's name and stats.
-                foreach (string key in behavior.GetKeys())
-                {
-                    var value = behavior.GetStat<object>(key);
-                    if (value != null)
-                    {
-                        //Set up a label for each behavior
-                        //Then an editable field
-                        EditorGUILayout.LabelField($"{key}:");
-                        behavior.SetStat(key, EditorGUILayout.TextField(value.ToString));
-                    //Add a delete button
-                    }
-                }
-                GUILayout.EndHorizontal();
-            }
-
-            //GUILayout.EndArea();
-        }*/
-        /*
-        private void RenameAbilityAsset(ScriptableObject selectedAbility, string newName)
-        {
-            RenameAbilityAsset(selectedAbility, newName, 0);
         }
-
-        private void RenameAbilityAsset(ScriptableObject ability, string newName, int count)
-        {
-            if (ability == null || string.IsNullOrEmpty(newName) || ability.name == newName)
-                return;
-
-            // Get the asset path
-            string assetPath = AssetDatabase.GetAssetPath(ability);
-
-            if (!string.IsNullOrEmpty(assetPath))
-            {
-                // Rename the asset file
-
-                string finalName = count > 0 ? $"{newName}_{count}" : newName;
-
-                string directory = System.IO.Path.GetDirectoryName(assetPath);
-                string newPath = $"{directory}/{finalName}.asset";
-
-
-                if (AssetDatabase.LoadAssetAtPath<ScriptableObject>(newPath) == null)
-                {
-                    AssetDatabase.RenameAsset(assetPath, finalName);
-
-                    // Rename the object's name
-                    ability.name = finalName;
-
-                    // Save the changes
-                    EditorUtility.SetDirty(ability);
-                    AssetDatabase.SaveAssets();
-                }
-                else
-                {
-
-                    RenameAbilityAsset(ability, newName, ++count);
-                }
-            }
-            else
-            {
-                UnityEngine.Debug.LogError("Failed to rename: Unable to find the asset path.");
-            }
-        }
-
-        */
-
-
+        //throw new NotImplementedException("You didn't finish the creation of a new behavior method.");
+    }
+}
