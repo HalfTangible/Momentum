@@ -10,11 +10,11 @@ namespace RPG.StatSystem
     [System.Serializable]
     public class StatSheet
     {
-        public Stat health;
-        public Stat momentum;
-        public Stat motive;
-        public Stat means;
-        public Stat skill;
+        public ResourceStat health;
+        public ResourceStat momentum;
+        public ValueStat motive;
+        public ValueStat means;
+        public ValueStat skill;
 
         public int wards;
         public int counters;
@@ -29,11 +29,11 @@ namespace RPG.StatSystem
             abilities = new List<Ability>();
             continuingEffects = new List<ABehavior>();
 
-            health = new Stat(100, StatType.Resource) { Name = "HEALTH" };
-            momentum = new Stat(10, StatType.Unbounded) { Name = "MOMENTUM" };
-            motive = new Stat(10, StatType.Character) { Name = "MOTIVE" };
-            means = new Stat(10, StatType.Character) { Name = "MEANS" };
-            skill = new Stat(3, StatType.Character) { Name = "SKILL" };
+            health = new ResourceStat(100) { Name = "HEALTH" };
+            momentum = new ResourceStat(10) { Name = "MOMENTUM" };
+            motive = new ValueStat(10) { Name = "MOTIVE" };
+            means = new ValueStat(10) { Name = "MEANS" };
+            skill = new ValueStat(3) { Name = "SKILL" };
         }
 
         public void AddAbility(Ability newAbility) => abilities.Add(newAbility);
