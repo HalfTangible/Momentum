@@ -10,9 +10,11 @@ namespace RPG.StatSystem
         [SerializeField] protected int minValue = 1;
 
         public ValueStat(string name, int initial)
+            : base(initial)
         {
             this.name = name;
             minValue = 1;
+            baseValue = initial;
         }
 
         public override int Current
@@ -25,12 +27,6 @@ namespace RPG.StatSystem
         {
             get => minValue;
             set => minValue = value;
-        }
-
-        public override int Max
-        {
-            get => maxValue;
-            set => maxValue = value;
         }
     }
 }

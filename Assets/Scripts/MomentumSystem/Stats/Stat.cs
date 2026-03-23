@@ -10,10 +10,10 @@ namespace RPG.StatSystem
     [System.Serializable]
     public abstract class Stat
     {
-        [SerializeField] private string name;
-        [SerializeField] private int baseStat;
-        [SerializeField] private int buff;
-        [SerializeField] private int debuff;
+        [SerializeField] protected string name;
+        [SerializeField] protected int baseValue;
+        [SerializeField] protected int buff;
+        [SerializeField] protected int debuff;
 
         // Public property for current value, with clamping logic
         public abstract int Current
@@ -34,8 +34,8 @@ namespace RPG.StatSystem
 
         public virtual int Base
         {
-            get => baseStat;
-            set => baseStat = value;
+            get => baseValue;
+            set => baseValue = value;
         }
 
         public virtual int Buff
@@ -52,7 +52,7 @@ namespace RPG.StatSystem
 
         public Stat(int initial)
         {
-            baseStat = initial;
+            baseValue = initial;
             buff = 0;
             debuff = 0;
         }

@@ -29,11 +29,11 @@ namespace RPG.StatSystem
             abilities = new List<Ability>();
             continuingEffects = new List<ABehavior>();
 
-            health = new ResourceStat(100) { Name = "HEALTH" };
-            momentum = new ResourceStat(10) { Name = "MOMENTUM" };
-            motive = new ValueStat(10) { Name = "MOTIVE" };
-            means = new ValueStat(10) { Name = "MEANS" };
-            skill = new ValueStat(3) { Name = "SKILL" };
+            health = new ResourceStat("HEALTH", 100, ResourceBinding.Bound);
+            momentum = new ResourceStat("MOMENTUM", 10, ResourceBinding.Unbound);
+            motive = new ValueStat("MOTIVE", 10);
+            means = new ValueStat("MEANS", 10);
+            skill = new ValueStat("SKILL", 3);
         }
 
         public void AddAbility(Ability newAbility) => abilities.Add(newAbility);
@@ -146,7 +146,7 @@ namespace RPG.StatSystem
         public void Debuffs(string statName, int amount) => GetStatByName(statName)?.ApplyDebuff(amount);
         public bool isAlive() => health.Current > 0;
 
-        public Stat[] GetStats() => new[] { health, momentum, motive, means, skill };
+        public Stat[] GetStats() => new Stat[] { health, momentum, motive, means, skill };
 
         public List<string> GetStatNames()
         {
