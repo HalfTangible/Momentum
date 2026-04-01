@@ -27,6 +27,7 @@ namespace RPG.StatSystem
             this.baseValue = initial;
             this.binding = binding;
             this.remaining = initial;
+            this.maxValue = initial;
             this.minValue = 0;
         }
 
@@ -53,16 +54,32 @@ namespace RPG.StatSystem
                 }
                 else
                 {
-                    return baseValue;
+                    return maxValue;
                 }
             } set => maxValue = value;
         }
 
         public override int Current
         {
-            get => (remaining + buff - debuff);
-            
-            set => remaining = value;
+            get
+            {
+                int raw = remaining + buff - debuff;
+                return binding == ResourceBinding.Bound
+                    ? Mathf.Clamp(raw, 0, baseValue)
+                    : raw;                    // Unbound = no clamping
+            }
+
+            set
+            {
+                if (binding == ResourceBinding.Bound)
+                {
+                    remaining = Mathf.Clamp(value, 0, baseValue);
+                }
+                else
+                {
+                    remaining = value;        // Unbound can be negative or very high
+                }
+            }
         }
 
         public int Remaining

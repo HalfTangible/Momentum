@@ -304,39 +304,40 @@ MonoBehaviour:
   playerSheet:
     health:
       name: HEALTH
-      type: 1
-      max: 10
-      baseStat: 10
+      baseValue: 100
       buff: 0
       debuff: 0
+      binding: 0
+      remaining: 100
+      maxValue: 0
+      minValue: 0
     momentum:
       name: MOMENTUM
-      type: 2
-      max: 10
-      baseStat: 10
+      baseValue: 10
       buff: 0
       debuff: 0
+      binding: 1
+      remaining: 10
+      maxValue: 0
+      minValue: 0
     motive:
       name: MOTIVE
-      type: 0
-      max: 10
-      baseStat: 10
+      baseValue: 10
       buff: 0
       debuff: 0
+      minValue: 1
     means:
       name: MEANS
-      type: 0
-      max: 10
-      baseStat: 10
+      baseValue: 10
       buff: 0
       debuff: 0
+      minValue: 1
     skill:
       name: SKILL
-      type: 0
-      max: 1
-      baseStat: 1
+      baseValue: 3
       buff: 0
       debuff: 0
+      minValue: 1
     wards: 0
     counters: 0
     shield: 0
@@ -346,39 +347,40 @@ MonoBehaviour:
   npcSheet:
     health:
       name: HEALTH
-      type: 1
-      max: 10
-      baseStat: 10
+      baseValue: 100
       buff: 0
       debuff: 0
+      binding: 0
+      remaining: 100
+      maxValue: 0
+      minValue: 0
     momentum:
       name: MOMENTUM
-      type: 2
-      max: 10
-      baseStat: 10
+      baseValue: 10
       buff: 0
       debuff: 0
+      binding: 1
+      remaining: 10
+      maxValue: 0
+      minValue: 0
     motive:
       name: MOTIVE
-      type: 0
-      max: 10
-      baseStat: 10
+      baseValue: 10
       buff: 0
       debuff: 0
+      minValue: 1
     means:
       name: MEANS
-      type: 0
-      max: 10
-      baseStat: 10
+      baseValue: 10
       buff: 0
       debuff: 0
+      minValue: 1
     skill:
       name: SKILL
-      type: 0
-      max: 1
-      baseStat: 1
+      baseValue: 3
       buff: 0
       debuff: 0
+      minValue: 1
     wards: 0
     counters: 0
     shield: 0
