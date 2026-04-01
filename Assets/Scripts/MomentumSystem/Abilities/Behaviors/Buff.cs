@@ -70,7 +70,7 @@ namespace RPG.AbilitySystem
             else
                 Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
 
-            Debug.Log(target.GetStatByName(targetStat).getValues());
+            //Debug.Log(target.GetStatByName(targetStat).getValues()); //This method no longer exists in the Stat class. Consider adding it in later if need be.
         }
 
         public override object GetStat<T>(string key)
