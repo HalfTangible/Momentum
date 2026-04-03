@@ -1,0 +1,17 @@
+{
+    "name": "RPG.Abilities",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4377c2af7574f2343aa532fc727aa22b",
+        "GUID:b35ce5717bdce7a4babaf182a7a112aa"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
