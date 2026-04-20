@@ -7,11 +7,35 @@ public class StatTests
     [Test]
     public void ValueStat_CalculatesCurrentCorrectly()
     {
-        var strength = new ValueStat("Strength", 40);
-        strength.Buff = 15;
-        strength.Debuff = 5;
+        int baseStrength = 40;
+        int buffValue = 15;
+        int debuffValue = 5;
 
-        Assert.AreEqual(50, strength.Current);
+        var strength = new ValueStat("Strength", baseStrength);
+        Assert.AreEqual(baseStrength, strength.Current);
+
+        strength.Buff = 15;
+        Assert.AreEqual(baseStrength + buffValue, strength.Current);
+        
+        strength.Debuff = 5;
+        Assert.AreEqual(baseStrength + buffValue - debuffValue, strength.Current);
+
+        Assert.AreEqual(baseStrength, strength.Base);
+
+        //Check base
+    }
+
+    [Test]
+    public void ValueStat_Minimum_One()
+    {
+        int baseValue = 5;
+        int debuffValue = 10;
+
+        var motive = new ValueStat("Motive", baseValue);
+
+        motive.Debuff = debuffValue;
+
+        Assert.AreEqual(1, motive.Current);
     }
 
     [Test]
