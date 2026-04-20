@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RPG.StatSystem;
+//using UnityEditor;
 
 namespace RPG.AbilitySystem
 {
-    [DisplayName("Shield - Tempory health")]
+    //[DisplayName("Shield - Tempory health")]
     [System.Serializable]
     public class Shield : ABehavior
     {

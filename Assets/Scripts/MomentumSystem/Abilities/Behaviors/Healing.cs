@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RPG.StatSystem;
+//using UnityEditor;
 
 namespace RPG.AbilitySystem
 {
-    [DisplayName("Healing - Health Recovery")]
+    //[DisplayName("Healing - Health Recovery")]
     [System.Serializable]
     public class Healing : ABehavior
     {

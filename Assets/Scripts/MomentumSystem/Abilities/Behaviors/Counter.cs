@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RPG.StatSystem;
+//using UnityEditor;
 
 namespace RPG.AbilitySystem
 {
-    [DisplayName("Counter - Reaction")]
+    //[DisplayName("Counter - Reaction")]
     [System.Serializable]
     public class Counter : ABehavior
     {

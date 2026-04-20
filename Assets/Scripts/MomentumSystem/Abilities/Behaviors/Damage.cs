@@ -4,10 +4,11 @@ using UnityEngine;
 using RPG.StatSystem;
 using System;
 using Debug = UnityEngine.Debug;
+//using UnityEditor;
 
 namespace RPG.AbilitySystem
 {
-    [DisplayName("Damage - Reduce health")]
+    //[DisplayName("Damage - Reduce health")]
     [System.Serializable]
     public class Damage : ABehavior
     {

@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RPG.StatSystem;
+//using UnityEditor;
 
 namespace RPG.AbilitySystem
 {
-    [DisplayName("Ward - Nullify ability")]
+    //[DisplayName("Ward - Nullify ability")]
     [System.Serializable]
     public class Ward : ABehavior
     {
