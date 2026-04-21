@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RPG.StatSystem;
+//using UnityEditor;
 
 namespace RPG.AbilitySystem
 {
-    [DisplayName("Grit - Damage Reduction")]
+    //[DisplayName("Grit - Damage Reduction")]
     [System.Serializable]
     public class Grit : ABehavior
     {
@@ -54,7 +55,7 @@ namespace RPG.AbilitySystem
         public override int ModifyIncomingDamage(int incomingAmount)
         {
             Debug.Log($"Grit: {incomingAmount} - {amount}");
-            return incomingAmount - amount; // Default: no change
+            return Mathf.Max(1, (incomingAmount - amount)); // Default: reduced to 1
         }
 
         public override void Overwhelms(StatSheet target)

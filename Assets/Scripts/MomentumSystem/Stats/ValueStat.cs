@@ -19,7 +19,7 @@ namespace RPG.StatSystem
 
         public override int Current
         {
-            get => baseValue + buff - debuff;
+            get => Mathf.Max(minValue, baseValue + buff - debuff);
             set => baseValue = value;           // usually just overwrite base (level up / perm change)
         }
 
