@@ -30,6 +30,83 @@ public class StatSheetTests
 
     #endregion
 
+    #region Continuing Effects Management
+
+    [Test]
+    public void AbilityHit_AddsContinuingBehavior_WhenItContinues()
+    {
+        var sheet = CreateTestSheet();
+        var damageOverTime = CreateBehavior<Damage>();
+        damageOverTime.Initialize(10, false, 3, 0); // 3 rounds
+
+        sheet.AbilityHit(damageOverTime);
+
+        Assert.AreEqual(1, sheet.continuingEffects.Count);
+        Assert.IsTrue(sheet.continuingEffects.Contains(damageOverTime));
+    }
+
+    [Test]
+    public void AbilityHit_DoesNotAddBehavior_ThatDoesNotContinue()
+    {
+        var sheet = CreateTestSheet();
+        var oneShot = CreateBehavior<Damage>();
+        oneShot.Initialize(15, true, 0, 0); // onHit only, no rounds/turns
+
+        sheet.AbilityHit(oneShot);
+
+        Assert.AreEqual(0, sheet.continuingEffects.Count);
+    }
+
+    [Test]
+    public void ApplyRoundEffects_RemovesFinishedBehaviors()
+    {
+        var sheet = CreateTestSheet();
+        var behavior = CreateBehavior<Damage>();
+        behavior.Initialize(5, false, 1, 0); // lasts 1 round
+
+        sheet.AbilityHit(behavior);
+        Assert.AreEqual(1, sheet.continuingEffects.Count);
+
+        // Apply one round; should finish and be removed
+        sheet.ApplyRoundEffects();
+
+        Assert.AreEqual(0, sheet.continuingEffects.Count);
+    }
+
+    [Test]
+    public void ApplyTurnEffects_RemovesFinishedBehaviors()
+    {
+        var sheet = CreateTestSheet();
+        var behavior = CreateBehavior<Damage>();
+        behavior.Initialize(8, false, 0, 2); // lasts 2 turns
+
+        sheet.AbilityHit(behavior);
+
+        sheet.ApplyTurnEffects();
+        Assert.AreEqual(1, sheet.continuingEffects.Count); // still 1 turn left
+
+        sheet.ApplyTurnEffects();
+        Assert.AreEqual(0, sheet.continuingEffects.Count); // now finished
+    }
+
+    [Test]
+    public void ApplyRoundEffects_And_ApplyTurnEffects_CanBothRun_OnSameBehavior()
+    {
+        var sheet = CreateTestSheet();
+        var behavior = CreateBehavior<Damage>();
+        behavior.Initialize(10, false, 1, 1); // 1 round + 1 turn
+
+        sheet.AbilityHit(behavior);
+
+        sheet.ApplyRoundEffects(); // consumes round
+        Assert.AreEqual(1, sheet.continuingEffects.Count);
+
+        sheet.ApplyTurnEffects(); // consumes turn; should be removed
+        Assert.AreEqual(0, sheet.continuingEffects.Count);
+    }
+
+    #endregion
+
     #region Health & Damage
 
     [Test]
@@ -152,6 +229,12 @@ public class StatSheetTests
         sheet.SpendMomentum(4);
         Assert.AreEqual(6, sheet.momentum.Current);
     }
+
+    #endregion
+
+    #region Helper Methods
+    
+    private T CreateBehavior<T>() where T : ABehavior => ScriptableObject.CreateInstance<T>();
 
     #endregion
 }

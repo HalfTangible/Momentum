@@ -20,8 +20,8 @@ namespace RPG.StatSystem
         public int counters;
         public int shield;
 
-        [SerializeField] private List<Ability> abilities;
-        [SerializeField] private List<ABehavior> continuingEffects;
+        [SerializeField] public List<Ability> abilities;
+        [SerializeField] public List<ABehavior> continuingEffects;
         public string characterName;
 
         public StatSheet()
