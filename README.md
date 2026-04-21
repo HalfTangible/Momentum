@@ -1,8 +1,12 @@
-ReadMe Last updated 10/27/2025
+ReadMe Last updated 2/21/2026
+
+
+
+(I'm doing things but not all of them are getting noted in the ReadMe such as the ability editor
 
 # Momentum
 
-Marked as Momentum_MVP in my files, this is the beginnings of a project using the Momentum system.
+Marked as Momentum\_MVP in my files, this is the beginnings of a project using the Momentum system.
 
 The main purpose of this project for the moment is to create tools in Unity based in C# that will allow me to create a wide variety of customizable abilities, dialogue, and anything else a JRPG system requires. I've been trying to future-proof the editors to work with any future updates.
 
@@ -24,17 +28,11 @@ REMEMBER: Crop your sprits down so there isn't any extra canvas space. Unity ass
 Dialogues can be created from scratch and nodes added to it through an editor system. Dialogues now contain a list of speakers, though at the moment the speakers must be entered manually through the inspector.
 
 12/30/24: Dialogue can be displayed now through the DisplayDialogue script. Currently only shows a test dialogue script.
-1/1/24: PROBLEM: The dialogue box no longer cooresponds with the player's view. 
+1/1/24: PROBLEM: The dialogue box no longer cooresponds with the player's view.
 
 ## Combat
 
 Statsheets are prepared. Still need to create full-on character sheets and character managers to unite the statsheet, animations, art, etc.
-
-## Overworld tilemaps
-
-## Tests
-
-There is a test that verifies the damage system works as it is supposed to. No others exist as of yet, nor does the full combat system.
 
 # The Momentum System
 
@@ -43,6 +41,10 @@ The Momentum combat system is similar to an action point system. The characters,
 When a character makes an attack, and their skill + momentum surpass a certain threshold, the attack becomes Overwhelming, and has additional effects based on the attack being used and the character using them.
 
 Example: A basic damaging ability that overwhelms would deal double the damage.
+
+
+
+2/21/2026: The combat system exists in a basic state. Abilities use an AbilityBehavior to affect a characters' StatSheet. OnHit buffs work. Multihit and Basic attacks work. Spells still need to be added in.
 
 # Design Speculation
 
@@ -58,3 +60,16 @@ Permutations: Perhaps the player and enemies get one free stance change per roun
 
 3/5/2025: BattleUI and BattleScene set up. (Size doesn't work, scale works at 0.53x for now)
 3/6/2025: Battle test now set up and working, uses Ability and Behavior classes. Abilities selected at random, still needs a UI.
+
+
+
+# Outside assets
+
+Unity: Duh.
+
+ZeggyGames (itch.io): Used 2D Pixel Art Top-Down Character Template (3/4 perspective) for art assistance.
+
+Majek (Fiverr): Basic forest tilemap
+
+
+

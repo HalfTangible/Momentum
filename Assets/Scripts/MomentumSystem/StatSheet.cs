@@ -10,18 +10,18 @@ namespace RPG.StatSystem
     [System.Serializable]
     public class StatSheet
     {
-        public Stat health;
-        public Stat momentum;
-        public Stat motive;
-        public Stat means;
-        public Stat skill;
+        public ResourceStat health;
+        public ResourceStat momentum;
+        public ValueStat motive;
+        public ValueStat means;
+        public ValueStat skill;
 
         public int wards;
         public int counters;
         public int shield;
 
-        [SerializeField] private List<Ability> abilities;
-        [SerializeField] private List<ABehavior> continuingEffects;
+        [SerializeField] public List<Ability> abilities;
+        [SerializeField] public List<ABehavior> continuingEffects;
         public string characterName;
 
         public StatSheet()
@@ -29,11 +29,11 @@ namespace RPG.StatSystem
             abilities = new List<Ability>();
             continuingEffects = new List<ABehavior>();
 
-            health = new Stat(100, StatType.Resource) { Name = "HEALTH" };
-            momentum = new Stat(10, StatType.Unbounded) { Name = "MOMENTUM" };
-            motive = new Stat(10, StatType.Character) { Name = "MOTIVE" };
-            means = new Stat(10, StatType.Character) { Name = "MEANS" };
-            skill = new Stat(3, StatType.Character) { Name = "SKILL" };
+            health = new ResourceStat("HEALTH", 100, ResourceBinding.Bound);
+            momentum = new ResourceStat("MOMENTUM", 10, ResourceBinding.Unbound);
+            motive = new ValueStat("MOTIVE", 10);
+            means = new ValueStat("MEANS", 10);
+            skill = new ValueStat("SKILL", 3);
         }
 
         public void AddAbility(Ability newAbility) => abilities.Add(newAbility);
@@ -146,7 +146,7 @@ namespace RPG.StatSystem
         public void Debuffs(string statName, int amount) => GetStatByName(statName)?.ApplyDebuff(amount);
         public bool isAlive() => health.Current > 0;
 
-        public Stat[] GetStats() => new[] { health, momentum, motive, means, skill };
+        public Stat[] GetStats() => new Stat[] { health, momentum, motive, means, skill };
 
         public List<string> GetStatNames()
         {

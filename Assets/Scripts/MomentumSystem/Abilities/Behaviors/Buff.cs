@@ -6,11 +6,12 @@ using System.Runtime.CompilerServices;
 using System;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
+//using UnityEditor;
 
 namespace RPG.AbilitySystem
 {
     [System.Serializable]
-    [DisplayName("Buff - Stat Increase")]
+    //[DisplayName("Buff - Stat Increase")]
     public class Buff : ABehavior
     {
         //This class needs to be able to distinguish between valid targets?
@@ -70,7 +71,7 @@ namespace RPG.AbilitySystem
             else
                 Debug.LogWarning($"Buff.OnHit: Invalid target stat '{targetStat}' for {target.characterName}");
 
-            Debug.Log(target.GetStatByName(targetStat).getValues());
+            //Debug.Log(target.GetStatByName(targetStat).getValues()); //This method no longer exists in the Stat class. Consider adding it in later if need be.
         }
 
         public override object GetStat<T>(string key)

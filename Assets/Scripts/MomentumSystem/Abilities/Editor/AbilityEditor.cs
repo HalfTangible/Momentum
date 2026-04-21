@@ -50,7 +50,6 @@ namespace RPG.AbilitySystem.Editor
 
             return false;
         }
-
         private void OnEnable()
         {
             Selection.selectionChanged += OnSelectionChanged;
@@ -58,7 +57,7 @@ namespace RPG.AbilitySystem.Editor
             behaviorTypes.Clear();
             behaviorDisplayNames.Clear();
 
-            // Discover all concrete ABehavior subclasses once
+            // Discover all concrete ABehavior subclasses
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
             {
@@ -68,50 +67,26 @@ namespace RPG.AbilitySystem.Editor
                     {
                         behaviorTypes.Add(type);
 
-                        string displayName;
-
-                        try
-                        {
-                            var attr = Attribute.GetCustomAttribute(type, typeof(DisplayNameAttribute)) as DisplayNameAttribute;
-                            displayName = attr != null ? attr.Name : type.Name.Replace("Behavior", "");
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogWarning($"Failed to get display name for {type.FullName}: {e.Message}");
-                            displayName = type.Name; // Fallback
-                        }
-
+                        // Simple fallback name - no DisplayNameAttribute magic for now
+                        string displayName = type.Name.Replace("Behavior", "").Replace("Behaviour", "");
                         behaviorDisplayNames.Add(displayName);
                     }
                 }
             }
 
-            // Safety: ensure lengths match (should never happen, but log if it does)
-            if (behaviorTypes.Count != behaviorDisplayNames.Count)
-            {
-                Debug.LogError($"Mismatch! Types: {behaviorTypes.Count}, Names: {behaviorDisplayNames.Count}");
-                // Truncate to shortest
-                int min = Mathf.Min(behaviorTypes.Count, behaviorDisplayNames.Count);
-                behaviorTypes = behaviorTypes.GetRange(0, min);
-                behaviorDisplayNames = behaviorDisplayNames.GetRange(0, min);
-            }
-
-            // Sort safely
-            var sortedPairs = new List<(string Name, Type Type)>();
-            for (int i = 0; i < behaviorDisplayNames.Count; i++)
-            {
-                sortedPairs.Add((behaviorDisplayNames[i], behaviorTypes[i]));
-            }
-
-            sortedPairs.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
+            // Sort by name
+            var sorted = behaviorDisplayNames
+                .Select((name, i) => (Name: name, Type: behaviorTypes[i]))
+                .OrderBy(x => x.Name)
+                .ToList();
 
             behaviorDisplayNames.Clear();
             behaviorTypes.Clear();
 
-            foreach (var pair in sortedPairs)
+            foreach (var item in sorted)
             {
-                behaviorDisplayNames.Add(pair.Name);
-                behaviorTypes.Add(pair.Type);
+                behaviorDisplayNames.Add(item.Name);
+                behaviorTypes.Add(item.Type);
             }
 
             selectedBehaviorIndex = Mathf.Clamp(selectedBehaviorIndex, 0, behaviorDisplayNames.Count - 1);
