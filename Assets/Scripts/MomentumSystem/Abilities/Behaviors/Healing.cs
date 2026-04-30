@@ -25,6 +25,25 @@ namespace RPG.AbilitySystem
             Affects(target);
         }
 
+        public override void Initialize(int amount)
+        {
+            Initialize(amount, true);
+        }
+
+        public void Initialize(int amount, bool onHit)
+        {
+           
+            Initialize(amount, onHit, 0, 0);
+
+        }
+
+        public void Initialize(int amount, bool onHit, int rounds, int turns)
+        {
+
+            base.InitializeStats(amount, onHit, rounds, turns);
+
+        }
+
 
     }
 }

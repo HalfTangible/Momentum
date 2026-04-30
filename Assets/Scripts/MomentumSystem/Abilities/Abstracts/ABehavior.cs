@@ -49,6 +49,11 @@ namespace RPG.AbilitySystem
             return onUser;
         }
 
+        public int getAmount()
+        {
+            return amount;
+        }
+
         public int getRounds()
         {
             return roundsRemaining;

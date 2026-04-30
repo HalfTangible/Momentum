@@ -37,6 +37,25 @@ namespace RPG.AbilitySystem
             allKeys.Sort();
         }
 
+        public override void Initialize(int amount)
+        {
+            Initialize(amount, true); // Default: apply on hit
+        }
+
+        public void Initialize(int amount, bool onHit)
+        {
+            Initialize(amount, onHit, 0, 0); // Default: do not continue on next turn or next round
+            //Why would you ever make a shield amount with no turn or rounds?
+            //Question for later. Get it all working right now then worry about efficiency.
+        }
+
+        public void Initialize(int amount, bool onHit, int rounds, int turns)
+        {
+
+            base.InitializeStats(amount, onHit, rounds, turns);
+
+        }
+
         public override void Affects(StatSheet target)
         {
             Debug.Log($"[Buff.Affects] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
