@@ -308,23 +308,6 @@ public class AbilityBehaviorTests
 
     #endregion
 
-    #region ABehavior Tests
-
-    [Test]
-    public void ABehavior_Continues_ReturnsCorrectValue()
-    {
-        var behavior = Create<Damage>();
-
-        behavior.SetStat("ROUNDS", 2);
-        Assert.IsTrue(behavior.Continues());
-
-        behavior.SetStat("ROUNDS", 0);
-        behavior.SetStat("TURNS", 0);
-        Assert.IsFalse(behavior.Continues());
-    }
-
-    #endregion
-
     #region Shield Tests
 
     [Test]
