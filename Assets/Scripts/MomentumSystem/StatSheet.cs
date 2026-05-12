@@ -133,9 +133,17 @@ namespace RPG.StatSystem
         {
             //Reminder: need to account for things like buff and debuff which are OnHit and end with the turn.
             //Can just have a check at the end of the turn that removes the buff/debuff and then add them, yeah?
-            Debug.Log($"{behavior.name} hits {characterName}. Continues? {behavior.Continues()} Turns: { behavior.getTurns()}, Rounds: { behavior.getRounds()}");
+            Debug.Log($"{behavior.name} hits {characterName}. OnHit? {behavior.actsOnHit()} Continues? {behavior.Continues()} Turns: { behavior.getTurns()}, Rounds: { behavior.getRounds()}");
+
+            if (behavior.actsOnHit())
+                behavior.Affects(this);
             
-            if (behavior.Continues()) continuingEffects.Add(behavior);
+            if (behavior.Continues())
+            {
+                Debug.Log("Add effect to continuingEffects");
+                continuingEffects.Add(behavior); 
+            }
+
 
         }
 
@@ -175,16 +183,22 @@ namespace RPG.StatSystem
         //EachTurn and EachRound in the behavior already sends back whether it's done or not.
         public void ApplyRoundEffects()
         {
+            Debug.Log("Apply round effects");
             if (health.Current <= 0) return;
+            Debug.Log("Health is > 0, continuing round effect");
+
             List<ABehavior> toRemove = new List<ABehavior>();
+
             foreach (ABehavior behavior in continuingEffects)
             {
                 if (!behavior.EachRound(this)) //EachRound returns a check to see if it's done.
                     toRemove.Add(behavior);
                 
+                
             }
             foreach (ABehavior behavior in toRemove)
             {
+
                 behavior.Finished(this);
                 continuingEffects.Remove(behavior);
             }
@@ -192,15 +206,20 @@ namespace RPG.StatSystem
 
         public void ApplyTurnEffects()
         {
+            Debug.Log("Apply turn effects 1");
             if (health.Current <= 0) return;
+            Debug.Log("Apply turn effects 2; Health is > 0, continuing turn effect");
             List<ABehavior> toRemove = new List<ABehavior>();
             foreach (ABehavior behavior in continuingEffects)
             {
+                Debug.Log("Apply turn effects 3");
                 if (!behavior.EachTurn(this)) //EachTurn returns a check to see if it's done.
                     toRemove.Add(behavior);
+                Debug.Log("Remaining turns: " + behavior.getTurns());
             }
             foreach (ABehavior behavior in toRemove)
             {
+                Debug.Log("Apply turn effects 4");
                 behavior.Finished(this);
                 continuingEffects.Remove(behavior);
             }

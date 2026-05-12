@@ -20,6 +20,26 @@ namespace RPG.AbilitySystem
             base.Affects(target);
         }
 
+        public override bool EachTurn(StatSheet target)
+        {
+            if (getTurns() > 0)
+            {
+                SpendTurn();
+                Affects(target);
+            }
+            return Continues();
+        }
+
+        public override bool EachRound(StatSheet target)
+        {
+            if (getRounds() > 0)
+            {
+                SpendRound();
+                Affects(target);
+            }
+            return Continues();
+        }
+
         public override void Overwhelms(StatSheet target)
         {
             Affects(target);

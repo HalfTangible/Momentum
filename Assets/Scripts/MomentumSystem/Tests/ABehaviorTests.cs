@@ -91,12 +91,15 @@ public class ABehaviorTests
         var target = CreateTarget();
 
         behavior.SetStat("ROUNDS", 2);
+        Debug.Log("2 MORE LADIES PLEASE Rounds: " + behavior.getRounds());
         Assert.IsTrue(behavior.EachRound(target));
 
         //behavior.SetStat("ROUNDS", 1);
+        Debug.Log("1 MORE LADY PLEASE Rounds: " + behavior.getRounds());
         Assert.IsFalse(behavior.EachRound(target));
 
         //behavior.SetStat("ROUNDS", 0);
+        Debug.Log("NO MORE LADIES PLEASE Rounds: " + behavior.getRounds());
         Assert.IsTrue(behavior.getRounds() == 0);
     }
 

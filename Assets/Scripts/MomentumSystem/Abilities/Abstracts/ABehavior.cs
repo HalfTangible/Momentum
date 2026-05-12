@@ -86,6 +86,15 @@ namespace RPG.AbilitySystem
 
         public virtual bool EachRound(StatSheet target)
         {
+            Debug.Log("[ABehavior.EachRound]");
+            SpendRound();
+            return Continues();
+        }
+
+        public virtual bool EachTurn(StatSheet target)
+        {
+            Debug.Log("[ABehavior.EachTurn]");
+            SpendTurn();
             return Continues();
         }
 
@@ -94,9 +103,20 @@ namespace RPG.AbilitySystem
             return incomingAmount; // Default: no change
         }
 
-        public virtual bool EachTurn(StatSheet target)
+        public void SpendTurn()
         {
-            return Continues();
+            Debug.Log("[ABehavior.SpendTurn()] 2 GetTurns " + getTurns());
+            if (turnsRemaining > 0)
+                turnsRemaining--;
+            Debug.Log("[ABehavior.SpendTurn()] 2 GetTurns " + getTurns());
+        }
+
+        public void SpendRound()
+        {
+            Debug.Log("[ABehavior.SpendRound()] 1 GetRounds " + getRounds());
+            if (roundsRemaining > 0)
+                roundsRemaining--;
+            Debug.Log("[ABehavior.SpendRound()] 2 GetRounds " + getRounds());
         }
 
         public virtual void Affects(StatSheet target)
@@ -119,15 +139,14 @@ namespace RPG.AbilitySystem
 
         public virtual bool Continues()
         {
-            //Called at the end of apply. The code checks to see if the ability is done.
-            if (roundsRemaining > 0 || turnsRemaining > 0)
-                return true;
-            else return false;
+            bool Continues = (roundsRemaining > 0 || turnsRemaining > 0);
+            Debug.Log("[ABehavior.Continues()]; rounds remaining: " + roundsRemaining + "; turns remaining: " + turnsRemaining + "; Continues:" + Continues);
+            return Continues;
         }
 
         public virtual void Finished(StatSheet target)
         {
-            Debug.Log("ABehavior.Finished() called.");
+            Debug.Log("[ABehavior.Finished()] called.");
             //This behavior is called when the ability's behaviors are done.
             //If this is a buff, then it removes the buff; debuff, same deal.
             //return false;

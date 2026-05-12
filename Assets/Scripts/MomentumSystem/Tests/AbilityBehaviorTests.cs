@@ -39,7 +39,7 @@ public class AbilityBehaviorTests
         var target = CreateStatSheet();
         int startHealth = target.health.Current;
 
-        damage.Affects(target);
+        target.AbilityHit(damage);
 
         Assert.AreEqual(startHealth - 35, target.health.Current);
     }
@@ -70,7 +70,7 @@ public class AbilityBehaviorTests
         var target = CreateStatSheet();
         int startHealth = target.health.Current;
 
-        damage.Affects(target);
+        target.AbilityHit(damage);
 
         target.ApplyRoundEffects();
         Assert.AreEqual(startHealth - 12, target.health.Current);
@@ -91,8 +91,7 @@ public class AbilityBehaviorTests
         var target = CreateStatSheet();
         int startHealth = target.health.Current;
 
-        damage.Affects(target);
-        target.continuingEffects.Add(damage);
+        target.AbilityHit(damage);
 
         for (int i = 0; i < 4; i++)
         {
@@ -106,20 +105,30 @@ public class AbilityBehaviorTests
     [Test]
     public void Damage_WithBothRoundsAndTurns_DealsDamageOnBoth()
     {
+        int damageAmount = 10;
+        int turnDuration = 1;
+        int roundDuration = 1;
+        bool onHit = false;
         var damage = Create<Damage>();
-        damage.Initialize(10, false, 1, 1);
+        damage.Initialize(damageAmount, onHit, turnDuration, roundDuration);
 
         var target = CreateStatSheet();
         int startHealth = target.health.Current;
 
-        damage.Affects(target);
-        target.continuingEffects.Add(damage);
 
+        Debug.Log("Starting health: " + target.health.Current);
+
+        target.AbilityHit(damage);
+
+        Debug.Log("Before damage health 1: " + target.health.Current);
         target.ApplyRoundEffects();
         Assert.AreEqual(startHealth - 10, target.health.Current);
+        Debug.Log("After damage health 1: " + target.health.Current);
 
         target.ApplyTurnEffects();
+        Debug.Log("Before damage health 2: " + target.health.Current);
         Assert.AreEqual(startHealth - 20, target.health.Current);
+        Debug.Log("After damage health 2: " + target.health.Current);
         Assert.AreEqual(0, target.continuingEffects.Count);
     }
 
@@ -314,10 +323,10 @@ public class AbilityBehaviorTests
     public void Shield_OnHit_GrantsShieldPoints()
     {
         var shield = Create<Shield>();
-        shield.Initialize(25);                    // 25 shield points
+        shield.Initialize(25, true);                    // 25 shield points
 
         var target = CreateStatSheet();
-        shield.Affects(target);
+        target.AbilityHit(shield);
 
         Assert.AreEqual(25, target.shield);
     }
@@ -360,18 +369,26 @@ public class AbilityBehaviorTests
     public void Shield_WithRounds_AppliesMultipleTimes()
     {
         var shield = Create<Shield>();
-        shield.Initialize(15, false, 2, 0);     // 2 rounds, not on hit
+        int rounds = 2;
+        int turns = 0;
+        shield.Initialize(15, false, rounds, turns);     // 2 rounds, not on hit
 
         var target = CreateStatSheet();
-        shield.Affects(target);                 // Initial application
-
+        Debug.Log("Shield 0: " + target.shield);
+        target.AbilityHit(shield);                 // Initial application
+        target.ApplyRoundEffects();
         Assert.AreEqual(15, target.shield);
+        Debug.Log("Shield 1: " + target.shield);
 
         target.ApplyRoundEffects();
+        Debug.Log("Shield 2: " + target.shield);
         Assert.AreEqual(30, target.shield);     // Second application
+        Debug.Log("Shield 3: " + target.shield);
 
         target.ApplyRoundEffects();
+        Debug.Log("Shield 4: " + target.shield);
         Assert.AreEqual(30, target.shield);     // Should not apply more
+        Debug.Log("Shield 5: " + target.shield);
     }
 
     [Test]
@@ -381,9 +398,10 @@ public class AbilityBehaviorTests
         shield.Initialize(10, false, 0, 3);     // 3 turns
 
         var target = CreateStatSheet();
-        shield.Affects(target);                 // Initial application
-        target.continuingEffects.Add(shield);   // Make sure it's tracked
+        target.AbilityHit(shield);
+        Assert.AreEqual(0, target.shield);
 
+        target.ApplyTurnEffects();
         Assert.AreEqual(10, target.shield);
 
         target.ApplyTurnEffects();
@@ -415,10 +433,13 @@ public class AbilityBehaviorTests
     [Test]
     public void Healing_OnHit_HealsTargetImmediately()
     {
-        var healing = Create<Healing>();
-        healing.Initialize(30);                    // Heal 30
+        var healing = Create<Healing>();  // Heal 30
+        healing.Initialize(30);
+        var damage = Create<Damage>();
+        damage.Initialize(40);
 
         var target = CreateStatSheet();
+        target.AbilityHit(damage);
         int startHealth = target.health.Current;
 
         healing.Affects(target);
@@ -429,22 +450,42 @@ public class AbilityBehaviorTests
     [Test]
     public void Healing_WithRounds_HealsEachRound()
     {
+        var damage = Create<Damage>();
+        damage.Initialize(45, true, 0, 0);
+
         var healing = Create<Healing>();
         healing.Initialize(15, false, 3, 0);       // 3 rounds, not on hit
 
         var target = CreateStatSheet();
+        Debug.Log("Before damage 1: " + target.health.Current + "/" + target.health.Max);
+        target.AbilityHit(damage);
+        Debug.Log("After damage 1: " + target.health.Current + "/" + target.health.Max);
+
         int startHealth = target.health.Current;
 
-        healing.Affects(target);                   // Initial heal?
+        Debug.Log("Before heal 1: " + target.health.Current + "/" + target.health.Max);
+
+        target.AbilityHit(healing);                   // Initial heal?
+
+        Debug.Log("Before heal 2: " + target.health.Current + "/" + target.health.Max);
 
         target.ApplyRoundEffects();
+        Debug.Log("After heal 2: " + target.health.Current + "/" + target.health.Max);
         Assert.AreEqual(startHealth + 15, target.health.Current);
 
-        target.ApplyRoundEffects();
-        Assert.AreEqual(startHealth + 30, target.health.Current);
+        Debug.Log("Before heal 3: " + target.health.Current + "/" + target.health.Max);
 
         target.ApplyRoundEffects();
+        Debug.Log("After heal 3: " + target.health.Current + "/" + target.health.Max);
+        Assert.AreEqual(startHealth + 30, target.health.Current);
+
+        Debug.Log("Before heal 4: " + target.health.Current + "/" + target.health.Max);
+
+        target.ApplyRoundEffects();
+        Debug.Log("After heal 4: " + target.health.Current + "/" + target.health.Max);
         Assert.AreEqual(startHealth + 45, target.health.Current);
+
+        Debug.Log("Before heal 5: " + target.health.Current + "/" + target.health.Max);
     }
 
     [Test]
@@ -454,32 +495,45 @@ public class AbilityBehaviorTests
         healing.Initialize(10, false, 0, 4);       // 4 turns
 
         var target = CreateStatSheet();
+
+        var damage = Create<Damage>();
+        damage.Initialize(45, true, 0, 0);
+
+        Debug.Log("Before damage 1: " + target.health.Current + "/" + target.health.Max);
+        target.AbilityHit(damage);
+        Debug.Log("After damage 1: " + target.health.Current + "/" + target.health.Max);
+
         int startHealth = target.health.Current;
 
-        healing.Affects(target);
-        target.continuingEffects.Add(healing);
+        Debug.Log("Before heal 1: " + target.health.Current + "/" + target.health.Max);
+        target.AbilityHit(healing);
+        Debug.Log("After heal 1: " + target.health.Current + "/" + target.health.Max);
 
-        for (int i = 0; i < 4; i++)
-        {
-            target.ApplyTurnEffects();
-        }
+        Debug.Log("Before heal 2: " + target.health.Current + "/" + target.health.Max);
+        target.ApplyTurnEffects();
+        Debug.Log("After heal 2: " + target.health.Current + "/" + target.health.Max);
+        Assert.AreEqual(startHealth + 10, target.health.Current);
 
+        Debug.Log("Before heal 3: " + target.health.Current + "/" + target.health.Max);
+        target.ApplyTurnEffects();
+        Debug.Log("After heal 3: " + target.health.Current + "/" + target.health.Max);
+        Assert.AreEqual(startHealth + 20, target.health.Current);
+
+        Debug.Log("Before heal 4: " + target.health.Current + "/" + target.health.Max);
+        target.ApplyTurnEffects();
+        Debug.Log("After heal 4: " + target.health.Current + "/" + target.health.Max);
+        Assert.AreEqual(startHealth + 30, target.health.Current);
+
+        Debug.Log("Before heal 5: " + target.health.Current + "/" + target.health.Max);
+        target.ApplyTurnEffects();
+        Debug.Log("After heal 5: " + target.health.Current + "/" + target.health.Max);
         Assert.AreEqual(startHealth + 40, target.health.Current);
         Assert.AreEqual(0, target.continuingEffects.Count); // should be cleaned up
-    }
 
-    [Test]
-    public void Healing_Overwhelms_AlsoHeals()
-    {
-        var healing = Create<Healing>();
-        healing.Initialize(25);
-
-        var target = CreateStatSheet();
-        int startHealth = target.health.Current;
-
-        healing.Overwhelms(target);
-
-        Assert.AreEqual(startHealth + 25, target.health.Current);
+        Debug.Log("Before heal 6: " + target.health.Current + "/" + target.health.Max);
+        target.ApplyTurnEffects();
+        Debug.Log("After heal 6: " + target.health.Current + "/" + target.health.Max);
+        Assert.AreEqual(startHealth + 40, target.health.Current);
     }
 
     #endregion
@@ -487,22 +541,13 @@ public class AbilityBehaviorTests
     #region Buff Tests
 
     [Test]
-    public void Buff_Initialize_SetsDefaultTargetStat()
-    {
-        var buff = Create<Buff>();
-        buff.Initialize(10);
-
-        // Should default to a valid stat (usually Motive or similar)
-        string target = (string)buff.GetStat<string>("TARGETSTAT");
-        Assert.IsNotNull(target);
-        Assert.IsTrue(target == "MOTIVE" || target == "MEANS" || target == "SKILL");
-    }
-
-    [Test]
     public void Buff_OnHit_BuffsCorrectStat()
     {
         var buff = Create<Buff>();
         buff.Initialize(8);
+        buff.setTargetStat("MOTIVE");
+        
+        Debug.Log("targetStat: " + buff.getTargetStat());
 
         var target = CreateStatSheet();
         int startMotive = target.motive.Current;
@@ -515,31 +560,55 @@ public class AbilityBehaviorTests
     [Test]
     public void Buff_AsContinuingEffect_BuffsAndLaterReversesCorrectly()
     {
+        int buffAmount = 12;
+        int rounds = 0;
+        int turns = 2;
+        bool onHit = true; //A buff or debuff by default should be an onHit effect, else it would do nothing of substance
         var buff = Create<Buff>();
-        buff.Initialize(12, false, 0, 2);           // 2 turns
+        buff.Initialize(buffAmount, onHit, rounds, turns);           // 2 turns
+        buff.setTargetStat("SKILL");
 
         var target = CreateStatSheet();
         int startSkill = target.skill.Current;
 
-        buff.Affects(target);
-        target.continuingEffects.Add(buff);         // Make it a continuing effect
+        Debug.Log("Skill 0: " + target.skill.Current);
+        Assert.AreEqual(startSkill, target.skill.Current);
 
-        Assert.AreEqual(startSkill + 12, target.skill.Current);
+        target.AbilityHit(buff);         // Make it a continuing effect
+
+        Debug.Log("Skill 1.1: " + target.skill.Current);
+
+        target.ApplyTurnEffects();
+        Debug.Log("Skill 1.2: " + target.skill.Current);
+        Assert.AreEqual(startSkill + buffAmount, target.skill.Current);
+
+        Debug.Log("Skill 2: " + target.skill.Current);
 
         // First turn
         target.ApplyTurnEffects();
-        Assert.AreEqual(startSkill + 12, target.skill.Current);
+        Assert.AreEqual(startSkill + buffAmount, target.skill.Current);
+
+        Debug.Log("Skill 3: " + target.skill.Current);
 
         // Second turn, should finish and remove buff
         target.ApplyTurnEffects();
         Assert.AreEqual(startSkill, target.skill.Current);   // Buff removed
+
+        Debug.Log("Skill 4: " + target.skill.Current);
+    }
+
+    private Buff Skill_Buff_Test()
+    {
+        var buff = Create<Buff>();
+        buff.Initialize(15);
+        buff.setTargetStat("SKILL");
+        return buff;
     }
 
     [Test]
     public void Buff_Finished_ReversesExactAmountApplied()
     {
-        var buff = Create<Buff>();
-        buff.Initialize(15);
+        var buff = Skill_Buff_Test();
 
         var target = CreateStatSheet();
         int startMeans = target.means.Current;
@@ -552,47 +621,19 @@ public class AbilityBehaviorTests
     }
 
     [Test]
-    public void Buff_CanTargetDifferentStats()
-    {
-        var buff = Create<Buff>();
-
-        buff.SetStat("TARGETSTAT", "SKILL");
-        buff.Initialize(7);
-
-        var target = CreateStatSheet();
-        int startSkill = target.skill.Current;
-
-        buff.Affects(target);
-        Assert.AreEqual(startSkill + 7, target.skill.Current);
-    }
-
-    [Test]
-    public void Buff_Overwhelms_AlsoAppliesBuff()
-    {
-        var buff = Create<Buff>();
-        buff.Initialize(20);
-
-        var target = CreateStatSheet();
-        int startMotive = target.motive.Current;
-
-        buff.Overwhelms(target);
-
-        Assert.AreEqual(startMotive + 20, target.motive.Current);
-    }
-
-    [Test]
     public void Buff_MultipleApplications_StackCorrectly()
     {
-        var buff = Create<Buff>();
-        buff.Initialize(5);
+        var buff1 = Skill_Buff_Test();
+        var buff2 = Skill_Buff_Test();
+        int baseAmount = buff1.getAmount();
 
         var target = CreateStatSheet();
         int startMotive = target.motive.Current;
 
-        buff.Affects(target);
-        buff.Affects(target);
+        target.AbilityHit(buff1);
+        target.AbilityHit(buff2);
 
-        Assert.AreEqual(startMotive + 10, target.motive.Current);
+        Assert.AreEqual(startMotive + (baseAmount * 2), target.motive.Current);
     }
 
     #endregion

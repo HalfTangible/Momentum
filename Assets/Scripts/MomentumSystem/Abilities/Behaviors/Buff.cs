@@ -28,13 +28,14 @@ namespace RPG.AbilitySystem
 
         // https://x.com/HalfTangible/status/2009771283555156221
 
-        public Buff()
+        public Buff(string buffTarget)
         {
             StatSheet temp = new StatSheet();
             buffTargets = temp.GetStatNames();
             buffTargets.Remove("HEALTH");
             allKeys.AddRange(new[] {"BUFFTARGETS", "TARGETSTAT"});
             allKeys.Sort();
+            targetStat = buffTarget;
         }
 
         public override void Initialize(int amount)
@@ -56,10 +57,24 @@ namespace RPG.AbilitySystem
 
         }
 
+        public void setTargetStat(string targetStat)
+        {
+            this.targetStat = targetStat;
+        }
+
+        public String getTargetStat()
+        {
+            return targetStat;
+        }
+
         public override void Affects(StatSheet target)
         {
-            Debug.Log($"[Buff.Affects] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
+            Debug.Log("Affects method 1: amountApplied: " + amountApplied);
+            if (amountApplied > 0)
+                return;
 
+            Debug.Log($"[Buff.Affects] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
+            
             if (target.GetStatByName(targetStat) != null)
             {
                 target.GetStatByName(targetStat).ApplyBuff(amount);
@@ -73,6 +88,20 @@ namespace RPG.AbilitySystem
         public override void Overwhelms(StatSheet target)
         {
             Affects(target);
+        }
+
+        public override bool EachRound(StatSheet target)
+        {
+            Debug.Log("Buff.EachRound");
+            Affects(target);
+            return base.EachRound(target);
+        }
+
+        public override bool EachTurn(StatSheet target)
+        {
+            Debug.Log("Buff.EachTurn");
+            Affects(target);
+            return base.EachTurn(target);
         }
 
 
