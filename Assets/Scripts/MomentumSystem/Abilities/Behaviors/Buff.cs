@@ -69,11 +69,11 @@ namespace RPG.AbilitySystem
 
         public override void Affects(StatSheet target)
         {
-            Debug.Log("Affects method 1: amountApplied: " + amountApplied);
+            Debug.Log("[Buff.Affects] 1: amountApplied: " + amountApplied);
             if (amountApplied > 0)
                 return;
 
-            Debug.Log($"[Buff.Affects] Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff)");
+            Debug.Log($"[Buff.Affects] 2: Applying to {target.characterName}'s {targetStat}: amount = {amount} (positive = buff, negative = reversing buff)");
             
             if (target.GetStatByName(targetStat) != null)
             {
@@ -82,7 +82,9 @@ namespace RPG.AbilitySystem
                 base.Affects(target);
             }
             else
-                Debug.LogWarning($"Buff.Affects: Invalid target stat '{targetStat}' for {target.characterName}");
+                Debug.LogWarning($"[Buff.Affects] 3: Invalid target stat '{targetStat}' for {target.characterName}");
+
+            Debug.Log("[Buff.Affects] 4: amountApplied: " + amountApplied);
         }
 
         public override void Overwhelms(StatSheet target)

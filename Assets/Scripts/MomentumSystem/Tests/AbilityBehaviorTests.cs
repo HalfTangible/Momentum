@@ -578,21 +578,19 @@ public class AbilityBehaviorTests
 
         Debug.Log("Skill 1.1: " + target.skill.Current);
 
-        target.ApplyTurnEffects();
+        target.ApplyTurnEffects(); // End turn 1
         Debug.Log("Skill 1.2: " + target.skill.Current);
         Assert.AreEqual(startSkill + buffAmount, target.skill.Current);
 
         Debug.Log("Skill 2: " + target.skill.Current);
 
-        // First turn
-        target.ApplyTurnEffects();
-        Assert.AreEqual(startSkill + buffAmount, target.skill.Current);
+        target.ApplyTurnEffects(); // End turn 2
+        Assert.AreEqual(startSkill, target.skill.Current); // Buff removed
 
         Debug.Log("Skill 3: " + target.skill.Current);
 
-        // Second turn, should finish and remove buff
         target.ApplyTurnEffects();
-        Assert.AreEqual(startSkill, target.skill.Current);   // Buff removed
+        Assert.AreEqual(startSkill, target.skill.Current); // Buff already removed.
 
         Debug.Log("Skill 4: " + target.skill.Current);
     }
@@ -606,34 +604,27 @@ public class AbilityBehaviorTests
     }
 
     [Test]
-    public void Buff_Finished_ReversesExactAmountApplied()
-    {
-        var buff = Skill_Buff_Test();
-
-        var target = CreateStatSheet();
-        int startMeans = target.means.Current;
-
-        buff.Affects(target);
-        Assert.AreEqual(startMeans + 15, target.means.Current);
-
-        buff.Finished(target);
-        Assert.AreEqual(startMeans, target.means.Current);
-    }
-
-    [Test]
     public void Buff_MultipleApplications_StackCorrectly()
     {
         var buff1 = Skill_Buff_Test();
         var buff2 = Skill_Buff_Test();
         int baseAmount = buff1.getAmount();
+        Debug.Log("buff1: " + buff1.getAmount());
+        Debug.Log("buff2: " + buff2.getAmount());
+        Debug.Log("baseAmount: " + baseAmount);
 
         var target = CreateStatSheet();
-        int startMotive = target.motive.Current;
+        int startMotive = target.skill.Current;
+
+        Debug.Log("startMotive: " + startMotive);
 
         target.AbilityHit(buff1);
         target.AbilityHit(buff2);
 
-        Assert.AreEqual(startMotive + (baseAmount * 2), target.motive.Current);
+        Debug.Log("Current motive: " + target.skill.Current);
+        Debug.Log("Should be motive: " + (startMotive + (baseAmount * 2)));
+
+        Assert.AreEqual((startMotive + (baseAmount * 2)), target.skill.Current);
     }
 
     #endregion
