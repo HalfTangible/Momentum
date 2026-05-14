@@ -119,7 +119,7 @@ namespace RPG.StatSystem
                 if (damageAfterDefenses <= 1)
                 {
                     damageAfterDefenses = 1;  // Optional: enforce minimum here
-                    break;                    // Stops looping — no need to check more Grit behaviors
+                    break;                    // Stops looping â€” no need to check more Grit behaviors
                 }
                 //Later: We're going to have Wards in the game as a behavior. We might decide later to have them only trigger against certain levels of damage to make their
                 //shielding effect more potent. If so, we'll put in a check for Ward behavior here.
