@@ -28,28 +28,36 @@ namespace RPG.AbilitySystem
 
         public override bool EachTurn(StatSheet target)
         {
-            int turnsRemaining = (int) GetStat<int>("TURNS");
-
-            if(turnsRemaining > 0)
+            
+            Debug.Log("[Damage.EachTurn()] turnsRemaining 1:" + getTurns());
+            if(getTurns() > 0)
             {
+
+                Debug.Log("[Damage.EachTurn()] turnsRemaining 2: " + getTurns());
                 Affects(target);
-                SetStat("TURNS", --turnsRemaining);
+                Debug.Log("[Damage.EachTurn()] turnsRemaining 3: " + getTurns());
             }
 
-            return Continues();
+            Debug.Log("[Damage.EachTurn()] turnsRemaining 4: " + getTurns());
+
+            return base.EachTurn(target);
         }
+        
 
         public override bool EachRound(StatSheet target)
         {
-            int roundsRemaining = (int) GetStat<int>("ROUNDS");
-
+            Debug.Log("[Damage.EachRound()] roundsRemaining 1: " + getRounds());
             if (roundsRemaining > 0)
             {
+
+                Debug.Log("[Damage.EachRound()] roundsRemaining 2: " + getRounds());
                 Affects(target);
-                SetStat("ROUNDS", --roundsRemaining);
+                Debug.Log("[Damage.EachRound()] After Affects, roundsRemaining 3: " + getRounds());
             }
 
-            return Continues();
+            Debug.Log("[Damage.EachRound()] roundsRemaining 4: " + getRounds());
+
+            return base.EachRound(target);
         }
 
 
@@ -63,10 +71,13 @@ namespace RPG.AbilitySystem
         public override void Affects(StatSheet target)
         {
             int finalDamage = target.ApplyDefenses((int)GetStat<int>("AMOUNT"));
-            
-            if(finalDamage > 0)
-                target.TakesDamage(finalDamage); 
-            
+
+            Debug.Log("[Damage.Affects()] initial damage: " + finalDamage);
+            if (finalDamage > 0)
+                target.TakesDamage(finalDamage);
+
+            Debug.Log("[Damage.Affects()] final Damage: " + finalDamage);
+
             base.Affects(target);
 
             //With the OnHit done, we check to see if the effect continues.

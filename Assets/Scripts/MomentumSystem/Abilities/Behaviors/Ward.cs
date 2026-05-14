@@ -12,12 +12,12 @@ namespace RPG.AbilitySystem
     {
         public override bool EachTurn(StatSheet target)
         {
-            int turnsRemaining = (int)GetStat<int>("TURNS");
+            int turnsRemaining = getTurns();
 
             if (turnsRemaining > 0)
             {
                 Affects(target);
-                SetStat("TURNS", --turnsRemaining);
+                SetStat("TURNS", turnsRemaining - 1);
             }
 
             return Continues();
@@ -25,32 +25,21 @@ namespace RPG.AbilitySystem
 
         public override bool EachRound(StatSheet target)
         {
-            int roundsRemaining = (int)GetStat<int>("ROUNDS");
+            int roundsRemaining = getRounds();
 
             if (roundsRemaining > 0)
             {
                 Affects(target);
-                SetStat("ROUNDS", --roundsRemaining);
+                SetStat("ROUNDS", roundsRemaining - 1);
             }
 
             return Continues();
         }
 
-
-        public override void Finished(StatSheet target)
-        {
-            //This behavior is called when the ability's behaviors are done.
-            //If this is a buff, then it removes the buff; debuff, same deal.
-            base.Finished(target);
-        }
-
         public override void Affects(StatSheet target)
         {
             target.AddWard(amount);
-
             base.Affects(target);
-
-            //With the OnHit done, we check to see if the effect continues.
         }
 
         public override void Overwhelms(StatSheet target)
@@ -60,15 +49,14 @@ namespace RPG.AbilitySystem
 
         public override void Initialize(int amount)
         {
-            Initialize(amount, true);
+            Initialize(amount, true); // Default: apply on hit
         }
 
         public void Initialize(int amount, bool onHit)
         {
-            //By default, damage will happen once on hit.
-            Initialize(amount, onHit, 0, 0);
-
-
+            Initialize(amount, onHit, 0, 0); // Default: do not continue on next turn or next round
+            //Why would you ever make a shield amount with no turn or rounds?
+            //Question for later. Get it all working right now then worry about efficiency.
         }
 
         public void Initialize(int amount, bool onHit, int rounds, int turns)
@@ -80,27 +68,27 @@ namespace RPG.AbilitySystem
 
         private string Description()
         {
+            //This should only be called when an Ability's description is being constructed.
 
-            string desc = "Damaging ability. \n";
-            /*
-            int amount = (int)GetStat<int>("AMOUNT");
-            bool onHit = (bool)GetStat<bool>("ONHIT");
-            int rounds = (int)GetStat<int>("ROUNDS");
-            int turns = (int)GetStat<int>("TURNS");
+            string desc = "Creates a ward. A ward nullifies one ability that hits the target. \n";
+            
+            int amount = getAmount();
+            bool onHit = actsOnHit();
+            int rounds = getRounds();
+            int turns = getTurns();
 
             if (onHit)
-                desc += $"*On hit, do {amount} damage.\n";
+                desc += $"* Apply {amount} warding on hit. \n";
             if (rounds == 1)
-                desc += $"*Do {amount} damage at the start of the next round.";
+                desc += $"* Apply {amount} warding at the start of the next round.";
             if (turns == 1)
-                desc += $"Do {amount} damage at the start of the target's next turn.";
+                desc += $"* Apply {amount} warding at the start of the target's next turn.";
             if (rounds > 1)
-                desc += $"*Do {amount} damage at the start of each round for {rounds} rounds";
+                desc += $"* Apply {amount} warding at the start of the next round for {rounds} rounds.";
             if (turns > 1)
-                desc += $"Do {amount} damage each turn at the start of each of the target's turns for {turns} turns.";
-            */
-
-            return desc;
+                desc += $"* Apply {amount} warding at the start of the target's next turn for {turns} turns.";
+            
+            return desc.TrimEnd();
 
         }
     }

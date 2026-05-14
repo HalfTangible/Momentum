@@ -12,12 +12,12 @@ namespace RPG.AbilitySystem
     {
         public override bool EachTurn(StatSheet target)
         {
-            int turnsRemaining = (int)GetStat<int>("TURNS");
+            int turnsRemaining = getTurns();
 
             if (turnsRemaining > 0)
             {
                 Affects(target);
-                SetStat("TURNS", --turnsRemaining);
+                SetStat("TURNS", turnsRemaining - 1);
             }
 
             return Continues();
@@ -25,33 +25,22 @@ namespace RPG.AbilitySystem
 
         public override bool EachRound(StatSheet target)
         {
-            int roundsRemaining = (int)GetStat<int>("ROUNDS");
+            int roundsRemaining = getRounds();
 
             if (roundsRemaining > 0)
             {
                 Affects(target);
-                SetStat("ROUNDS", --roundsRemaining);
+                SetStat("ROUNDS", roundsRemaining - 1);
             }
 
             return Continues();
         }
 
-
-        public override void Finished(StatSheet target)
-        {
-            //This behavior is called when the ability's behaviors are done.
-            //If this is a buff, then it removes the buff; debuff, same deal.
-            base.Finished(target);
-        }
-
         public override void Affects(StatSheet target)
         {
 
-            
-
+            target.AddShield(amount);
             base.Affects(target);
-
-            //With the OnHit done, we check to see if the effect continues.
         }
 
         public override void Overwhelms(StatSheet target)
@@ -82,26 +71,25 @@ namespace RPG.AbilitySystem
         private string Description()
         {
             
-            string desc = "Damaging ability. \n";
-            /*
-            int amount = (int)GetStat<int>("AMOUNT");
-            bool onHit = (bool)GetStat<bool>("ONHIT");
-            int rounds = (int)GetStat<int>("ROUNDS");
-            int turns = (int)GetStat<int>("TURNS");
+            string desc = "Grants temporary shielding to absorb damage. \n";
+            
+            int amt = getAmount();
+            bool onHit = actsOnHit();
+            int rounds = getRounds();
+            int turns = getTurns();
 
             if (onHit)
-                desc += $"*On hit, do {amount} damage.\n";
+                desc += $"* Apply {amt} shielding on hit. \n";
             if (rounds == 1)
-                desc += $"*Do {amount} damage at the start of the next round.";
+                desc += $"* Apply {amt} shielding at the start of the next round. \n";
             if (turns == 1)
-                desc += $"Do {amount} damage at the start of the target's next turn.";
+                desc += $"* Apply {amt} shielding at the start of the target's next turn. \n";
             if (rounds > 1)
-                desc += $"*Do {amount} damage at the start of each round for {rounds} rounds";
+                desc += $"* Apply {amt} shielding at the start of the next round for {rounds} rounds. \n";
             if (turns > 1)
-                desc += $"Do {amount} damage each turn at the start of each of the target's turns for {turns} turns.";
-            */
+                desc += $"* Apply {amt} shielding at the start of the target's next turn for {turns} turns. \n";
 
-            return desc;
+            return desc.TrimEnd();
             
         }
     }

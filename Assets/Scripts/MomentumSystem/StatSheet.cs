@@ -76,55 +76,55 @@ namespace RPG.StatSystem
 
         public int ApplyDefenses(int incomingDamage)
         {
-            Debug.Log($"{characterName}.ApplyDefenses; incomingDamage = {incomingDamage}");
-            Debug.Log($"Wards: {wards}");
+            Debug.Log($"[StatSheet.ApplyDefenses] {characterName}.ApplyDefenses; incomingDamage = {incomingDamage}");
+            Debug.Log($"[StatSheet.ApplyDefenses] Wards: {wards}");
 
             if (wards > 0)
             {
                 wards--;
-                Debug.Log($"Ward applied. {wards} left.");
+                Debug.Log($"[StatSheet.ApplyDefenses] Ward applied. {wards} left.");
                 return 0;
             }
 
             int damageAfterDefenses = incomingDamage;
-            Debug.Log($"Shields: {shield}");
+            Debug.Log($"[StatSheet.ApplyDefenses] Shields: {shield}");
             //Then shielding absorbs what's left
             if (shield >= damageAfterDefenses && damageAfterDefenses > 0)
             {
                 shield -= damageAfterDefenses;
-                Debug.Log($"Shields left: {shield}, Damage going through: 0");
+                Debug.Log($"[StatSheet.ApplyDefenses] Shields left: {shield}, Damage going through: 0");
                 return 0;
             }
             else if (shield < damageAfterDefenses && shield > 0)
             {
                 damageAfterDefenses -= shield;
-                Debug.Log($"Shields left: 0, Shields left: {shield}");
+                Debug.Log($"[StatSheet.ApplyDefenses] Shields left: 0, Shields left: {shield}");
                 shield = 0;
             }
 
-            Debug.Log($"Before {continuingEffects.Count} continuingEffects: {damageAfterDefenses}");
+            Debug.Log($"[StatSheet.ApplyDefenses] Before {continuingEffects.Count} continuingEffects: {damageAfterDefenses}");
 
             foreach (ABehavior behavior in continuingEffects)
             {
-                Debug.Log($"{behavior.name}");
+                Debug.Log($"[StatSheet.ApplyDefenses] {behavior.name}");
                 // Safe type check + cast
                 if (behavior is Grit gritBehavior && damageAfterDefenses > 1)
                 {
                     // Assuming Grit has a public field/property like this
                     damageAfterDefenses = behavior.ModifyIncomingDamage(damageAfterDefenses); 
-                    Debug.Log($"Grit reduced damage. New total: {damageAfterDefenses}");
+                    Debug.Log($"[StatSheet.ApplyDefenses] Grit reduced damage. New total: {damageAfterDefenses}");
                 }
 
                 // Exit early if we've reduced it to 1 or below
                 if (damageAfterDefenses <= 1)
                 {
                     damageAfterDefenses = 1;  // Optional: enforce minimum here
-                    break;                    // Stops looping — no need to check more Grit behaviors
+                    break;                    // Stops looping â€” no need to check more Grit behaviors
                 }
                 //Later: We're going to have Wards in the game as a behavior. We might decide later to have them only trigger against certain levels of damage to make their
                 //shielding effect more potent. If so, we'll put in a check for Ward behavior here.
             }
-            Debug.Log($"After all behaviors, total is: {damageAfterDefenses}");
+            Debug.Log($"[StatSheet.ApplyDefenses] After all behaviors, total is: {damageAfterDefenses}");
             return damageAfterDefenses;
             //If counters exist, we can trigger them elsewhere; this is for calculating damage.
         }
@@ -133,9 +133,17 @@ namespace RPG.StatSystem
         {
             //Reminder: need to account for things like buff and debuff which are OnHit and end with the turn.
             //Can just have a check at the end of the turn that removes the buff/debuff and then add them, yeah?
-            Debug.Log($"{behavior.name} hits {characterName}. Continues? {behavior.Continues()} Turns: { behavior.getTurns()}, Rounds: { behavior.getRounds()}");
+            Debug.Log($"[StatSheet.AbilityHit] {behavior.name} hits {characterName}. OnHit? {behavior.actsOnHit()} Continues? {behavior.Continues()} Turns: { behavior.getTurns()}, Rounds: { behavior.getRounds()}");
+
+            if (behavior.actsOnHit())
+                behavior.Affects(this);
             
-            if (behavior.Continues()) continuingEffects.Add(behavior);
+            if (behavior.Continues())
+            {
+                Debug.Log("[StatSheet.AbilityHit] Add effect to continuingEffects");
+                continuingEffects.Add(behavior); 
+            }
+
 
         }
 
@@ -175,32 +183,43 @@ namespace RPG.StatSystem
         //EachTurn and EachRound in the behavior already sends back whether it's done or not.
         public void ApplyRoundEffects()
         {
+            Debug.Log("[StatSheet.ApplyRoundEffects] Apply round effects");
             if (health.Current <= 0) return;
+            Debug.Log("[StatSheet.ApplyRoundEffects] Health is > 0, continuing round effect");
+
             List<ABehavior> toRemove = new List<ABehavior>();
+
             foreach (ABehavior behavior in continuingEffects)
             {
                 if (!behavior.EachRound(this)) //EachRound returns a check to see if it's done.
                     toRemove.Add(behavior);
                 
+                
             }
             foreach (ABehavior behavior in toRemove)
             {
+
                 behavior.Finished(this);
                 continuingEffects.Remove(behavior);
             }
         }
 
-        public void ApplyTurnEffects()
+        public void ApplyTurnEffects() // This should trigger at the end of the player's turn
         {
+            Debug.Log("[StatSheet.ApplyTurnEffects] Apply turn effects 1");
             if (health.Current <= 0) return;
+            Debug.Log("[StatSheet.ApplyTurnEffects] Apply turn effects 2; Health is > 0, continuing turn effect");
             List<ABehavior> toRemove = new List<ABehavior>();
             foreach (ABehavior behavior in continuingEffects)
             {
+                Debug.Log("[StatSheet.ApplyTurnEffects] Apply turn effects 3");
                 if (!behavior.EachTurn(this)) //EachTurn returns a check to see if it's done.
                     toRemove.Add(behavior);
+                Debug.Log("[StatSheet.ApplyTurnEffects] Remaining turns: " + behavior.getTurns());
             }
             foreach (ABehavior behavior in toRemove)
             {
+                Debug.Log("[StatSheet.ApplyTurnEffects] Apply turn effects 4");
                 behavior.Finished(this);
                 continuingEffects.Remove(behavior);
             }
